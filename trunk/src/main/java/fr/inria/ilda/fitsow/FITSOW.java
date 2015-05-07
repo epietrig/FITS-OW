@@ -54,7 +54,7 @@ import fr.inria.zvtm.widgets.PieMenu;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 
 import fr.inria.zuist.engine.SceneManager;
-import fr.inria.zuist.engine.ProgressListener;
+import fr.inria.zuist.event.ProgressListener;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
