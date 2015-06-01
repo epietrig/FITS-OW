@@ -6,10 +6,6 @@
 
 package fr.inria.ilda.fitsow;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FilenameFilter;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -26,9 +22,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.KeyAdapter;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.ImageIcon;
-import java.awt.geom.Point2D;
 
 import java.util.Vector;
 import java.util.HashMap;
@@ -40,21 +33,15 @@ import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.Utils;
-import fr.inria.zvtm.glyphs.VSegment;
-import fr.inria.zvtm.glyphs.Glyph;
-import fr.inria.zvtm.glyphs.VCircle;
-import fr.inria.zvtm.glyphs.ClosedShape;
-import fr.inria.zvtm.glyphs.VImage;
-// import fr.inria.zvtm.engine.Java2DPainter;
-import fr.inria.zvtm.widgets.TranslucentTextArea;
 import fr.inria.zvtm.animation.Animation;
 import fr.inria.zvtm.animation.EndAction;
 
 import fr.inria.zvtm.widgets.PieMenu;
-import fr.inria.zvtm.widgets.PieMenuFactory;
 
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.event.ProgressListener;
+
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -68,76 +55,85 @@ public class FITSOW {
     /* screen dimensions, actual dimensions of windows */
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
-    static int VIEW_MAX_W = 1024; //1920; // 1400
-    static int VIEW_MAX_H = 768; //1080;   // 1050
+    static int VIEW_MAX_W = 1024;
+    static int VIEW_MAX_H = 768;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;
     /* dimensions of zoomable panel */
     int panelWidth, panelHeight;
 
-    static final short FITS_LAYER = 0;
-    static final short DATA_LAYER = 1;
-    static final short MENU_LAYER = 2;
+    static final short Z_FITS_LAYER = 0;
+    static final short ZF_DATA_LAYER = 1;
+    static final short P_FITS_LAYER = 2;
+    static final short MENU_LAYER = 3;
+
+    FITSScene scene;
 
     /* ZVTM objects */
     VirtualSpaceManager vsm;
-    static final String FITS_SPACE_STR = "FITS Layer";
-    static final String DATA_SPACE_STR = "Data Layer";
-    VirtualSpace fSpace, dSpace;
-    Camera fCamera, dCamera;
+    static final String ZUIST_FITS_SPACE_STR = "ZFITS Layer";
+    static final String ZUIST_FITS_DATA_SPACE_STR = "ZData Layer";
+    static final String PLAIN_FITS_SPACE_STR = "PFITS Layer";
+    VirtualSpace zfSpace, pfSpace, dSpace;
+    Camera zfCamera, pfCamera, dCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
 
     View mView;
     MVEventListener eh;
 
     SceneManager sm;
+    Navigation nav;
 
     WEGlassPane gp;
-    PieMenu mainPieMenu;
+    // PieMenu mainPieMenu;
 
     boolean antialiasing = false;
 
     public FITSOW(FOWOptions options){
         VirtualSpaceManager.INSTANCE.getAnimationManager().setResolution(80);
         initGUI(options);
+        nav = new Navigation(this);
         gp = new WEGlassPane(this);
         ((JFrame)mView.getFrame()).setGlassPane(gp);
         gp.setValue(0);
         gp.setVisible(true);
-        VirtualSpace[]  sceneSpaces = {fSpace};
-        Camera[] sceneCameras = {fCamera};
+        VirtualSpace[] sceneSpaces = {zfSpace};
+        Camera[] sceneCameras = {zfCamera};
         sm = new SceneManager(sceneSpaces, sceneCameras, new HashMap<String,String>(1,1));
-        // if (xmlSceneFile != null){
-        //     gp.setLabel("Loading "+xmlSceneFile.getName());
-        //     sm.loadScene(Utils.parseXML(xmlSceneFile), xmlSceneFile.getParentFile(), true, gp);
-        // }
+        sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
+                              new JSkyFitsResourceHandler());
+        scene = new FITSScene(this);
+        if (options.path_to_zuist_fits != null){
+            File xmlSceneFile = new File(options.path_to_zuist_fits);
+            loadFITSScene(xmlSceneFile);
+		}
+        else if (options.path_to_fits != null){
+            File fitsFile = new File(options.path_to_fits);
+            scene.loadImage(fitsFile);
+        }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
-        // EndAction ea  = new EndAction(){
-        //        public void execute(Object subject, Animation.Dimension dimension){
-        //            sm.setUpdateLevel(true);
-        //            sm.enableRegionUpdater(true);
-        //        }
-        //    };
-        // sm.getGlobalView(mCamera, NavigationManager.ANIM_MOVE_DURATION, ea);
-        // nm.getGlobalView(null);
-        // eh.cameraMoved(mCamera, null, 0);
     }
 
     void initGUI(FOWOptions options){
         vsm = VirtualSpaceManager.INSTANCE;
         Config.MASTER_ANTIALIASING = !options.noaa;
         windowLayout();
-        fSpace = vsm.addVirtualSpace(FITS_SPACE_STR);
-        dSpace = vsm.addVirtualSpace(DATA_SPACE_STR);
-        fCamera = fSpace.addCamera();
+        zfSpace = vsm.addVirtualSpace(ZUIST_FITS_SPACE_STR);
+        dSpace = vsm.addVirtualSpace(ZUIST_FITS_DATA_SPACE_STR);
+        pfSpace = vsm.addVirtualSpace(PLAIN_FITS_SPACE_STR);
+        zfCamera = zfSpace.addCamera();
         dCamera = dSpace.addCamera();
-        Vector cameras = new Vector(2);
-        cameras.add(fCamera);
+        pfCamera = pfSpace.addCamera();
+        Vector cameras = new Vector(3);
+        cameras.add(zfCamera);
         cameras.add(dCamera);
-        fCamera.stick(dCamera, true);
+        cameras.add(pfCamera);
+        // XXX add menu camera
+        zfCamera.stick(dCamera, true);
         mView = vsm.addFrameView(cameras, MAIN_VIEW_TITLE, View.STD_VIEW, VIEW_W, VIEW_H, false, false, !options.fullscreen, null);
-        if (options.fullscreen && GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().isFullScreenSupported()){
+        if (options.fullscreen &&
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().isFullScreenSupported()){
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow((JFrame)mView.getFrame());
         }
         else {
@@ -145,15 +141,14 @@ public class FITSOW {
         }
         mView.setAntialiasing(Config.MASTER_ANTIALIASING);
         eh = new MVEventListener(this);
-        fCamera.addListener(eh);
-        mView.setListener(eh, FITS_LAYER);
-        mView.setListener(eh, DATA_LAYER);
+        zfCamera.addListener(eh);
+        mView.setListener(eh, Z_FITS_LAYER);
+        mView.setListener(eh, ZF_DATA_LAYER);
         mView.getCursor().getPicker().setListener(eh);
         mView.setBackgroundColor(Config.BACKGROUND_COLOR);
         mView.getCursor().setColor(Config.CURSOR_COLOR);
         mView.getCursor().setHintColor(Config.CURSOR_COLOR);
         updatePanelSize();
-        // mView.setActiveLayer(BOUNDARY_LAYER);
         mView.getPanel().getComponent().addComponentListener(eh);
     }
 
@@ -162,13 +157,31 @@ public class FITSOW {
         VIEW_H = (SCREEN_HEIGHT <= VIEW_MAX_H) ? SCREEN_HEIGHT : VIEW_MAX_H;
     }
 
-    /*-------------     Navigation       -------------*/
-
     void updatePanelSize(){
         Dimension d = mView.getPanel().getComponent().getSize();
         panelWidth = d.width;
         panelHeight = d.height;
     }
+
+    void loadFITSScene(File zuistSceneFile){
+        sm.enableRegionUpdater(false);
+        gp.setLabel("Loading " + zuistSceneFile.getName());
+        scene.loadScene(zuistSceneFile, gp);
+        EndAction ea  = new EndAction(){
+            public void execute(Object subject, Animation.Dimension dimension){
+                sm.setUpdateLevel(true);
+                sm.enableRegionUpdater(true);
+            }
+        };
+        nav.getGlobalView(ea);
+        // eh.cameraMoved(mCamera, null, 0);
+    }
+
+    void loadFITSImage(){
+        // scene.loadImage();
+        // nav.getGlobalView(null);
+    }
+
 
     void gc(){
         System.gc();

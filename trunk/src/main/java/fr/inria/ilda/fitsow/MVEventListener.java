@@ -39,6 +39,7 @@ import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.TextDescription;
 
 import fr.inria.zvtm.engine.Location;
+import fr.inria.zvtm.engine.VirtualSpaceManager;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -55,14 +56,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     int currentJPX, currentJPY;
 
-    FITSOW application;
+    FITSOW app;
 
     Glyph g;
 
     boolean panning = false;
 
     MVEventListener(FITSOW app){
-        this.application = app;
+        this.app = app;
     }
 
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
@@ -86,8 +87,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
 
     public void release3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
-        // if (application.mainPieMenu != null){
-        //     application.displayMainPieMenu(false);
+        // if (app.mainPieMenu != null){
+        //     app.displayMainPieMenu(false);
         // }
     }
 
@@ -95,9 +96,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     public void mouseMoved(ViewPanel v,int jpx,int jpy, MouseEvent e){}
 
-    public void mouseDragged(ViewPanel v,int mod,int buttonNumber,int jpx,int jpy, MouseEvent e){
+    public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
         if (panning){
-            Camera c = application.fCamera;
+            Camera c = app.zfCamera;
             double a = (c.focal+Math.abs(c.altitude)) / c.focal;
             synchronized(c){
                 c.move(a*(lastJPX-jpx), a*(jpy-lastJPY));
@@ -108,27 +109,28 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
     }
 
-    public void mouseWheelMoved(ViewPanel v,short wheelDirection,int jpx,int jpy, MouseWheelEvent e){
-        // double a = (c.focal+Math.abs(c.altitude)) / c.focal;
-        // double mvx = v.getVCursor().getVSXCoordinate();
-        // double mvy = v.getVCursor().getVSYCoordinate();
-        // if (wheelDirection  == WHEEL_UP){
-        //     // zooming out
-        //     c.move(-((mvx - c.vx) * WHEEL_ZOOMOUT_FACTOR / c.focal),
-        //                              -((mvy - c.vy) * WHEEL_ZOOMOUT_FACTOR / c.focal));
-        //     c.altitudeOffset(a*WHEEL_ZOOMOUT_FACTOR);
-        // }
-        // else {
-        //     //wheelDirection == WHEEL_DOWN, zooming in
-        //     if (c.getAltitude()-a*WHEEL_ZOOMIN_FACTOR >= c.getZoomFloor()){
-        //         // this test to prevent translation when camera is not actually zoming in
-        //         c.move((mvx - c.vx) * WHEEL_ZOOMIN_FACTOR / c.focal,
-        //                                  ((mvy - c.vy) * WHEEL_ZOOMIN_FACTOR / c.focal));
-        //
-        //     }
-        //     c.altitudeOffset(-a*WHEEL_ZOOMIN_FACTOR);
-        // }
-        // application.vsm.repaint();
+    public void mouseWheelMoved(ViewPanel v, short wheelDirection, int jpx, int jpy, MouseWheelEvent e){
+        Camera c = app.zfCamera;
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        double mvx = v.getVCursor().getVSXCoordinate();
+        double mvy = v.getVCursor().getVSYCoordinate();
+        if (wheelDirection  == WHEEL_UP){
+            // zooming out
+            c.move(-((mvx - c.vx) * WHEEL_ZOOMOUT_FACTOR / c.focal),
+                                     -((mvy - c.vy) * WHEEL_ZOOMOUT_FACTOR / c.focal));
+            c.altitudeOffset(a*WHEEL_ZOOMOUT_FACTOR);
+        }
+        else {
+            //wheelDirection == WHEEL_DOWN, zooming in
+            if (c.getAltitude()-a*WHEEL_ZOOMIN_FACTOR >= c.getZoomFloor()){
+                // this test to prevent translation when camera is not actually zoming in
+                c.move((mvx - c.vx) * WHEEL_ZOOMIN_FACTOR / c.focal,
+                                         ((mvy - c.vy) * WHEEL_ZOOMIN_FACTOR / c.focal));
+
+            }
+            c.altitudeOffset(-a*WHEEL_ZOOMIN_FACTOR);
+        }
+        VirtualSpaceManager.INSTANCE.repaint();
     }
 
     public void enterGlyph(Glyph g){}
@@ -136,13 +138,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void exitGlyph(Glyph g){}
 
     public void Kpress(ViewPanel v,char c,int code,int mod, KeyEvent e){
-        // if (code==KeyEvent.VK_PAGE_UP){application.nm.getHigherView();}
-        // else if (code==KeyEvent.VK_PAGE_DOWN){application.nm.getLowerView();}
-        // else if (code==KeyEvent.VK_HOME){application.nm.getGlobalView(null);}
-        // else if (code==KeyEvent.VK_UP){application.nm.translateView(NavigationManager.MOVE_UP);}
-        // else if (code==KeyEvent.VK_DOWN){application.nm.translateView(NavigationManager.MOVE_DOWN);}
-        // else if (code==KeyEvent.VK_LEFT){application.nm.translateView(NavigationManager.MOVE_LEFT);}
-        // else if (code==KeyEvent.VK_RIGHT){application.nm.translateView(NavigationManager.MOVE_RIGHT);}
+        if (code==KeyEvent.VK_PAGE_UP){app.nav.getHigherView();}
+        else if (code==KeyEvent.VK_PAGE_DOWN){app.nav.getLowerView();}
+        else if (code==KeyEvent.VK_HOME){app.nav.getGlobalView(null);}
+        else if (code==KeyEvent.VK_UP){app.nav.translateView(Navigation.MOVE_UP);}
+        else if (code==KeyEvent.VK_DOWN){app.nav.translateView(Navigation.MOVE_DOWN);}
+        else if (code==KeyEvent.VK_LEFT){app.nav.translateView(Navigation.MOVE_LEFT);}
+        else if (code==KeyEvent.VK_RIGHT){app.nav.translateView(Navigation.MOVE_RIGHT);}
     }
 
     public void Ktype(ViewPanel v,char c,int code,int mod, KeyEvent e){}
@@ -158,14 +160,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void viewDeiconified(View v){}
 
     public void viewClosing(View v){
-        application.exit();
+        app.exit();
     }
 
     /*ComponentListener*/
     public void componentHidden(ComponentEvent e){}
     public void componentMoved(ComponentEvent e){}
     public void componentResized(ComponentEvent e){
-        application.updatePanelSize();
+        app.updatePanelSize();
     }
     public void componentShown(ComponentEvent e){}
 
