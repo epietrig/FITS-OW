@@ -58,7 +58,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     FITSOW app;
 
-    Glyph g;
+    // last glyph entered
+    Glyph lge;
 
     boolean panning = false;
 
@@ -69,11 +70,23 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
-        panning = true;
+        lge = app.dSpacePicker.lastGlyphEntered();
+        if (lge != null){
+            // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
+            app.dSpacePicker.stickGlyph(lge);
+        }
+        else {
+            // pressed button in empty space (or background ZUIST image)
+            panning = true;
+        }
     }
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
+        lge = app.dSpacePicker.lastGlyphEntered();
+        if (lge != null){
+            app.dSpacePicker.unstickLastGlyph();
+        }
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){}
@@ -92,11 +105,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         // }
     }
 
-    public void click3(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){}
+    public void click3(ViewPanel v, int mod, int jpx, int jpy, int clickNumber, MouseEvent e){}
 
-    public void mouseMoved(ViewPanel v,int jpx,int jpy, MouseEvent e){}
+    public void mouseMoved(ViewPanel v, int jpx, int jpy, MouseEvent e){
+        updateDataSpacePicker(jpx, jpy);
+    }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
+        updateDataSpacePicker(jpx, jpy);
         if (panning){
             Camera c = app.zfCamera;
             double a = (c.focal+Math.abs(c.altitude)) / c.focal;
@@ -172,5 +188,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void componentShown(ComponentEvent e){}
 
     public void cameraMoved(Camera cam, Point2D.Double coord, double a){}
+
+    Point2D.Double vsCoords = new Point2D.Double();
+
+    void updateDataSpacePicker(int jpx, int jpy){
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, vsCoords);
+        app.dSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
+        app.dSpacePicker.computePickedGlyphList(app.dCamera);
+    }
 
 }

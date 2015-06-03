@@ -33,6 +33,7 @@ import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.Utils;
+import fr.inria.zvtm.engine.PickerVS;
 import fr.inria.zvtm.animation.Animation;
 import fr.inria.zvtm.animation.EndAction;
 
@@ -55,28 +56,28 @@ public class FITSOW {
     /* screen dimensions, actual dimensions of windows */
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
-    static int VIEW_MAX_W = 1024;
-    static int VIEW_MAX_H = 768;
+    static int VIEW_MAX_W = 1280;
+    static int VIEW_MAX_H = 1024;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;
     /* dimensions of zoomable panel */
     int panelWidth, panelHeight;
 
-    static final short Z_FITS_LAYER = 0;
-    static final short ZF_DATA_LAYER = 1;
-    static final short P_FITS_LAYER = 2;
-    static final short MENU_LAYER = 3;
+    static final short ZUIST_FITS_LAYER = 0;
+    static final short DATA_LAYER = 1;
+    static final short MENU_LAYER = 2;
 
     FITSScene scene;
 
     /* ZVTM objects */
     VirtualSpaceManager vsm;
-    static final String ZUIST_FITS_SPACE_STR = "ZFITS Layer";
-    static final String ZUIST_FITS_DATA_SPACE_STR = "ZData Layer";
-    static final String PLAIN_FITS_SPACE_STR = "PFITS Layer";
-    VirtualSpace zfSpace, pfSpace, dSpace;
-    Camera zfCamera, pfCamera, dCamera;
+    static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
+    static final String DATA_SPACE_STR = "Data Layer";
+    VirtualSpace zfSpace, dSpace;
+    Camera zfCamera, dCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
+
+    PickerVS dSpacePicker;
 
     View mView;
     MVEventListener eh;
@@ -86,8 +87,6 @@ public class FITSOW {
 
     WEGlassPane gp;
     // PieMenu mainPieMenu;
-
-    boolean antialiasing = false;
 
     public FITSOW(FOWOptions options){
         VirtualSpaceManager.INSTANCE.getAnimationManager().setResolution(80);
@@ -107,7 +106,7 @@ public class FITSOW {
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);
 		}
-        else if (options.path_to_fits != null){
+        if (options.path_to_fits != null){
             File fitsFile = new File(options.path_to_fits);
             scene.loadImage(fitsFile);
         }
@@ -120,15 +119,12 @@ public class FITSOW {
         Config.MASTER_ANTIALIASING = !options.noaa;
         windowLayout();
         zfSpace = vsm.addVirtualSpace(ZUIST_FITS_SPACE_STR);
-        dSpace = vsm.addVirtualSpace(ZUIST_FITS_DATA_SPACE_STR);
-        pfSpace = vsm.addVirtualSpace(PLAIN_FITS_SPACE_STR);
+        dSpace = vsm.addVirtualSpace(DATA_SPACE_STR);
         zfCamera = zfSpace.addCamera();
         dCamera = dSpace.addCamera();
-        pfCamera = pfSpace.addCamera();
-        Vector cameras = new Vector(3);
+        Vector cameras = new Vector(2);
         cameras.add(zfCamera);
         cameras.add(dCamera);
-        cameras.add(pfCamera);
         // XXX add menu camera
         zfCamera.stick(dCamera, true);
         mView = vsm.addFrameView(cameras, MAIN_VIEW_TITLE, View.STD_VIEW, VIEW_W, VIEW_H, false, false, !options.fullscreen, null);
@@ -142,14 +138,18 @@ public class FITSOW {
         mView.setAntialiasing(Config.MASTER_ANTIALIASING);
         eh = new MVEventListener(this);
         zfCamera.addListener(eh);
-        mView.setListener(eh, Z_FITS_LAYER);
-        mView.setListener(eh, ZF_DATA_LAYER);
-        mView.getCursor().getPicker().setListener(eh);
+        mView.setListener(eh, ZUIST_FITS_LAYER);
+        mView.setListener(eh, DATA_LAYER);
+        // mView.getCursor().getPicker().setListener(eh);
+        dSpacePicker = new PickerVS();
+        dSpace.registerPicker(dSpacePicker);
+        dSpacePicker.setListener(eh);
         mView.setBackgroundColor(Config.BACKGROUND_COLOR);
         mView.getCursor().setColor(Config.CURSOR_COLOR);
         mView.getCursor().setHintColor(Config.CURSOR_COLOR);
         updatePanelSize();
         mView.getPanel().getComponent().addComponentListener(eh);
+        mView.setActiveLayer(DATA_LAYER);
     }
 
     void windowLayout(){

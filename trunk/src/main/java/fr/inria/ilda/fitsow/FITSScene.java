@@ -71,7 +71,7 @@ class FITSScene {
             img.setColorLookupTable("Standard", false);
             img.setScaleAlgorithm(JSkyFitsImage.ScaleAlgorithm.LINEAR, false);
             img.updateDisplayedImage();
-            app.pfSpace.addGlyph(img);
+            app.dSpace.addGlyph(img);
             // menu.buildHistogram();
         }
     }

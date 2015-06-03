@@ -84,7 +84,7 @@ public class WallFITSOW extends FITSOW {
         vsm.setMaster("WallFITSOW");
         cg = new ClusterGeometry(options.blockWidth, options.blockHeight, options.numCols, options.numRows);
         Vector ccameras = new Vector(2);
-        ccameras.add(fCamera);
+        ccameras.add(zfCamera);
         ccameras.add(dCamera);
         cv = new ClusteredView(cg, options.numRows-1, options.numCols, options.numRows, ccameras);
         vsm.addClusteredView(cv);
