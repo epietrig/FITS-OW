@@ -97,13 +97,12 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     public void click2(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){}
 
-    public void press3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
-
-    public void release3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
-        // if (app.mainPieMenu != null){
-        //     app.displayMainPieMenu(false);
-        // }
+    public void press3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
+        app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
+        app.meh.displayMainPieMenu();
     }
+
+    public void release3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
 
     public void click3(ViewPanel v, int mod, int jpx, int jpy, int clickNumber, MouseEvent e){}
 

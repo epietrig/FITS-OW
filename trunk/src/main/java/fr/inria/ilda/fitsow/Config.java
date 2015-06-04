@@ -9,6 +9,8 @@ package fr.inria.ilda.fitsow;
 import java.awt.Color;
 import java.awt.Font;
 
+import fr.inria.zvtm.widgets.PieMenuFactory;
+
 class Config {
 
     static final Color BACKGROUND_COLOR = Color.BLACK;
@@ -18,14 +20,36 @@ class Config {
     static boolean CLUSTER_ANTIALIASING = true;
 
     static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
-    static final Font PIEMENU_FONT = DEFAULT_FONT;
     static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
 
     /* PIEMENU */
 
+    static final Font PIEMENU_FONT = DEFAULT_FONT;
+
     static Color PIEMENU_FILL_COLOR = Color.BLACK;
     static Color PIEMENU_BORDER_COLOR = Color.WHITE;
-    static Color PIEMENU_INSIDE_COLOR_ = Color.DARK_GRAY;
-    static Color PIEMENU_INSIDE_COLOR = Color.LIGHT_GRAY;
+    static Color PIEMENU_INSIDE_COLOR = Color.DARK_GRAY;
+
+    static {
+        PieMenuFactory.setItemFillColor(PIEMENU_FILL_COLOR);
+        PieMenuFactory.setItemBorderColor(PIEMENU_BORDER_COLOR);
+        PieMenuFactory.setSelectedItemFillColor(PIEMENU_INSIDE_COLOR);
+        PieMenuFactory.setSelectedItemBorderColor(null);
+        PieMenuFactory.setLabelColor(PIEMENU_BORDER_COLOR);
+        PieMenuFactory.setFont(PIEMENU_FONT);
+        PieMenuFactory.setAngle(0);
+    }
+
+    // /* ------------ Glyph z-index ---------- */
+    // static final int Z_MPMI = 10;
+    // static final int Z_SPMI = 12;
+
+    /* ------------ Glyph types ---------- */
+
+    static final String T_MPMI = "mpm";
+    static final String T_SPMI = "spm_";
+    static final String T_SPMISc = T_SPMI + "sc";
+
+    static final String T_FITS = "fits";
 
 }

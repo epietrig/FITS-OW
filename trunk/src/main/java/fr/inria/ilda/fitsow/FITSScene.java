@@ -9,6 +9,7 @@ package fr.inria.ilda.fitsow;
 import java.awt.Color;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import java.io.File;
 import java.net.URL;
@@ -19,6 +20,19 @@ import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 class FITSScene {
+
+    static final Short SCALE_LINEAR = 0;
+    static final Short SCALE_LOG = 1;
+    static final Short SCALE_SQRT = 2;
+    static final Short SCALE_HISTEQ = 3;
+
+    static LinkedHashMap<Short,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
+    static {
+        SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
+        SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
+        SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
+        SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
+    };
 
     File SCENE_FILE, SCENE_FILE_DIR;
 
@@ -45,6 +59,7 @@ class FITSScene {
 
     void loadImage(URL url){
         JSkyFitsImage img = new JSkyFitsImage(url);
+        img.setType(Config.T_FITS);
         addImage(img);
     }
 
@@ -73,6 +88,15 @@ class FITSScene {
             img.updateDisplayedImage();
             app.dSpace.addGlyph(img);
             // menu.buildHistogram();
+        }
+    }
+
+    void setScale(JSkyFitsImage img, Short scale){
+        if (img != null){
+            img.setScaleAlgorithm(SCALES.get(scale), true);
+        }
+        else {
+            // XXX no specific image selected, do it on ZUIST scene
         }
     }
 

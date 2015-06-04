@@ -73,14 +73,17 @@ public class FITSOW {
     VirtualSpaceManager vsm;
     static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
     static final String DATA_SPACE_STR = "Data Layer";
-    VirtualSpace zfSpace, dSpace;
-    Camera zfCamera, dCamera;
+    static final String MENU_SPACE_STR = "Command/Menu Layer";
+    VirtualSpace zfSpace, dSpace, mnSpace;
+    Camera zfCamera, dCamera, mnCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
 
     PickerVS dSpacePicker;
+    PickerVS mnSpacePicker;
 
     View mView;
     MVEventListener eh;
+    MenuEventListener meh;
 
     SceneManager sm;
     Navigation nav;
@@ -120,12 +123,14 @@ public class FITSOW {
         windowLayout();
         zfSpace = vsm.addVirtualSpace(ZUIST_FITS_SPACE_STR);
         dSpace = vsm.addVirtualSpace(DATA_SPACE_STR);
+        mnSpace = vsm.addVirtualSpace(MENU_SPACE_STR);
         zfCamera = zfSpace.addCamera();
         dCamera = dSpace.addCamera();
-        Vector cameras = new Vector(2);
+        mnCamera = mnSpace.addCamera();
+        Vector cameras = new Vector(3);
         cameras.add(zfCamera);
         cameras.add(dCamera);
-        // XXX add menu camera
+        cameras.add(mnCamera);
         zfCamera.stick(dCamera, true);
         mView = vsm.addFrameView(cameras, MAIN_VIEW_TITLE, View.STD_VIEW, VIEW_W, VIEW_H, false, false, !options.fullscreen, null);
         if (options.fullscreen &&
@@ -137,13 +142,18 @@ public class FITSOW {
         }
         mView.setAntialiasing(Config.MASTER_ANTIALIASING);
         eh = new MVEventListener(this);
+        meh = new MenuEventListener(this);
         zfCamera.addListener(eh);
         mView.setListener(eh, ZUIST_FITS_LAYER);
         mView.setListener(eh, DATA_LAYER);
+        mView.setListener(meh, MENU_LAYER);
         // mView.getCursor().getPicker().setListener(eh);
         dSpacePicker = new PickerVS();
         dSpace.registerPicker(dSpacePicker);
         dSpacePicker.setListener(eh);
+        mnSpacePicker = new PickerVS();
+        mnSpace.registerPicker(mnSpacePicker);
+        mnSpacePicker.setListener(meh);
         mView.setBackgroundColor(Config.BACKGROUND_COLOR);
         mView.getCursor().setColor(Config.CURSOR_COLOR);
         mView.getCursor().setHintColor(Config.CURSOR_COLOR);
@@ -190,52 +200,6 @@ public class FITSOW {
     void exit(){
         System.exit(0);
     }
-
-    // void displayMainPieMenu(boolean b){
-    //     if (b){
-    //         double a = (mCamera.focal+Math.abs(mCamera.altitude)) / mCamera.focal;
-
-
-    //         PieMenuFactory.setItemFillColor(PIEMENU_FILL_COLOR);
-    //         PieMenuFactory.setItemBorderColor(PIEMENU_BORDER_COLOR);
-    //         PieMenuFactory.setSelectedItemFillColor(PIEMENU_INSIDE_COLOR);
-    //         PieMenuFactory.setSelectedItemBorderColor(null);
-    //         PieMenuFactory.setLabelColor(PIEMENU_BORDER_COLOR);
-    //         PieMenuFactory.setFont(PIEMENU_FONT);
-    //         PieMenuFactory.setTranslucency(0.7f);
-    //         PieMenuFactory.setSensitivityRadius(0.5);
-    //         PieMenuFactory.setAngle(-Math.PI/2.0);
-    //         PieMenuFactory.setRadius((long)(150));
-
-    //         mainPieMenu = PieMenuFactory.createPieMenu(RaildarStore.BRANDS, rdStore.BRANDS_OFFSETS, 0, mView, vsm);
-
-    //         Glyph[] items = mainPieMenu.getItems();
-    //         for(Glyph item : items){
-    //             item.setType(ExplorerEventHandler.T_PIEMENU);
-    //             item.setZindex(Z_DRAW_RECT);
-    //         }
-    //         for(int i = 0; i < rdStore.BRANDS.length; i++){
-    //             short type = Circulation.getTrainType(rdStore.BRANDS[i]);
-    //             if(rdStore.hiddenBrand.contains(type) && rdStore.isHiddenBrand(rdStore.BRANDS[i])){
-    //                 items[i].setColor(PIEMENU_INSIDE_COLOR_);
-    //             }
-    //         }
-    //     }
-    //     else {
-    //         mainPieMenu.destroy(0);
-    //         mainPieMenu = null;
-    //     }
-    // }
-
-    // void pieMenuEvent(Glyph menuItem){
-    //     int index = mainPieMenu.getItemIndex(menuItem);
-    //     if (index != -1){
-    //         String label = mainPieMenu.getLabels()[index].getText();
-    //         boolean set = rdStore.isHiddenBrand(RaildarStore.BRANDS[index]);
-    //         rdStore.hideTrainsForBrand(set, RaildarStore.BRANDS[index]);
-    //         smartiesMngr.updateBrands();
-    //     }
-    // }
 
     public static void main(String[] args){
         FOWOptions options = new FOWOptions();
