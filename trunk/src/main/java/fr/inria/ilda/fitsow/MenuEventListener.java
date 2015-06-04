@@ -96,30 +96,37 @@ class MenuEventListener implements ViewListener, PickerListener {
     public void mouseWheelMoved(ViewPanel v, short wheelDirection, int jpx, int jpy, MouseWheelEvent e){}
 
     public void enterGlyph(Glyph g){
-        if (g.getType().equals(Config.T_MPMI)){
-            g.highlight(true, null);
-            // app.mnSpace.onTop(g);
-            // int i = mainPieMenu.getItemIndex(g);
-            // if (i != -1){
-            //     app.mnSpace.onTop(mainPieMenu.getLabels()[i]);
-            // }
-        }
-        else if (g.getType().startsWith(Config.T_SPMI)){
-            g.highlight(true, null);
-            if (g.getType() == Config.T_SPMISc){
-                subPieMenuEvent(g);
+        if (g.getType() != null){
+            if (g.getType().equals(Config.T_MPMI)){
+                g.highlight(true, null);
+                // app.mnSpace.onTop(g);
+                // int i = mainPieMenu.getItemIndex(g);
+                // if (i != -1){
+                //     app.mnSpace.onTop(mainPieMenu.getLabels()[i]);
+                // }
             }
-            // app.mnSpace.onTop(g);
-            // int i = subPieMenu.getItemIndex(g);
-            // if (i != -1){
-            //     app.mnSpace.onTop(subPieMenu.getLabels()[i]);
-            // }
+            else if (g.getType().startsWith(Config.T_SPMI)){
+                g.highlight(true, null);
+                if (g.getType() == Config.T_SPMISc){
+                    subPieMenuEvent(g);
+                }
+                // app.mnSpace.onTop(g);
+                // int i = subPieMenu.getItemIndex(g);
+                // if (i != -1){
+                //     app.mnSpace.onTop(subPieMenu.getLabels()[i]);
+                // }
+            }
+        }
+        else {
+            if (mainPieMenu != null && g == mainPieMenu.getBoundary()){
+                mainPieMenu.setSensitivity(true);
+            }
         }
     }
 
     public void exitGlyph(Glyph g){
         if (g.getType() != null){
-            if (g.getType().equals(Config.T_MPMI) || g.getType().equals(Config.T_SPMI)){
+            if (g.getType().equals(Config.T_MPMI) || g.getType().startsWith(Config.T_SPMI)){
                 // exiting a pie menu item
                 g.highlight(false, null);
             }
@@ -129,8 +136,9 @@ class MenuEventListener implements ViewListener, PickerListener {
                 // crossing the main pie menu's trigger
                 Glyph lge = app.mnSpacePicker.lastGlyphEntered();
                 if (lge != null && lge.getType() == Config.T_MPMI){
-                    mainPieMenu.setSensitivity(false);
-                    displaySubPieMenu(lge);
+                    if (displaySubPieMenu(lge)){
+                        mainPieMenu.setSensitivity(false);
+                    }
                 }
             }
             else if (subPieMenu != null && g == subPieMenu.getBoundary()){
@@ -174,7 +182,7 @@ class MenuEventListener implements ViewListener, PickerListener {
 
     void displayMainPieMenu(){
         app.mView.setActiveLayer(FITSOW.MENU_LAYER);
-        PieMenuFactory.setSensitivityRadius(0.7);
+        PieMenuFactory.setSensitivityRadius(0.6);
         PieMenuFactory.setRadius(140);
         PieMenuFactory.setTranslucency(0.7f);
         mainPieMenu = PieMenuFactory.createPieMenu(MPM_COMMANDS, MPM_OFFSETS, 0, app.mView);
@@ -192,17 +200,21 @@ class MenuEventListener implements ViewListener, PickerListener {
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
     }
 
-    void displaySubPieMenu(Glyph menuItem){
+    // returns true if it did create a sub pie menu
+    boolean displaySubPieMenu(Glyph menuItem){
         int index = mainPieMenu.getItemIndex(menuItem);
         if (index != -1){
             String label = mainPieMenu.getLabels()[index].getText();
             PieMenuFactory.setSensitivityRadius(1);
             PieMenuFactory.setRadius(100);
-            PieMenuFactory.setTranslucency(0.9f);
+            PieMenuFactory.setTranslucency(0.95f);
             if (label.equals(MPM_SCALE)){
                 displayScaleSubMenu();
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
     void displayScaleSubMenu(){
