@@ -125,27 +125,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void mouseWheelMoved(ViewPanel v, short wheelDirection, int jpx, int jpy, MouseWheelEvent e){
-        Camera c = app.zfCamera;
-        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
         double mvx = v.getVCursor().getVSXCoordinate();
         double mvy = v.getVCursor().getVSYCoordinate();
         if (wheelDirection  == WHEEL_UP){
-            // zooming out
-            c.move(-((mvx - c.vx) * WHEEL_ZOOMOUT_FACTOR / c.focal),
-                                     -((mvy - c.vy) * WHEEL_ZOOMOUT_FACTOR / c.focal));
-            c.altitudeOffset(a*WHEEL_ZOOMOUT_FACTOR);
+            app.nav.czoomOut(app.zfCamera, WHEEL_ZOOMOUT_FACTOR, mvx, mvy);
         }
         else {
             //wheelDirection == WHEEL_DOWN, zooming in
-            if (c.getAltitude()-a*WHEEL_ZOOMIN_FACTOR >= c.getZoomFloor()){
-                // this test to prevent translation when camera is not actually zoming in
-                c.move((mvx - c.vx) * WHEEL_ZOOMIN_FACTOR / c.focal,
-                                         ((mvy - c.vy) * WHEEL_ZOOMIN_FACTOR / c.focal));
-
-            }
-            c.altitudeOffset(-a*WHEEL_ZOOMIN_FACTOR);
+            app.nav.czoomIn(app.zfCamera, WHEEL_ZOOMIN_FACTOR, mvx, mvy);
         }
-        VirtualSpaceManager.INSTANCE.repaint();
     }
 
     public void enterGlyph(Glyph g){}

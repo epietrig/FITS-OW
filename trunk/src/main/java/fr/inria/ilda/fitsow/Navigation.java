@@ -9,6 +9,7 @@ package fr.inria.ilda.fitsow;
 import java.awt.geom.Point2D;
 
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.animation.EndAction;
 import fr.inria.zvtm.animation.Animation;
 import fr.inria.zvtm.animation.interpolation.SlowInSlowOutInterpolator;
@@ -79,6 +80,40 @@ class Navigation {
                             Navigation.ANIM_MOVE_DURATION, app.zfCamera, trans, true,
                             SlowInSlowOutInterpolator.getInstance(), null);
         vsm.getAnimationManager().startAnimation(a, false);
+    }
+
+    /** Camera zoom-in. Called e.g. when using the mouse wheel or circular gestures.
+     *@param c camera to zoom in
+     *@param idfactor input device factor
+     *@param zcx center of zoom x-coord (in virtual space)
+     *@param zcy center of zoom y-coord (in virtual space)
+     */
+    void czoomIn(Camera c, float idfactor, double zcx, double zcy){
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        //wheelDirection == WHEEL_DOWN, zooming in
+        if (c.getAltitude()-a*idfactor >= c.getZoomFloor()){
+            // this test to prevent translation when camera is not actually zoming in
+            c.move((zcx - c.vx) * idfactor / c.focal,
+                   ((zcy - c.vy) * idfactor / c.focal));
+
+        }
+        c.altitudeOffset(-a*idfactor);
+        c.getOwningView().repaint();
+    }
+
+    /** Camera zoom-out. Called e.g. when using the mouse wheel or circular gestures.
+     *@param c camera to zoom in
+     *@param idfactor input device factor
+     *@param zcx center of zoom x-coord (in virtual space)
+     *@param zcy center of zoom y-coord (in virtual space)
+     */
+    void czoomOut(Camera c, float idfactor, double zcx, double zcy){
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        // zooming out
+        c.move(-((zcx - c.vx) * idfactor / c.focal),
+               -((zcy - c.vy) * idfactor / c.focal));
+        c.altitudeOffset(a*idfactor);
+        c.getOwningView().repaint();
     }
 
 }
