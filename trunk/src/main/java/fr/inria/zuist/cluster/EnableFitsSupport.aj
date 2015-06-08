@@ -7,13 +7,12 @@
 package fr.inria.zuist.cluster;
 
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
-import fr.inria.zuist.engine.FitsResourceHandler;
+// import fr.inria.zuist.engine.FitsResourceHandler;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.engine.VirtualSpace;
 
 import java.util.HashMap;
-
 
 //set a resource handler for FITS files whenever a SceneManager is
 //instantiated
@@ -33,11 +32,10 @@ aspect EnableZuistSupport {
                 JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                 new JSkyFitsResourceHandler()
                 );
-        sceneManager.setResourceHandler(
-                FitsResourceHandler.RESOURCE_TYPE_FITS,
-                new FitsResourceHandler()
-                );
+        // sceneManager.setResourceHandler(
+        //         FitsResourceHandler.RESOURCE_TYPE_FITS,
+        //         new FitsResourceHandler()
+        //         );
 
     }
 }
-
