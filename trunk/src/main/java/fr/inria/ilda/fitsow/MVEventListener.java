@@ -148,6 +148,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         else if (code==KeyEvent.VK_DOWN){app.nav.translateView(Navigation.MOVE_DOWN);}
         else if (code==KeyEvent.VK_LEFT){app.nav.translateView(Navigation.MOVE_LEFT);}
         else if (code==KeyEvent.VK_RIGHT){app.nav.translateView(Navigation.MOVE_RIGHT);}
+        else if (code==KeyEvent.VK_F1){
+            app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
+            app.scene.selectPrevColorMapping(app.meh.selectedFITSImage);
+        }
+        else if (code==KeyEvent.VK_F2){
+            app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
+            app.scene.selectNextColorMapping(app.meh.selectedFITSImage);
+        }
     }
 
     public void Ktype(ViewPanel v,char c,int code,int mod, KeyEvent e){}

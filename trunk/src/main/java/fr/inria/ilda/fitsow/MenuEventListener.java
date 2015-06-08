@@ -178,6 +178,10 @@ class MenuEventListener implements ViewListener, PickerListener {
         app.mnSpacePicker.computePickedGlyphList(app.mnCamera);
     }
 
+    void setSelectedFITSImage(Glyph[] pickedImages){
+        selectedFITSImage = (pickedImages.length > 0) ? (JSkyFitsImage)pickedImages[pickedImages.length-1] : null;
+    }
+
     /*------------------ Pie menu -------------------------*/
 
     void displayMainPieMenu(){
@@ -189,7 +193,6 @@ class MenuEventListener implements ViewListener, PickerListener {
         Glyph[] items = mainPieMenu.getItems();
         for (Glyph item:items){
             item.setType(Config.T_MPMI);
-            // item.setZindex(Config.Z_MPMI);
         }
     }
 
@@ -217,15 +220,6 @@ class MenuEventListener implements ViewListener, PickerListener {
         return false;
     }
 
-    void displayScaleSubMenu(){
-        subPieMenu = PieMenuFactory.createPieMenu(SCALEPM_COMMANDS, SCALEPM_OFFSETS,
-                                                  0, app.mView);
-        Glyph[] items = subPieMenu.getItems();
-        for (int i=0;i<items.length;i++){
-            items[i].setType(Config.T_SPMISc);
-        }
-    }
-
     void hideSubPieMenu(){
         if (subPieMenu == null){return;}
         subPieMenu.destroy(0);
@@ -239,6 +233,12 @@ class MenuEventListener implements ViewListener, PickerListener {
             if (label == MPM_GLOBAL_VIEW){
                 app.nav.getGlobalView(null);
             }
+            else if (label == MPM_COLOR){
+                displayColorSubMenu();
+            }
+            // else if (label == MPM_QUERY){
+            //
+            // }
         }
     }
 
@@ -246,25 +246,31 @@ class MenuEventListener implements ViewListener, PickerListener {
         int index = subPieMenu.getItemIndex(menuItem);
         if (index != -1){
             String label = subPieMenu.getLabels()[index].getText();
-            if (label == SCALEPM_LOG){app.scene.setScale(selectedFITSImage, FITSScene.SCALE_LOG);}
-            else if (label == SCALEPM_LINEAR){app.scene.setScale(selectedFITSImage, FITSScene.SCALE_LINEAR);}
-            else if (label == SCALEPM_SQRT){app.scene.setScale(selectedFITSImage, FITSScene.SCALE_SQRT);}
-            else if (label == SCALEPM_HISTEQ){app.scene.setScale(selectedFITSImage, FITSScene.SCALE_HISTEQ);}
+            if (label == SCALEPM_LOG){app.scene.setScale(selectedFITSImage, Config.SCALE_LOG);}
+            else if (label == SCALEPM_LINEAR){app.scene.setScale(selectedFITSImage, Config.SCALE_LINEAR);}
+            else if (label == SCALEPM_SQRT){app.scene.setScale(selectedFITSImage, Config.SCALE_SQRT);}
+            else if (label == SCALEPM_HISTEQ){app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);}
         }
-    }
-
-
-    void setSelectedFITSImage(Glyph[] pickedImages){
-        selectedFITSImage = (pickedImages.length > 0) ? (JSkyFitsImage)pickedImages[pickedImages.length-1] : null;
     }
 
     /*------------------ Color -------------------------*/
 
     // XXX show color gradients laid out in a grid
+    void displayColorSubMenu(){
 
+        
+    }
 
     /*------------------ Scale -------------------------*/
 
-    // XXX as a secondary pie menu
+    void displayScaleSubMenu(){
+        subPieMenu = PieMenuFactory.createPieMenu(SCALEPM_COMMANDS, SCALEPM_OFFSETS,
+                                                  0, app.mView);
+        Glyph[] items = subPieMenu.getItems();
+        for (int i=0;i<items.length;i++){
+            items[i].setType(Config.T_SPMISc);
+        }
+    }
+
 
 }

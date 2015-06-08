@@ -21,19 +21,6 @@ import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 class FITSScene {
 
-    static final Short SCALE_LINEAR = 0;
-    static final Short SCALE_LOG = 1;
-    static final Short SCALE_SQRT = 2;
-    static final Short SCALE_HISTEQ = 3;
-
-    static LinkedHashMap<Short,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
-    static {
-        SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
-        SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
-        SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
-        SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
-    };
-
     File SCENE_FILE, SCENE_FILE_DIR;
 
     FITSOW app;
@@ -91,13 +78,54 @@ class FITSScene {
         }
     }
 
-    void setScale(JSkyFitsImage img, Short scale){
+    /* ---------------- Scale ---------------------- */
+
+    void setScale(JSkyFitsImage img, String scale){
         if (img != null){
-            img.setScaleAlgorithm(SCALES.get(scale), true);
+            img.setScaleAlgorithm(Config.SCALES.get(scale), true);
         }
         else {
             // XXX no specific image selected, do it on ZUIST scene
         }
+    }
+
+    /* ---------------- Color mapping ---------------------- */
+
+    void setColorMapping(JSkyFitsImage img, String colorMappingID){
+        if (img != null){
+            img.setColorLookupTable(colorMappingID, true);
+        }
+        else {
+            // XXX no specific image selected, do it on ZUIST scene
+        }
+    }
+
+    void selectNextColorMapping(JSkyFitsImage img){
+        if (img == null){return;}
+        String currentCLT = img.getColorLookupTable();
+        int ci = 0;
+        for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
+            if (Config.COLOR_MAPPING_LIST[i].equals(currentCLT)){
+                ci = i;
+                break;
+            }
+        }
+        ci = (ci >= Config.COLOR_MAPPING_LIST.length-1) ? 0 : ci + 1;
+        setColorMapping(img, Config.COLOR_MAPPING_LIST[ci]);
+    }
+
+    void selectPrevColorMapping(JSkyFitsImage img){
+        if (img == null){return;}
+        String currentCLT = img.getColorLookupTable();
+        int ci = 0;
+        for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
+            if (Config.COLOR_MAPPING_LIST[i].equals(currentCLT)){
+                ci = i;
+                break;
+            }
+        }
+        ci = (ci <= 0) ? Config.COLOR_MAPPING_LIST.length-1 : ci - 1;
+        setColorMapping(img, Config.COLOR_MAPPING_LIST[ci]);
     }
 
 }
