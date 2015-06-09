@@ -20,6 +20,7 @@ import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 class FITSScene {
 
@@ -91,7 +92,7 @@ class FITSScene {
         else {
             JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
             for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc instanceof JSkyFitsImageDescription){
+                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
                     ((JSkyFitsImageDescription)desc).setScaleAlgorithm(sa, true);
                 }
             }
@@ -106,7 +107,7 @@ class FITSScene {
         }
         else {
             for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc instanceof JSkyFitsImageDescription){
+                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
                     ((JSkyFitsImageDescription)desc).setColorLookupTable(clt, true);
                 }
             }
@@ -120,7 +121,7 @@ class FITSScene {
         }
         else {
             for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc instanceof JSkyFitsImageDescription){
+                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
                     currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
                     break;
                 }
