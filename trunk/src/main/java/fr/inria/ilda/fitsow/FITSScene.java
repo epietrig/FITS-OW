@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
+import fr.inria.zuist.engine.ObjectDescription;
+import fr.inria.zuist.engine.JSkyFitsImageDescription;
 
 class FITSScene {
 
@@ -87,7 +89,12 @@ class FITSScene {
             img.setScaleAlgorithm(Config.SCALES.get(scale), true);
         }
         else {
-            // XXX no specific image selected, do it on ZUIST scene
+            JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
+            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
+                if (desc instanceof JSkyFitsImageDescription){
+                    ((JSkyFitsImageDescription)desc).setScaleAlgorithm(sa, true);
+                }
+            }
         }
     }
 
@@ -98,7 +105,11 @@ class FITSScene {
             img.setColorLookupTable(clt, true);
         }
         else {
-            // XXX no specific image selected, do it on ZUIST scene
+            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
+                if (desc instanceof JSkyFitsImageDescription){
+                    ((JSkyFitsImageDescription)desc).setColorLookupTable(clt, true);
+                }
+            }
         }
     }
 
