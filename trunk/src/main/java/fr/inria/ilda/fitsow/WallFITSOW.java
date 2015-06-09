@@ -9,6 +9,7 @@ package fr.inria.ilda.fitsow;
 import java.util.Vector;
 
 import fr.inria.zvtm.engine.Utils;
+import fr.inria.zvtm.engine.VirtualSpaceManager;
 
 import fr.inria.zvtm.cluster.ClusterGeometry;
 import fr.inria.zvtm.cluster.ClusteredView;
@@ -30,8 +31,8 @@ public class WallFITSOW extends FITSOW {
     }
 
     void initGUI(FOWOptions options){
+        VirtualSpaceManager.INSTANCE.setMaster("WallFITSOW");
         super.initGUI(options);
-        vsm.setMaster("WallFITSOW");
         cg = new ClusterGeometry(options.blockWidth, options.blockHeight, options.numCols, options.numRows);
         Vector ccameras = new Vector(2);
         ccameras.add(zfCamera);
