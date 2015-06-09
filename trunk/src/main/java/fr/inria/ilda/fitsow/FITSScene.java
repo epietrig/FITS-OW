@@ -26,6 +26,8 @@ class FITSScene {
     FITSOW app;
     SceneManager sm;
 
+    String zuistColorMapping = Config.COLOR_MAPPING_LIST[0];
+    String zuistScale = Config.SCALE_LINEAR;
 
     FITSScene(FITSOW app){
         this.app = app;
@@ -91,17 +93,20 @@ class FITSScene {
 
     /* ---------------- Color mapping ---------------------- */
 
-    void setColorMapping(JSkyFitsImage img, String colorMappingID){
+    void setColorMapping(JSkyFitsImage img, String clt){
         if (img != null){
-            img.setColorLookupTable(colorMappingID, true);
+            img.setColorLookupTable(clt, true);
         }
         else {
             // XXX no specific image selected, do it on ZUIST scene
         }
     }
 
-    void selectNextColorMapping(JSkyFitsImage img){
-        if (img == null){return;}
+    String selectNextColorMapping(JSkyFitsImage img){
+        if (img == null){
+            // XXX no specific image selected, do it on ZUIST scene
+            return null;
+        }
         String currentCLT = img.getColorLookupTable();
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
@@ -112,10 +117,14 @@ class FITSScene {
         }
         ci = (ci >= Config.COLOR_MAPPING_LIST.length-1) ? 0 : ci + 1;
         setColorMapping(img, Config.COLOR_MAPPING_LIST[ci]);
+        return Config.COLOR_MAPPING_LIST[ci];
     }
 
-    void selectPrevColorMapping(JSkyFitsImage img){
-        if (img == null){return;}
+    String selectPrevColorMapping(JSkyFitsImage img){
+        if (img == null){
+            // XXX no specific image selected, do it on ZUIST scene
+            return null;
+        }
         String currentCLT = img.getColorLookupTable();
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
@@ -126,6 +135,7 @@ class FITSScene {
         }
         ci = (ci <= 0) ? Config.COLOR_MAPPING_LIST.length-1 : ci - 1;
         setColorMapping(img, Config.COLOR_MAPPING_LIST[ci]);
+        return Config.COLOR_MAPPING_LIST[ci];
     }
 
 }

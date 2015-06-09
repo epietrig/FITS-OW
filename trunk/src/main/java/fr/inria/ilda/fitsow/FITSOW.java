@@ -56,7 +56,7 @@ public class FITSOW {
     /* screen dimensions, actual dimensions of windows */
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
-    static int VIEW_MAX_W = 1280;
+    static int VIEW_MAX_W = 1600;
     static int VIEW_MAX_H = 1024;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;

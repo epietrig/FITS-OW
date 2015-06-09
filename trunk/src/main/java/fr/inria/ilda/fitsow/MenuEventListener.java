@@ -6,13 +6,17 @@
 
 package fr.inria.ilda.fitsow;
 
-// import java.awt.Cursor;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 //
-// import java.util.Vector;
+import java.awt.image.RGBImageFilter;
+import java.awt.MultipleGradientPaint;
+
+import java.util.Vector;
+import java.util.HashMap;
 // import java.util.Timer;
 // import java.util.TimerTask;
 //
@@ -22,9 +26,13 @@ import fr.inria.zvtm.event.ViewListener;
 import fr.inria.zvtm.event.PickerListener;
 import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VText;
+import fr.inria.zvtm.glyphs.PRectangle;
+import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.widgets.PieMenu;
+
+import fr.inria.zvtm.fits.Utils;
 
 class MenuEventListener implements ViewListener, PickerListener {
 
@@ -54,7 +62,12 @@ class MenuEventListener implements ViewListener, PickerListener {
         this.app = app;
     }
 
-    public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
+    public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
+        if (showingCLTmenu){
+            hideColorSubMenu();
+            app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+        }
+    }
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
 
@@ -70,9 +83,10 @@ class MenuEventListener implements ViewListener, PickerListener {
 
     public void release3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         Glyph g = v.lastGlyphEntered();
+        short layerToActivate = FITSOW.DATA_LAYER;
         if (g != null){
             if (g.getType() == Config.T_MPMI){
-                mainPieMenuEvent(g);
+                layerToActivate = mainPieMenuEvent(g);
             }
             else if (g.getType() == Config.T_SPMISc){
                 // nothing to do, command triggered when cursor entered menu item
@@ -80,7 +94,7 @@ class MenuEventListener implements ViewListener, PickerListener {
         }
         hideSubPieMenu();
         hideMainPieMenu();
-        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+        app.mView.setActiveLayer(layerToActivate);
     }
 
     public void click3(ViewPanel v, int mod, int jpx, int jpy, int clickNumber, MouseEvent e){}
@@ -116,6 +130,9 @@ class MenuEventListener implements ViewListener, PickerListener {
                 //     app.mnSpace.onTop(subPieMenu.getLabels()[i]);
                 // }
             }
+            else if (g.getType().equals(Config.T_CLT_BTN)){
+                selectCLT((String)g.getOwner());
+            }
         }
         else {
             if (mainPieMenu != null && g == mainPieMenu.getBoundary()){
@@ -128,6 +145,9 @@ class MenuEventListener implements ViewListener, PickerListener {
         if (g.getType() != null){
             if (g.getType().equals(Config.T_MPMI) || g.getType().startsWith(Config.T_SPMI)){
                 // exiting a pie menu item
+                g.highlight(false, null);
+            }
+            else if (g.getType().equals(Config.T_CLT_BTN)){
                 g.highlight(false, null);
             }
         }
@@ -150,11 +170,26 @@ class MenuEventListener implements ViewListener, PickerListener {
         }
     }
 
-    public void Kpress(ViewPanel v,char c,int code,int mod, KeyEvent e){}
+    public void Kpress(ViewPanel v, char c, int code, int mod, KeyEvent e){
+        if (code==KeyEvent.VK_F1){
+            String newCLT = app.scene.selectPrevColorMapping(app.meh.selectedFITSImage);
+            updateHighlightedCLT(newCLT);
+        }
+        else if (code==KeyEvent.VK_F2){
+            String newCLT = app.scene.selectNextColorMapping(app.meh.selectedFITSImage);
+            updateHighlightedCLT(newCLT);
+        }
+        else if (code==KeyEvent.VK_ESCAPE){
+            if (showingCLTmenu){
+                hideColorSubMenu();
+                app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+            }
+        }
+    }
 
-    public void Ktype(ViewPanel v,char c,int code,int mod, KeyEvent e){}
+    public void Ktype(ViewPanel v, char c, int code, int mod, KeyEvent e){}
 
-    public void Krelease(ViewPanel v,char c,int code,int mod, KeyEvent e){}
+    public void Krelease(ViewPanel v, char c, int code, int mod, KeyEvent e){}
 
     public void viewActivated(View v){}
 
@@ -185,7 +220,6 @@ class MenuEventListener implements ViewListener, PickerListener {
     /*------------------ Pie menu -------------------------*/
 
     void displayMainPieMenu(){
-        app.mView.setActiveLayer(FITSOW.MENU_LAYER);
         PieMenuFactory.setSensitivityRadius(0.6);
         PieMenuFactory.setRadius(140);
         PieMenuFactory.setTranslucency(0.7f);
@@ -200,7 +234,6 @@ class MenuEventListener implements ViewListener, PickerListener {
         if (mainPieMenu == null){return;}
         mainPieMenu.destroy(0);
         mainPieMenu = null;
-        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
     }
 
     // returns true if it did create a sub pie menu
@@ -226,7 +259,7 @@ class MenuEventListener implements ViewListener, PickerListener {
         subPieMenu = null;
     }
 
-    void mainPieMenuEvent(Glyph menuItem){
+    short mainPieMenuEvent(Glyph menuItem){
         int index = mainPieMenu.getItemIndex(menuItem);
         if (index != -1){
             String label = mainPieMenu.getLabels()[index].getText();
@@ -235,11 +268,13 @@ class MenuEventListener implements ViewListener, PickerListener {
             }
             else if (label == MPM_COLOR){
                 displayColorSubMenu();
+                return FITSOW.MENU_LAYER;
             }
             // else if (label == MPM_QUERY){
             //
             // }
         }
+        return FITSOW.DATA_LAYER;
     }
 
     void subPieMenuEvent(Glyph menuItem){
@@ -255,10 +290,68 @@ class MenuEventListener implements ViewListener, PickerListener {
 
     /*------------------ Color -------------------------*/
 
-    // XXX show color gradients laid out in a grid
-    void displayColorSubMenu(){
+    boolean showingCLTmenu = false;
 
-        
+    HashMap<String,CLTButton> clt2button = new HashMap(Config.COLOR_MAPPING_GRADIENTS.size(),1);
+    String currentCLT;
+
+    void displayColorSubMenu(){
+        currentCLT = (selectedFITSImage != null) ? selectedFITSImage.getColorLookupTable() : app.scene.zuistColorMapping;
+        Vector<Glyph> cltMenuGs = new Vector(2*Config.COLOR_MAPPING_LIST.length+1);
+        double gridH = Config.LARGEST_COLOR_MAPPING_CAT;
+        double gridW = Config.COLOR_MAPPINGS.length;
+        double cellW = (Config.CLT_BTN_W + 2*Config.CLT_BTN_PADDING);
+        double cellH = (Config.CLT_BTN_H + 2*Config.CLT_BTN_PADDING);
+        double bkgW = gridW * cellW;
+        double bkgH = gridH * cellH;
+        VRectangle bkg = new VRectangle(0, 0, Config.Z_CLT_BKG, bkgW, 1.05*bkgH, Color.BLACK, Color.BLACK, .8f);
+        bkg.setType(Config.T_CLT_BTN);
+        bkg.setSensitivity(false);
+        cltMenuGs.add(bkg);
+        clt2button.clear();
+        for (int i=0;i<Config.COLOR_MAPPINGS.length;i++){
+            for (int j=0;j<Config.COLOR_MAPPINGS[i].length;j++){
+                double x = i * cellW - bkgW/2d + cellW/2d;
+                double y = -j * cellH + bkgH/2d - cellH/2d;
+                RGBImageFilter f = Config.COLOR_MAPPING_GRADIENTS.get(Config.COLOR_MAPPINGS[i][j]);
+                MultipleGradientPaint mgp = Utils.makeGradient(f);
+                PRectangle filterG = new PRectangle(x, y, Config.Z_CLT_BTN,
+                                                    Config.CLT_BTN_W, Config.CLT_BTN_H,
+                                                    mgp, Config.CLT_BTN_BORDER_COLOR);
+                filterG.setType(Config.T_CLT_BTN);
+                filterG.setOwner(Config.COLOR_MAPPINGS[i][j]);
+                VText filterLb = new VText(x-Config.CLT_BTN_W/2d+Config.CLT_BTN_HOFFSET,
+                                           y+Config.CLT_BTN_H/2d+Config.CLT_BTN_VOFFSET,
+                                           Config.Z_CLT_BTN, Config.CLT_BTN_BORDER_COLOR,
+                                           Config.COLOR_MAPPINGS[i][j], VText.TEXT_ANCHOR_START);
+                filterLb.setType(Config.T_CLT_BTN);
+                cltMenuGs.add(filterG);
+                cltMenuGs.add(filterLb);
+                clt2button.put(Config.COLOR_MAPPINGS[i][j], new CLTButton(filterG, filterLb));
+            }
+        }
+        app.mnSpace.addGlyphs(cltMenuGs.toArray(new Glyph[cltMenuGs.size()]));
+        showingCLTmenu = true;
+        clt2button.get(currentCLT).select();
+    }
+
+    void hideColorSubMenu(){
+        Vector v = app.mnSpace.getGlyphsOfType(Config.T_CLT_BTN);
+        app.mnSpace.removeGlyphs((Glyph[])v.toArray(new Glyph[v.size()]), true);
+        showingCLTmenu = false;
+    }
+
+    void selectCLT(String clt){
+        if (!clt.equals(currentCLT)){
+            updateHighlightedCLT(clt);
+            app.scene.setColorMapping(selectedFITSImage, clt);
+        }
+    }
+
+    void updateHighlightedCLT(String clt){
+        clt2button.get(currentCLT).unselect();
+        clt2button.get(clt).select();
+        currentCLT = clt;
     }
 
     /*------------------ Scale -------------------------*/
@@ -272,5 +365,29 @@ class MenuEventListener implements ViewListener, PickerListener {
         }
     }
 
+
+}
+
+class CLTButton {
+
+    PRectangle button;
+    VText label;
+
+    CLTButton(PRectangle r, VText t){
+        this.button = r;
+        this.label = t;
+    }
+
+    void select(){
+        button.setStroke(Config.CLT_BTN_SEL_STROKE);
+        button.setBorderColor(Config.CLT_BTN_SEL_COLOR);
+        label.setColor(Config.CLT_BTN_SEL_COLOR);
+    }
+
+    void unselect(){
+        button.setStroke(null);
+        button.setBorderColor(Config.CLT_BTN_BORDER_COLOR);
+        label.setColor(Config.CLT_BTN_BORDER_COLOR);
+    }
 
 }
