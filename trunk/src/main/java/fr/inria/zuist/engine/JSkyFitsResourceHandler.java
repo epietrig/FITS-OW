@@ -1,18 +1,24 @@
-/*   Copyright (c) INRIA, 2010-2014. All Rights Reserved
+/*   Copyright (c) INRIA, 2010-2015. All Rights Reserved
  *   Licensed under the GNU LGPL. For full terms see the file COPYING.
  *
- * $Id: FitsResourceHandler.java 5247 2014-12-02 20:22:41Z fdelcampo $
  */
 
 package fr.inria.zuist.engine;
 
-import java.net.URL;
 import java.awt.Color;
+
+import java.net.URL;
+
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.SceneManager;
 
 public class JSkyFitsResourceHandler implements ResourceHandler {
+
     public static final String RESOURCE_TYPE_FITS = "skyfits";
+
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.LINEAR;
+    public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
+
     private static final String SC_ID = "sc="; //scale factor in params
     private static final String SM_ID = "sm="; //scale method in params
     private static final String CF_ID = "cf="; //color filter in params
@@ -26,8 +32,8 @@ public class JSkyFitsResourceHandler implements ResourceHandler {
 
         float scaleFactor = 1;
 
-        JSkyFitsImage.ScaleAlgorithm scaleMethod = JSkyFitsImage.ScaleAlgorithm.LINEAR;
-        String colorLookupTable = "Heat";
+        JSkyFitsImage.ScaleAlgorithm scaleMethod = DEFAULT_SCALE;
+        String colorLookupTable = DEFAULT_COLOR_LOOKUP_TABLE;
 
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;

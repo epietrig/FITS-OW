@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 import fr.inria.zvtm.fits.filters.Aips0Filter;
 import fr.inria.zvtm.fits.filters.BackgrFilter;
@@ -209,6 +210,13 @@ class Config {
         COLOR_MAPPING_GRADIENTS.put("Staircase", new StaircaseFilter());
         COLOR_MAPPING_GRADIENTS.put("Stairs8", new Stairs8Filter());
         COLOR_MAPPING_GRADIENTS.put("Stairs9", new Stairs9Filter());
+    }
+
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.LINEAR;
+    public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
+    static {
+        JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
+        JSkyFitsResourceHandler.DEFAULT_COLOR_LOOKUP_TABLE = DEFAULT_COLOR_LOOKUP_TABLE;
     }
 
 }

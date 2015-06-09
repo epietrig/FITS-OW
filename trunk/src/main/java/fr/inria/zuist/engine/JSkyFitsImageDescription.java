@@ -218,12 +218,19 @@ public class JSkyFitsImageDescription extends ResourceDescription {
         }
     }
 
+    public String getColorLookupTable(){
+        return this.colorLookupTable;
+    }
 
     public void setScaleAlgorithm(JSkyFitsImage.ScaleAlgorithm algorithm, boolean updateDisplay){
         this.scaleMethod = algorithm;
         if(glyph != null){
             glyph.setScaleAlgorithm(algorithm, updateDisplay);
         }
+    }
+
+    public JSkyFitsImage.ScaleAlgorithm getScale(){
+        return this.scaleMethod;
     }
 
     public void setRescaleGlobal(double min, double max){

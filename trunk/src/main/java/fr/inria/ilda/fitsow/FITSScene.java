@@ -74,8 +74,8 @@ class FITSScene {
 
     void addImage(JSkyFitsImage img){
         if (img != null){
-            img.setColorLookupTable("Standard", false);
-            img.setScaleAlgorithm(JSkyFitsImage.ScaleAlgorithm.LINEAR, false);
+            img.setColorLookupTable(Config.DEFAULT_COLOR_LOOKUP_TABLE, false);
+            img.setScaleAlgorithm(Config.DEFAULT_SCALE, false);
             img.updateDisplayedImage();
             app.dSpace.addGlyph(img);
             // menu.buildHistogram();
@@ -113,12 +113,24 @@ class FITSScene {
         }
     }
 
-    String selectNextColorMapping(JSkyFitsImage img){
-        if (img == null){
-            // XXX no specific image selected, do it on ZUIST scene
-            return null;
+    String getCurrentCLT(JSkyFitsImage img){
+        String currentCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
+        if (img != null){
+            currentCLT = img.getColorLookupTable();
         }
-        String currentCLT = img.getColorLookupTable();
+        else {
+            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
+                if (desc instanceof JSkyFitsImageDescription){
+                    currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+                    break;
+                }
+            }
+        }
+        return currentCLT;
+    }
+
+    String selectNextColorMapping(JSkyFitsImage img){
+        String currentCLT = getCurrentCLT(img);
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
             if (Config.COLOR_MAPPING_LIST[i].equals(currentCLT)){
@@ -132,11 +144,7 @@ class FITSScene {
     }
 
     String selectPrevColorMapping(JSkyFitsImage img){
-        if (img == null){
-            // XXX no specific image selected, do it on ZUIST scene
-            return null;
-        }
-        String currentCLT = img.getColorLookupTable();
+        String currentCLT = getCurrentCLT(img);
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
             if (Config.COLOR_MAPPING_LIST[i].equals(currentCLT)){
