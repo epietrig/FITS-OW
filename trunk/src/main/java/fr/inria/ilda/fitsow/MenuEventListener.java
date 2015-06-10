@@ -34,7 +34,7 @@ import fr.inria.zvtm.widgets.PieMenu;
 
 import fr.inria.zvtm.fits.Utils;
 
-class MenuEventListener implements ViewListener, PickerListener {
+public class MenuEventListener implements ViewListener, PickerListener {
 
     static final String MPM_GLOBAL_VIEW = "Global View";
     static final String MPM_QUERY = "Query...";
@@ -295,7 +295,7 @@ class MenuEventListener implements ViewListener, PickerListener {
     HashMap<String,CLTButton> clt2button = new HashMap(Config.COLOR_MAPPING_GRADIENTS.size(),1);
     String currentCLT;
 
-    void displayColorSubMenu(){
+    public void displayColorSubMenu(){
         currentCLT = (selectedFITSImage != null) ? selectedFITSImage.getColorLookupTable() : app.scene.zuistColorMapping;
         Vector<Glyph> cltMenuGs = new Vector(2*Config.COLOR_MAPPING_LIST.length+1);
         double gridH = Config.LARGEST_COLOR_MAPPING_CAT;
@@ -335,7 +335,7 @@ class MenuEventListener implements ViewListener, PickerListener {
         clt2button.get(currentCLT).select();
     }
 
-    void hideColorSubMenu(){
+   public void hideColorSubMenu(){
         Vector v = app.mnSpace.getGlyphsOfType(Config.T_CLT_BTN);
         app.mnSpace.removeGlyphs((Glyph[])v.toArray(new Glyph[v.size()]), true);
         showingCLTmenu = false;
@@ -348,7 +348,7 @@ class MenuEventListener implements ViewListener, PickerListener {
         }
     }
 
-    void updateHighlightedCLT(String clt){
+    public void updateHighlightedCLT(String clt){
         clt2button.get(currentCLT).unselect();
         clt2button.get(clt).select();
         currentCLT = clt;

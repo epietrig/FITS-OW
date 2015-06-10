@@ -130,7 +130,7 @@ public class FITSOW {
     		gestureManager.registerSegmenter(segmenter);		
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
     		segmenter.registerListener(mtRecognizer);
-    		RecognitionLayer recognitionLayer = new RecognitionLayer(mView);
+    		RecognitionLayer recognitionLayer = new RecognitionLayer(this);
     		mtRecognizer.registerListener(recognitionLayer);
     		gestureManager.start();
     		mView.setJava2DPainter(recognitionLayer, Java2DPainter.AFTER_PORTALS);
@@ -220,7 +220,27 @@ public class FITSOW {
     void exit(){
         System.exit(0);
     }
+    
+	public View getView() {
+		return mView;
+	}
+	
+	public Navigation getNavigation() {
+		return nav;
+	}
+	
+	public Camera getZFCamera() {
+		return zfCamera;
+	}
+	
+	public FITSScene getScene() {
+		return scene;
+	}
 
+	public MenuEventListener getMenuEventHandler() {
+		return meh;
+	}
+	
     public static void main(String[] args){
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);

@@ -22,7 +22,7 @@ import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
-class FITSScene {
+public class FITSScene {
 
     File SCENE_FILE, SCENE_FILE_DIR;
 
@@ -101,7 +101,7 @@ class FITSScene {
 
     /* ---------------- Color mapping ---------------------- */
 
-    void setColorMapping(JSkyFitsImage img, String clt){
+    public void setColorMapping(JSkyFitsImage img, String clt){
         if (img != null){
             img.setColorLookupTable(clt, true);
         }
@@ -130,7 +130,7 @@ class FITSScene {
         return currentCLT;
     }
 
-    String selectNextColorMapping(JSkyFitsImage img){
+    public String selectNextColorMapping(JSkyFitsImage img){
         String currentCLT = getCurrentCLT(img);
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){
@@ -144,7 +144,7 @@ class FITSScene {
         return Config.COLOR_MAPPING_LIST[ci];
     }
 
-    String selectPrevColorMapping(JSkyFitsImage img){
+    public String selectPrevColorMapping(JSkyFitsImage img){
         String currentCLT = getCurrentCLT(img);
         int ci = 0;
         for (int i=0;i<Config.COLOR_MAPPING_LIST.length;i++){

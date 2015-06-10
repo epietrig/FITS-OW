@@ -14,7 +14,7 @@ import fr.inria.zvtm.animation.EndAction;
 import fr.inria.zvtm.animation.Animation;
 import fr.inria.zvtm.animation.interpolation.SlowInSlowOutInterpolator;
 
-class Navigation {
+public class Navigation {
 
     /* Navigation constants */
     static final int ANIM_MOVE_DURATION = 300;
@@ -88,7 +88,7 @@ class Navigation {
      *@param zcx center of zoom x-coord (in virtual space)
      *@param zcy center of zoom y-coord (in virtual space)
      */
-    void czoomIn(Camera c, float idfactor, double zcx, double zcy){
+    public void czoomIn(Camera c, float idfactor, double zcx, double zcy){
         double a = (c.focal+Math.abs(c.altitude)) / c.focal;
         //wheelDirection == WHEEL_DOWN, zooming in
         if (c.getAltitude()-a*idfactor >= c.getZoomFloor()){
@@ -107,7 +107,7 @@ class Navigation {
      *@param zcx center of zoom x-coord (in virtual space)
      *@param zcy center of zoom y-coord (in virtual space)
      */
-    void czoomOut(Camera c, float idfactor, double zcx, double zcy){
+    public void czoomOut(Camera c, float idfactor, double zcx, double zcy){
         double a = (c.focal+Math.abs(c.altitude)) / c.focal;
         // zooming out
         c.move(-((zcx - c.vx) * idfactor / c.focal),

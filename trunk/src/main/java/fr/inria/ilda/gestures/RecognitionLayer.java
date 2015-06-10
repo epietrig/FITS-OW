@@ -6,21 +6,22 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import fr.inria.ilda.fitsow.FITSOW;
 import fr.inria.ilda.gesture.AbstractGestureEvent;
 import fr.inria.ilda.gesture.IGestureEventListener;
 import fr.inria.ilda.gestures.events.MTFreeCircularGesture;
 import fr.inria.ilda.gestures.events.MTGestureEvent;
 import fr.inria.ilda.gestures.events.MTStopGestureEvent;
 import fr.inria.zvtm.engine.Java2DPainter;
-import fr.inria.zvtm.engine.View;
 
 public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 
-	protected View mView;
-	protected String gestureRecognized = "";
+	protected FITSOW app;
 	protected double traceLength = 0;
 	protected double traceLengthIncrement = 0;
-	
+
+	protected double traceLengthLastCMSetting = 0;
+
 	protected Point deltaMove = new Point();
 
 	protected GestureControl gestureControl = GestureControl.NONE;
@@ -28,20 +29,24 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 	private static Font FONT_DEBUG = new Font("Verdana", Font.PLAIN, 30);
 
 
+	public static int CM_STEP = 40; 
+	public static int TRACE_LENGTH_START_PAN = 50; 
 
-	public RecognitionLayer(View mView) {
-		this.mView = mView;
+	public RecognitionLayer(FITSOW app) {
+		this.app = app;
 	}
 
 	public void gestureOccured(AbstractGestureEvent event) {
-//		System.out.println(""+event.getClass());
+		//		System.out.println(""+event.getClass());
 		if(event instanceof MTStopGestureEvent) {
-			gestureRecognized = "";
+			System.out.println("STOP");
 			traceLength = 0;
 			traceLengthIncrement = 0;
+			traceLengthLastCMSetting = 0;
 			deltaMove.setLocation(0, 0);
 			gestureControl = GestureControl.NONE;
-			mView.repaint();
+			app.getMenuEventHandler().hideColorSubMenu();
+			app.getView().repaint();
 		} else if(event instanceof MTGestureEvent) {
 			MTGestureEvent mtEvent = (MTGestureEvent)event;
 			if(mtEvent.getFingers() == 2) {
@@ -55,42 +60,82 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 					deltaMove = freeFingers.get(0).getLastMove();
 					traceLengthIncrement = traceLength - previousTrace;
 				}
-//				System.out.println("\t--> "+(int)traceLength);
-				if(gestureControl == GestureControl.ZOOM) {
+				//				System.out.println("\t--> "+(int)traceLength);
+				if(gestureControl == GestureControl.ZOOM_IN || gestureControl == GestureControl.ZOOM_OUT) {
 					// zoom is going on
 					// check if there is a change in direction
 					if(mtEvent instanceof MTFreeCircularGesture) {
 						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
-						gestureRecognized = mtFreeCircularEvent.isClockwise() ? "ZOOM + " : "ZOOM - ";
+						gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.ZOOM_IN : GestureControl.ZOOM_OUT;
 					}
 				} else if(gestureControl == GestureControl.PAN) {
 				} else if(mtEvent instanceof MTFreeCircularGesture) {
 					// zoom starts
-					gestureControl = GestureControl.ZOOM;
-					if(mtEvent instanceof MTFreeCircularGesture) {
-						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
-						gestureRecognized = mtFreeCircularEvent.isClockwise() ? "ZOOM + " : "ZOOM - ";
-					}
-				} else if(traceLength > 50) {
+					MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
+					gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.ZOOM_IN : GestureControl.ZOOM_OUT;
+				} else if(traceLength > TRACE_LENGTH_START_PAN) {
 					// pan starts
 					gestureControl = GestureControl.PAN;
-					gestureRecognized ="PAN ";
+				}
+				if(gestureControl == GestureControl.ZOOM_IN) {
+					app.getNavigation().czoomIn(app.getZFCamera(), 2.5f, app.getZFCamera().vx, app.getZFCamera().vy);
+				} else if(gestureControl == GestureControl.ZOOM_OUT) {
+					app.getNavigation().czoomOut(app.getZFCamera(), 2.5f, app.getZFCamera().vx, app.getZFCamera().vy);
+				} else {
+					app.getView().repaint();
+				}
+			} else if(mtEvent.getFingers() == 3) {
+				ArrayList<Finger> freeFingers = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFreeFingersWithoutId();
+				double previousTrace = traceLength;
+				traceLength = 0;
+				deltaMove.setLocation(0, 0);
+				traceLengthIncrement = 0;
+				if(freeFingers.size() > 0) {
+					traceLength = freeFingers.get(0).getTraceLength();
+					deltaMove = freeFingers.get(0).getLastMove();
+					traceLengthIncrement = traceLength - previousTrace;
+				}
+				if(gestureControl == GestureControl.NEXT_COLOR_MAPPING || gestureControl == GestureControl.PREV_COLOR_MAPPING) {
+					// color mapping setting is going on
+					// check if there is a change in direction
+					if(mtEvent instanceof MTFreeCircularGesture) {
+						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
+						gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
+					}
+				} else if(mtEvent instanceof MTFreeCircularGesture) {
+					// color mapping setting starts
+					MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
+					gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
+					app.getMenuEventHandler().displayColorSubMenu();
+				}
+				if(gestureControl == GestureControl.NEXT_COLOR_MAPPING) {
+					if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
+						String newCLT = app.getScene().selectNextColorMapping(null);
+						app.getMenuEventHandler().updateHighlightedCLT(newCLT);
+						traceLengthLastCMSetting = traceLength;
+					}
+				} else if(gestureControl == GestureControl.PREV_COLOR_MAPPING) {
+					if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
+						String newCLT = app.getScene().selectPrevColorMapping(null);
+						app.getMenuEventHandler().updateHighlightedCLT(newCLT);
+						traceLengthLastCMSetting = traceLength;
+					}
+				} else {
+					app.getView().repaint();
 				}
 			}
-			mView.repaint();
+
 		}
-	}
-	
-	protected void updateView() {
-		
 	}
 
 	@Override
 	public void paint(Graphics2D g2d, int viewWidth, int viewHeight) {
-		g2d.setFont(FONT_DEBUG);
-		g2d.setColor(Color.WHITE);
-		g2d.drawString(gestureRecognized, viewWidth/2, viewHeight/2);
-		g2d.drawString("("+deltaMove.x+", "+deltaMove.y+") / "+traceLengthIncrement, viewWidth/2, viewHeight/2 + 40);
+		if(gestureControl != GestureControl.NONE) {
+			g2d.setFont(FONT_DEBUG);
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(""+gestureControl, viewWidth/2, viewHeight/2);
+			g2d.drawString("("+deltaMove.x+", "+deltaMove.y+") / "+traceLengthIncrement, viewWidth/2, viewHeight/2 + 40);
+		}
 	}
 
 }
