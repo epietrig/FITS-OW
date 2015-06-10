@@ -76,6 +76,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
 		<artifactId>tuio</artifactId>
 		<version>1.4</version>
 	</dependency>
+    <!-- mvn install:install-file -Dfile=IldaGestureManagerDraft-all-1.0.jar -DgroupId=fr.inria.ilda -DartifactId=ilda-gestureManager -Dversion=0.0.1 -Dpackaging=jar -->
 	<dependency>
 		<groupId>fr.inria.ilda</groupId>
 		<artifactId>ilda-gestureManager</artifactId>
