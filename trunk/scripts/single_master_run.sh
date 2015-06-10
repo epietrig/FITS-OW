@@ -16,4 +16,4 @@ JARS=$JARS":target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
 
-java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=$IP -Xmx1g -cp $JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"
+java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=$IP -Xmx1g -cp .:$JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"
