@@ -8,44 +8,44 @@ package fr.inria.ilda.fitsow;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Graphics;
-import java.awt.GradientPaint;
-import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.KeyAdapter;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Vector;
+
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import java.util.Vector;
-import java.util.HashMap;
-
-import java.io.File;
-
-import fr.inria.zvtm.engine.Camera;
-import fr.inria.zvtm.engine.VirtualSpaceManager;
-import fr.inria.zvtm.engine.VirtualSpace;
-import fr.inria.zvtm.engine.View;
-import fr.inria.zvtm.engine.Utils;
-import fr.inria.zvtm.engine.PickerVS;
-import fr.inria.zvtm.animation.Animation;
-import fr.inria.zvtm.animation.EndAction;
-
-import fr.inria.zvtm.widgets.PieMenu;
-
-import fr.inria.zuist.engine.SceneManager;
-import fr.inria.zuist.event.ProgressListener;
-
-import fr.inria.zuist.engine.JSkyFitsResourceHandler;
-
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+
+import fr.inria.ilda.gesture.BasicSegmenter;
+import fr.inria.ilda.gesture.GestureManager;
+import fr.inria.ilda.gestures.MTRecognitionEngine;
+import fr.inria.ilda.gestures.RecognitionLayer;
+import fr.inria.ilda.smarties.SmartiesInputDevice;
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
+import fr.inria.zuist.engine.SceneManager;
+import fr.inria.zuist.event.ProgressListener;
+import fr.inria.zvtm.animation.Animation;
+import fr.inria.zvtm.animation.EndAction;
+import fr.inria.zvtm.engine.Camera;
+import fr.inria.zvtm.engine.Java2DPainter;
+import fr.inria.zvtm.engine.PickerVS;
+import fr.inria.zvtm.engine.Utils;
+import fr.inria.zvtm.engine.View;
+import fr.inria.zvtm.engine.VirtualSpace;
+import fr.inria.zvtm.engine.VirtualSpaceManager;
 
 /**
  * @author Emmanuel Pietriga
@@ -115,8 +115,28 @@ public class FITSOW {
         }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
+        
+        if(options.smarties) {
+        	int vsWidth = options.blockWidth*options.numCols;
+    		int vsHeight = options.blockHeight*options.numRows;
+    		SmartiesInputDevice smartiesDevice = new SmartiesInputDevice("smarties", vsWidth, vsHeight, options.numCols, options.numRows, 1280, 800);
+    		// tablet screen size in pixels 1280 x 800
+    		// tablet screen size in mms 217.94 x 136.21 
+    		smartiesDevice.setSurfaceSize(217.94f, 136.21f);
+    		GestureManager gestureManager = GestureManager.getInstance();
+    		gestureManager.registerDevice(smartiesDevice);		
+    		smartiesDevice.connect();
+    		BasicSegmenter segmenter = new BasicSegmenter();
+    		gestureManager.registerSegmenter(segmenter);		
+    		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
+    		segmenter.registerListener(mtRecognizer);
+    		RecognitionLayer recognitionLayer = new RecognitionLayer(mView);
+    		mtRecognizer.registerListener(recognitionLayer);
+    		gestureManager.start();
+    		mView.setJava2DPainter(recognitionLayer, Java2DPainter.AFTER_PORTALS);
+        }
     }
-
+    
     void initGUI(FOWOptions options){
         vsm = VirtualSpaceManager.INSTANCE;
         Config.MASTER_ANTIALIASING = !options.noaa;

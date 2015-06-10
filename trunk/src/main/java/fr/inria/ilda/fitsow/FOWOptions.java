@@ -43,6 +43,9 @@ public class FOWOptions {
 
     @Option(name = "-zfits", aliases = {"--zuist-fits-file"}, usage = "ZUIST FITS file")
     public String path_to_zuist_fits = null;
+    
+    @Option(name = "-smarties", usage = "enable smarties")
+    public boolean smarties = false;
 
     @Argument
     List<String> arguments = new ArrayList<String>();
