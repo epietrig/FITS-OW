@@ -40,6 +40,7 @@ public class WallFITSOW extends FITSOW {
         ccameras.add(mnCamera);
         cv = new ClusteredView(cg, options.numRows-1, options.numCols, options.numRows, ccameras);
         vsm.addClusteredView(cv);
+        cv.setBackgroundColor(Config.BACKGROUND_COLOR);
     }
 
     public static void main(String[] args){
