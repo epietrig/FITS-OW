@@ -114,14 +114,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
         updateDataSpacePicker(jpx, jpy);
         if (panning){
-            Camera c = app.zfCamera;
-            double a = (c.focal+Math.abs(c.altitude)) / c.focal;
-            synchronized(c){
-                c.move(a*(lastJPX-jpx), a*(jpy-lastJPY));
-                lastJPX = jpx;
-                lastJPY = jpy;
-                cameraMoved(c, null, 0);
-            }
+            app.nav.pan(app.zfCamera, lastJPX-jpx, jpy-lastJPY, 1);
+            lastJPX = jpx;
+            lastJPY = jpy;
         }
     }
 

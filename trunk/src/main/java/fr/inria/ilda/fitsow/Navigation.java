@@ -116,4 +116,12 @@ public class Navigation {
         c.getOwningView().repaint();
     }
 
+    public void pan(Camera c, int dx, int dy, double f){
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        synchronized(c){
+            c.move(a*dx*f, a*dy*f);
+            app.eh.cameraMoved(c, null, 0);
+        }
+    }
+
 }
