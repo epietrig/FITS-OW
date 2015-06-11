@@ -6,3 +6,8 @@
 *.lst
 
 target
+*.prefs
+
+trunk/.classpath
+
+trunk/.project
