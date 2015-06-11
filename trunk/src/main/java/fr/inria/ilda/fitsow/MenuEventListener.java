@@ -253,7 +253,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         return false;
     }
 
-    void hideSubPieMenu(){
+    public void hideSubPieMenu(){
         if (subPieMenu == null){return;}
         subPieMenu.destroy(0);
         subPieMenu = null;
@@ -356,7 +356,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     /*------------------ Scale -------------------------*/
 
-    void displayScaleSubMenu(){
+    public void displayScaleSubMenu(){
         subPieMenu = PieMenuFactory.createPieMenu(SCALEPM_COMMANDS, SCALEPM_OFFSETS,
                                                   0, app.mView);
         Glyph[] items = subPieMenu.getItems();

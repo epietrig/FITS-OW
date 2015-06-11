@@ -331,9 +331,9 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		Finger firstFreeFinger = getFreeFingersWithoutId().get(0);
 		int index = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
 		long when = firstFreeFinger.getTimeStamps().get(index);
-		if((System.currentTimeMillis() - when) > 500) { // movement information is too old
-			return new MTGestureEvent(fingersCount);
-		}
+//		if((System.currentTimeMillis() - when) > 500) { // movement information is too old
+//			return new MTGestureEvent(fingersCount);
+//		}
 		
 		Object[] polygons = getPolygons(TRACE_LENGTH);
 		if(polygons == null || polygons.length < 2) {

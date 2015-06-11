@@ -145,9 +145,18 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 			deltaMove.setLocation(0, 0);
 			gestureControl = GestureControl.NONE;
 			app.getMenuEventHandler().hideColorSubMenu();
+			app.getMenuEventHandler().hideSubPieMenu();
 			app.getView().repaint();
+			System.out.println("--- --- --- --- ---");
 		} else if(event instanceof MTGestureEvent) {
 			MTGestureEvent mtEvent = (MTGestureEvent)event;
+//			if(event instanceof MTFreeExternalLinearGesture) {
+//				System.out.println("free external linear "+mtEvent.getFingers());
+//			}
+//			if(event instanceof MTFreeCircularGesture) {
+//				System.out.println("free circular "+mtEvent.getFingers());
+//			}
+
 			ArrayList<Finger> freeFingers = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFreeFingersWithoutId();
 			double previousTrace = traceLength;
 			traceLength = 0;
@@ -162,7 +171,7 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 			if(debug) { System.out.println("PAN "+mtEvent.getFingers()); }
 			if(mtEvent.getFingers() == 2) {
 				gestureControl = GestureControl.PAN;
-				app.getNavigation().pan(app.getZFCamera(), deltaMove.x, deltaMove.y, 4.0);
+				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, 4.0);
 			} else if(mtEvent.getFingers() == 3) {
 				if(gestureControl == GestureControl.ZOOM_IN || gestureControl == GestureControl.ZOOM_OUT) {
 					if(mtEvent instanceof MTCircularGesture) {
@@ -172,6 +181,8 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 					if(mtEvent instanceof MTCircularGesture) {
 						gestureControl = ((MTCircularGesture)mtEvent).isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
 					}
+				} else if(gestureControl == GestureControl.SCALE_SELECTION) {
+					// TODO ?
 				} else {
 					if(mtEvent instanceof MTAnchoredCircularGesture) {
 						MTAnchoredCircularGesture mtAnchoredCircularEvent = (MTAnchoredCircularGesture)event;
@@ -182,6 +193,8 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 						app.getMenuEventHandler().displayColorSubMenu();
 					} else if(mtEvent instanceof MTFreeExternalLinearGesture) {
 						MTFreeExternalLinearGesture mtFreeExtLinearEvent = (MTFreeExternalLinearGesture)event;
+						gestureControl = GestureControl.SCALE_SELECTION;
+						app.getMenuEventHandler().displayScaleSubMenu();
 						System.out.println("\t\t"+mtFreeExtLinearEvent.getCardinalDirection());
 					}
 				}
@@ -202,9 +215,9 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 						traceLengthLastCMSetting = traceLength;
 					}
 				}
-				//				else {
-				//					app.getView().repaint();
-				//				}
+				else {
+					app.getView().repaint();
+				}
 			}
 		}
 	}

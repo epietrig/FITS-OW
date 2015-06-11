@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
+import fr.inria.ilda.TUIO.TUIOInputDevice;
 import fr.inria.ilda.gesture.BasicSegmenter;
 import fr.inria.ilda.gesture.GestureManager;
 import fr.inria.ilda.gestures.MTRecognitionEngine;
@@ -123,9 +124,17 @@ public class FITSOW {
     		// tablet screen size in pixels 1280 x 800
     		// tablet screen size in mms 217.94 x 136.21 
     		smartiesDevice.setSurfaceSize(217.94f, 136.21f);
+    		
+    		TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
+    		
     		GestureManager gestureManager = GestureManager.getInstance();
-    		gestureManager.registerDevice(smartiesDevice);		
+    		gestureManager.registerDevice(smartiesDevice);	
+    		
+    		gestureManager.registerDevice(tuioDevice);	
+    		
     		smartiesDevice.connect();
+    		tuioDevice.connect();
+    		
     		BasicSegmenter segmenter = new BasicSegmenter();
     		gestureManager.registerSegmenter(segmenter);		
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
