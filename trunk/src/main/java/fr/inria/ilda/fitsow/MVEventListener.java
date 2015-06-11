@@ -100,7 +100,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         app.mView.setActiveLayer(FITSOW.MENU_LAYER);
         app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
-        app.meh.displayMainPieMenu();
+        app.meh.displayMainPieMenu(currentJPX, currentJPY);
     }
 
     public void release3(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -108,10 +108,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void click3(ViewPanel v, int mod, int jpx, int jpy, int clickNumber, MouseEvent e){}
 
     public void mouseMoved(ViewPanel v, int jpx, int jpy, MouseEvent e){
+        currentJPX = jpx;
+        currentJPY = jpy;
         updateDataSpacePicker(jpx, jpy);
     }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
+        currentJPX = jpx;
+        currentJPY = jpy;
         updateDataSpacePicker(jpx, jpy);
         if (panning){
             app.nav.pan(app.zfCamera, lastJPX-jpx, jpy-lastJPY, 1);

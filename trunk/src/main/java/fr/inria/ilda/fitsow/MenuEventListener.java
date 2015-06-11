@@ -156,7 +156,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
                 // crossing the main pie menu's trigger
                 Glyph lge = app.mnSpacePicker.lastGlyphEntered();
                 if (lge != null && lge.getType() == Config.T_MPMI){
-                    if (displaySubPieMenu(lge)){
+                    if (displaySubPieMenu(lge, new Point2D.Double(vsCoords.x, vsCoords.y))){
                         mainPieMenu.setSensitivity(false);
                     }
                 }
@@ -219,11 +219,17 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     /*------------------ Pie menu -------------------------*/
 
-    void displayMainPieMenu(){
+    void displayMainPieMenu(int jpx, int jpy){
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.mnCamera, vsCoords);
+        displayMainPieMenu(vsCoords);
+    }
+
+    void displayMainPieMenu(Point2D.Double coords){
         PieMenuFactory.setSensitivityRadius(0.6);
         PieMenuFactory.setRadius(140);
         PieMenuFactory.setTranslucency(0.7f);
-        mainPieMenu = PieMenuFactory.createPieMenu(MPM_COMMANDS, MPM_OFFSETS, 0, app.mView);
+        mainPieMenu = PieMenuFactory.createPieMenu(MPM_COMMANDS, MPM_OFFSETS, 0,
+                                                   app.mnSpace, coords);
         Glyph[] items = mainPieMenu.getItems();
         for (Glyph item:items){
             item.setType(Config.T_MPMI);
@@ -237,7 +243,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
     }
 
     // returns true if it did create a sub pie menu
-    boolean displaySubPieMenu(Glyph menuItem){
+    boolean displaySubPieMenu(Glyph menuItem, Point2D.Double coords){
         int index = mainPieMenu.getItemIndex(menuItem);
         if (index != -1){
             String label = mainPieMenu.getLabels()[index].getText();
@@ -245,7 +251,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
             PieMenuFactory.setRadius(100);
             PieMenuFactory.setTranslucency(0.95f);
             if (label.equals(MPM_SCALE)){
-                displayScaleSubMenu();
+                displayScaleSubMenu(coords);
                 return true;
             }
             return false;
@@ -356,9 +362,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     /*------------------ Scale -------------------------*/
 
-    public void displayScaleSubMenu(){
+    public void displayScaleSubMenu(Point2D.Double coords){
         subPieMenu = PieMenuFactory.createPieMenu(SCALEPM_COMMANDS, SCALEPM_OFFSETS,
-                                                  0, app.mView);
+                                                  0, app.mnSpace, coords);
         Glyph[] items = subPieMenu.getItems();
         for (int i=0;i<items.length;i++){
             items[i].setType(Config.T_SPMISc);
