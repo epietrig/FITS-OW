@@ -82,7 +82,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		switch (event.state) {
 		case START:
 			fingerDown(event2D.source.getID(), pt);
-			break;
+//			break;
 		case UPDATE:
 			fingerMove(event2D.source.getID(), pt);
 			MTGestureEvent recognized = recognize();
@@ -316,21 +316,22 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		int freeFingersCount = freeFingers.size();
 		int fingersCount = fingersInContactCount();
 
+		if(fingersCount < 2) {
+			return new MTGestureEvent(fingersCount);
+		}
+		if(fingersCount == 2) { // PAN in FITTS-OW
+			return new MTGestureEvent(fingersCount);
+		}
+		if(anchoredFingersCount == fingersCount) { // DWELL
+			return new MTGestureEvent(true, fingersCount);
+		}
 		if(freeFingersCount == 0) {
 			return new MTGestureEvent(fingersCount);
 		}
 		
-		if(fingersCount < 2) {
-			return new MTGestureEvent(fingersCount);
-		}
-		if(anchoredFingersCount == fingersCount) {
-			System.out.println("DWELL");
-			return new MTGestureEvent(true); // TODO make a dwell event
-		}
-		
 		Finger firstFreeFinger = getFreeFingersWithoutId().get(0);
-		int index = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
-		long when = firstFreeFinger.getTimeStamps().get(index);
+//		int index = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
+//		long when = firstFreeFinger.getTimeStamps().get(index);
 //		if((System.currentTimeMillis() - when) > 500) { // movement information is too old
 //			return new MTGestureEvent(fingersCount);
 //		}
@@ -353,9 +354,9 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 					endPolygon.get(0).getY() - endCentroid.getY());
 			double angle = Utils.angleBetweenVectors(vector1, vector2);
 			double diffArea = polygonAreaChange(startPolygon, endPolygon);
-			if(angle >= Math.PI/8 && angle <= (2* Math.PI - Math.PI/8) ) {//&& distanceBetweenCircles <= 10) {
+			double diffAngleThreshold = Math.PI/6;//Math.PI/8;
+			if(angle >= diffAngleThreshold && angle <= (2* Math.PI - diffAngleThreshold) ) {//&& distanceBetweenCircles <= 10) {
 				clockwiseStatus = (angle <= Math.PI/2);
-				
 				Circle circle = null;
 				if(freeFingersCount == 2) {
 					circle = Utils.getCircle(freeFingers.get(0).getLastPoint(), freeFingers.get(1).getLastPoint());
@@ -373,7 +374,6 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 			} else {
 				if(Math.abs(diffArea) >= 10) {
 					towardsStatus = diffArea < 0;
-					// TODO
 					return new MTFreeInternalLinearGesture(towardsStatus, fingersCount);
 				} else {
 					ArrayList<Point> midPolygon = (ArrayList<Point>)(getPolygons(TRACE_LENGTH/2)[0]);
@@ -381,10 +381,9 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 					vector1 = new Point2D.Double(midCentroid.getX() - startCentroid.getX(), midCentroid.getY() - startCentroid.getY());
 					vector2 = new Point2D.Double(endCentroid.getX() - startCentroid.getX(), endCentroid.getY() - startCentroid.getY());
 					double angleSuccessiveCentroids = Utils.angleBetweenVectors(vector1, vector2);
-					double sinAngleSuccessiveCentroids = Math.abs(angleSuccessiveCentroids);
-					if(sinAngleSuccessiveCentroids < 0.1) {
+					diffAngleThreshold = Math.PI/12;
+					if(angleSuccessiveCentroids <= diffAngleThreshold || angleSuccessiveCentroids >= (2*Math.PI - diffAngleThreshold)) {
 						cardinalDirection = Utils.cardinalDirection(midPolygon.get(0), endPolygon.get(0));
-						// TODO
 						return new MTFreeExternalLinearGesture(cardinalDirection, fingersCount);
 					} else {
 						Point endFirstFreeFinger = firstFreeFinger.getLastPoint();
@@ -452,7 +451,6 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 					if(sinAngleSuccessiveFreePoints < 0.1) {
 						double diffArea = polygonAreaChange(startPolygon, endPolygon);
 						towardsStatus = diffArea < 0;
-						// TODO
 						return new MTAnchoredInternalLinearGesture(getAnchoredFingersWithoutId().get(0).getLastPoint(), towardsStatus, fingersCount);
 					} else {
 						return new MTGestureEvent(fingersCount);

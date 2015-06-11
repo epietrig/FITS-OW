@@ -22,9 +22,12 @@ public class MTGestureEvent extends AbstractGestureEvent{
 		this.external = true;
 	}
 
-	public MTGestureEvent(boolean dwell) {
+	public MTGestureEvent(boolean dwell, int fingers) {
 		this.unknown = false;
+		this.fingers = fingers;
 		this.dwell = dwell;
+		this.anchored = true;
+		this.external = true;
 	}
 
 	public MTGestureEvent(boolean anchored, boolean external, int fingers) {

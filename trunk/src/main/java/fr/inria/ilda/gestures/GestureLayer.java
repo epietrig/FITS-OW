@@ -4,8 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+
+import javax.swing.Timer;
 
 import fr.inria.ilda.fitsow.Config;
 import fr.inria.ilda.fitsow.FITSOW;
@@ -16,10 +20,11 @@ import fr.inria.ilda.gestures.events.MTCircularGesture;
 import fr.inria.ilda.gestures.events.MTFreeCircularGesture;
 import fr.inria.ilda.gestures.events.MTFreeExternalLinearGesture;
 import fr.inria.ilda.gestures.events.MTGestureEvent;
+import fr.inria.ilda.gestures.events.MTStartGestureEvent;
 import fr.inria.ilda.gestures.events.MTStopGestureEvent;
 import fr.inria.zvtm.engine.Java2DPainter;
 
-public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
+public class GestureLayer implements IGestureEventListener, Java2DPainter, ActionListener {
 
 	protected FITSOW app;
 	protected double traceLength = 0;
@@ -28,17 +33,34 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 	protected Point deltaMove = new Point();
 	protected GestureControl gestureControl = GestureControl.NONE;
 
+	protected Timer dwellTimer;
+
 	public static int CM_STEP = 40; 
 	public static int TRACE_LENGTH_START_PAN = 50; 
 
 	private static Font FONT_DEBUG = new Font("Verdana", Font.PLAIN, 30);
 
-	public RecognitionLayer(FITSOW app) {
+	public GestureLayer(FITSOW app) {
 		this.app = app;
+		this.dwellTimer = new Timer(1000, this);
+		this.dwellTimer.setRepeats(false);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		// Dwell
+		app.getNavigation().getGlobalView(null);
 	}
 
 	public void gestureOccured(AbstractGestureEvent event) {
-		if(event instanceof MTStopGestureEvent) {
+		if(!(event instanceof MTGestureEvent)) {
+			return;
+		}
+		dwellTimer.stop();
+		MTGestureEvent mtEvent = (MTGestureEvent)event;
+		if(mtEvent.getFingers() == 5) {
+			dwellTimer.restart();
+		}
+		if((event instanceof MTStopGestureEvent) || (event instanceof MTStartGestureEvent)) {
 			traceLength = 0;
 			traceLengthIncrement = 0;
 			traceLengthLastCMSetting = 0;
@@ -47,8 +69,7 @@ public class RecognitionLayer implements IGestureEventListener, Java2DPainter {
 			app.getMenuEventHandler().hideColorSubMenu();
 			app.getMenuEventHandler().hideSubPieMenu();
 			app.getView().repaint();
-		} else if(event instanceof MTGestureEvent) {
-			MTGestureEvent mtEvent = (MTGestureEvent)event;
+		} else {
 			ArrayList<Finger> freeFingers = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFreeFingersWithoutId();
 			double previousTrace = traceLength;
 			traceLength = 0;

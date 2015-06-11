@@ -136,7 +136,6 @@ public class Finger {
 	 * @param newPosition The new position
 	 */
 	public void addPosition(Point newPosition){
-//		System.out.println("add position "+newPosition+" to finger "+id);
 		if(positions.size() > 0) {
 			Point lastPosition = positions.get(positions.size()-1);
 			if(newPosition.x != lastPosition.x || newPosition.y != lastPosition.y){

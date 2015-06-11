@@ -33,7 +33,7 @@ import fr.inria.ilda.TUIO.TUIOInputDevice;
 import fr.inria.ilda.gesture.BasicSegmenter;
 import fr.inria.ilda.gesture.GestureManager;
 import fr.inria.ilda.gestures.MTRecognitionEngine;
-import fr.inria.ilda.gestures.RecognitionLayer;
+import fr.inria.ilda.gestures.GestureLayer;
 import fr.inria.ilda.smarties.SmartiesInputDevice;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 import fr.inria.zuist.engine.SceneManager;
@@ -139,7 +139,7 @@ public class FITSOW {
     		gestureManager.registerSegmenter(segmenter);		
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
     		segmenter.registerListener(mtRecognizer);
-    		RecognitionLayer recognitionLayer = new RecognitionLayer(this);
+    		GestureLayer recognitionLayer = new GestureLayer(this);
     		mtRecognizer.registerListener(recognitionLayer);
     		gestureManager.start();
     		mView.setJava2DPainter(recognitionLayer, Java2DPainter.AFTER_PORTALS);
