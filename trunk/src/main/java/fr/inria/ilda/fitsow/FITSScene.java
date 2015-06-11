@@ -85,7 +85,7 @@ public class FITSScene {
 
     /* ---------------- Scale ---------------------- */
 
-    void setScale(JSkyFitsImage img, String scale){
+    public void setScale(JSkyFitsImage img, String scale){
         if (img != null){
             img.setScaleAlgorithm(Config.SCALES.get(scale), true);
         }

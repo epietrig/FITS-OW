@@ -293,6 +293,33 @@ public class MenuEventListener implements ViewListener, PickerListener {
             else if (label == SCALEPM_HISTEQ){app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);}
         }
     }
+    
+    public void unhighlightAllScalePieMenuItems() {
+    	Glyph[] items = subPieMenu.getItems();
+    	for (int i = 0; i < items.length; i++) {
+			items[i].highlight(false, null);
+		}
+    }
+    
+    public Glyph getScalePieMenuGlyphByScaleType(String scaleType) {
+    	String label = "";
+    	if(scaleType.equals(Config.SCALE_LOG)) {
+    		label = SCALEPM_LOG;
+    	} else if(scaleType.equals(Config.SCALE_LINEAR)) {
+    		label = SCALEPM_LINEAR;
+    	} else if(scaleType.equals(Config.SCALE_SQRT)) {
+    		label = SCALEPM_SQRT;
+    	} else if(scaleType.equals(Config.SCALE_HISTEQ)) {
+    		label = SCALEPM_HISTEQ;
+    	}
+    	VText[] labels = subPieMenu.getLabels();
+    	for (int i = 0; i < labels.length; i++) {
+			if(labels[i].getText().equals(label)) {
+				return subPieMenu.getItems()[i];
+			}
+		}
+    	return null;
+    }
 
     /*------------------ Color -------------------------*/
 

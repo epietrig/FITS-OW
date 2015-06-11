@@ -63,7 +63,7 @@ import fr.inria.zvtm.fits.filters.Stairs9Filter;
 import fr.inria.zvtm.fits.filters.StandardFilter;
 import fr.inria.zvtm.fits.filters.ColorGradient;
 
-class Config {
+public class Config {
 
     static final Color BACKGROUND_COLOR = Color.BLACK;
     static final Color CURSOR_COLOR = Color.WHITE;
@@ -122,10 +122,10 @@ class Config {
 
     /* ------------ Scales and color mappings ---------- */
 
-    static final String SCALE_LINEAR = "LIN";
-    static final String SCALE_LOG = "LOG";
-    static final String SCALE_SQRT = "SQRT";
-    static final String SCALE_HISTEQ = "HIST";
+    public static final String SCALE_LINEAR = "LIN";
+    public static final String SCALE_LOG = "LOG";
+    public static final String SCALE_SQRT = "SQRT";
+    public static final String SCALE_HISTEQ = "HIST";
 
     static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
     static {
