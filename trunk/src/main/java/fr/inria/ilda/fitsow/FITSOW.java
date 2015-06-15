@@ -168,7 +168,7 @@ public class FITSOW {
         cameras.add(mnCamera);
         cameras.add(crCamera);
         zfCamera.stick(dCamera, true);
-        zfCamera.stick(crCamera, true);
+//        zfCamera.stick(crCamera, true);
         mView = vsm.addFrameView(cameras, MAIN_VIEW_TITLE, View.STD_VIEW, VIEW_W, VIEW_H, false, false, !options.fullscreen, null);
         if (options.fullscreen &&
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().isFullScreenSupported()){

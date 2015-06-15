@@ -116,6 +116,10 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 					}
 				}
 				if(gestureControl == GestureControl.ZOOM_IN) {
+					// Cursor activeCursor = app.getCursorManager().getActiveCursor(deviceID);
+					// double cursorX = activeCursor.getCoordsInVirtualSpace().x;
+					// double cursorY = activeCursor.getCoordsInVirtualSpace().y;
+					// app.getNavigation().czoomIn(app.getZFCamera(), 1f, cursorX, cursorY);
 					app.getNavigation().czoomIn(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
 				} else if(gestureControl == GestureControl.ZOOM_OUT) {
 					app.getNavigation().czoomOut(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
