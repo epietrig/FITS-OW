@@ -33,7 +33,8 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
   <repositories>
     <repository>
       <id>zvtm repository</id>
-      <url>http://zvtm.sourceforge.net/maven</url>
+      <url>http://isteam.gforge.inria.fr/maven/</url>
+      <!-- <url>http://zvtm.sourceforge.net/maven</url> -->
     </repository>
     <repository>
       <id>central</id>
