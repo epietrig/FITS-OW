@@ -6,12 +6,21 @@
 
 package fr.inria.ilda.fitsow;
 
+import fr.inria.zvtm.engine.Camera;
+import fr.inria.zvtm.engine.VirtualSpace;
+
 public class CursorManager {
 
     FITSOW app;
 
+    // space that holds cursors
+    VirtualSpace crSpace;
+    Camera crCamera;
+
     CursorManager(FITSOW app){
         this.app = app;
+        this.crSpace = app.crSpace;
+        this.crCamera = app.crCamera;
     }
 
 }
