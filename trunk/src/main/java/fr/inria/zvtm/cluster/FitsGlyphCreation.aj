@@ -33,7 +33,7 @@ public aspect FitsGlyphCreation {
         Glyph doCreateGlyph(){
             try{
                 System.out.println("XXX "+imageLocation);
-                return new JSkyFitsImage(0d, 0d, 0, imageLocation, scaleFactor);
+                return new JSkyFitsImage(imageLocation);
             } catch(Exception e){
                 System.out.println("JSkyFitsGlyphCreation - doCreateGlyph - catch");
                 throw new Error(e);
