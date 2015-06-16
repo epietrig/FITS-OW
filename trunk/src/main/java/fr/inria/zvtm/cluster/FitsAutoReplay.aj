@@ -5,6 +5,8 @@
 
 package fr.inria.zvtm.cluster;
 
+import java.awt.geom.Rectangle2D;
+
 import fr.inria.zvtm.cluster.Identifiable;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
@@ -19,9 +21,12 @@ aspect FitsAutoReplay extends AbstractAutoReplay {
         this(replayTarget) &&
         if(replayTarget.isReplicated()) &&
         (
-         execution(public void JSkyFitsImage.setColorLookupTable(String)) ||
-         execution(public void JSkyFitsImage.setCutLevels(double, double)) ||
-         execution(public void JSkyFitsImage.setScaleAlgorithm(JSkyFitsImage.ScaleAlgorithm)) ||
+         execution(public void JSkyFitsImage.setColorLookupTable(String, boolean)) ||
+         execution(public void JSkyFitsImage.setCutLevels(double, double, boolean)) ||
+         execution(public void JSkyFitsImage.setScaleAlgorithm(JSkyFitsImage.ScaleAlgorithm, boolean)) ||
+         execution(public void JSkyFitsImage.autoSetCutLevels(boolean)) ||
+         execution(public void JSkyFitsImage.autoSetCutLevels(Rectangle2D.Double, boolean)) ||
+         execution(public void JSkyFitsImage.updateDisplayedImage()) ||
          execution(public void JSkyFitsImage.setTranslucencyValue(float) ) ||
          execution(public void JSkyFitsImage.setVisible(boolean) ) ||
          execution(public void JSkyFitsImage.moveTo(double, double) ) ||

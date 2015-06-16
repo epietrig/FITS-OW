@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
+import fr.inria.zvtm.glyphs.VCircle;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
@@ -75,10 +76,10 @@ public class FITSScene {
 
     void addImage(JSkyFitsImage img){
         if (img != null){
+            app.dSpace.addGlyph(img);
             img.setColorLookupTable(Config.DEFAULT_COLOR_LOOKUP_TABLE, false);
             img.setScaleAlgorithm(Config.DEFAULT_SCALE, false);
             img.updateDisplayedImage();
-            app.dSpace.addGlyph(img);
             // menu.buildHistogram();
         }
     }

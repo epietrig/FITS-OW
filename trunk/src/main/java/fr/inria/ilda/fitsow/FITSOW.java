@@ -33,8 +33,8 @@ import fr.inria.ilda.TUIO.TUIOInputDevice;
 import fr.inria.ilda.gesture.BasicSegmenter;
 import fr.inria.ilda.gesture.GestureManager;
 import fr.inria.ilda.gestures.MTRecognitionEngine;
-import fr.inria.ilda.gestures.RecognitionLayer;
-import fr.inria.ilda.smarties.SmartiesInputDevice;
+import fr.inria.ilda.gestures.GestureLayer;
+
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.event.ProgressListener;
@@ -67,6 +67,7 @@ public class FITSOW {
     static final short ZUIST_FITS_LAYER = 0;
     static final short DATA_LAYER = 1;
     static final short MENU_LAYER = 2;
+    static final short CURSOR_LAYER = 3;
 
     FITSScene scene;
 
@@ -75,8 +76,9 @@ public class FITSOW {
     static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
     static final String DATA_SPACE_STR = "Data Layer";
     static final String MENU_SPACE_STR = "Command/Menu Layer";
-    VirtualSpace zfSpace, dSpace, mnSpace;
-    Camera zfCamera, dCamera, mnCamera;
+    static final String CURSOR_SPACE_STR = "Cursor Layer";
+    VirtualSpace zfSpace, dSpace, mnSpace, crSpace;
+    Camera zfCamera, dCamera, mnCamera, crCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
 
     PickerVS dSpacePicker;
@@ -88,6 +90,7 @@ public class FITSOW {
 
     SceneManager sm;
     Navigation nav;
+    CursorManager cm;
 
     WEGlassPane gp;
     // PieMenu mainPieMenu;
@@ -96,6 +99,7 @@ public class FITSOW {
         VirtualSpaceManager.INSTANCE.getAnimationManager().setResolution(80);
         initGUI(options);
         nav = new Navigation(this);
+        cm = new CursorManager(this);
         gp = new WEGlassPane(this);
         ((JFrame)mView.getFrame()).setGlassPane(gp);
         gp.setValue(0);
@@ -116,38 +120,30 @@ public class FITSOW {
         }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
-        
-        if(options.smarties) {
-        	//int vsWidth = options.blockWidth*options.numCols;
-    		//int vsHeight = options.blockHeight*options.numRows;
-    		//SmartiesInputDevice smartiesDevice = new SmartiesInputDevice("smarties", vsWidth, vsHeight, options.numCols, options.numRows, 1280, 800);
-    		// tablet screen size in pixels 1280 x 800
-    		// tablet screen size in mms 217.94 x 136.21 
-    		//smartiesDevice.setSurfaceSize(217.94f, 136.21f);
 
-    		TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
-    		
+        if(options.smarties) {
+
     		GestureManager gestureManager = GestureManager.getInstance();
-    		//gestureManager.registerDevice(smartiesDevice);	
+
     		new SmartiesManager(
                 this, gestureManager, options.blockWidth, options.blockHeight,
                 options.numCols,options.numRows);
-    		gestureManager.registerDevice(tuioDevice);	
-    		
-    		//smartiesDevice.connect();
+
+            TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
+    		gestureManager.registerDevice(tuioDevice);
     		tuioDevice.connect();
-    		
+
     		BasicSegmenter segmenter = new BasicSegmenter();
-    		gestureManager.registerSegmenter(segmenter);		
+    		gestureManager.registerSegmenter(segmenter);
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
     		segmenter.registerListener(mtRecognizer);
-    		RecognitionLayer recognitionLayer = new RecognitionLayer(this);
+    		GestureLayer recognitionLayer = new GestureLayer(this);
     		mtRecognizer.registerListener(recognitionLayer);
     		gestureManager.start();
     		mView.setJava2DPainter(recognitionLayer, Java2DPainter.AFTER_PORTALS);
         }
     }
-    
+
     void initGUI(FOWOptions options){
         vsm = VirtualSpaceManager.INSTANCE;
         Config.MASTER_ANTIALIASING = !options.noaa;
@@ -155,14 +151,18 @@ public class FITSOW {
         zfSpace = vsm.addVirtualSpace(ZUIST_FITS_SPACE_STR);
         dSpace = vsm.addVirtualSpace(DATA_SPACE_STR);
         mnSpace = vsm.addVirtualSpace(MENU_SPACE_STR);
+        crSpace = vsm.addVirtualSpace(CURSOR_SPACE_STR);
         zfCamera = zfSpace.addCamera();
         dCamera = dSpace.addCamera();
         mnCamera = mnSpace.addCamera();
-        Vector cameras = new Vector(3);
+        crCamera = crSpace.addCamera();
+        Vector cameras = new Vector(4);
         cameras.add(zfCamera);
         cameras.add(dCamera);
         cameras.add(mnCamera);
+        cameras.add(crCamera);
         zfCamera.stick(dCamera, true);
+//        zfCamera.stick(crCamera, true);
         mView = vsm.addFrameView(cameras, MAIN_VIEW_TITLE, View.STD_VIEW, VIEW_W, VIEW_H, false, false, !options.fullscreen, null);
         if (options.fullscreen &&
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().isFullScreenSupported()){
@@ -234,10 +234,11 @@ public class FITSOW {
     void exit(){
         System.exit(0);
     }
-    
+
 	public View getView() {
 		return mView;
 	}
+
 	public boolean runningOnWall() { return false; }
 
 	public Navigation getNavigation() {
@@ -251,7 +252,7 @@ public class FITSOW {
 	public Camera getZFCamera() {
 		return zfCamera;
 	}
-	
+
 	public FITSScene getScene() {
 		return scene;
 	}
@@ -259,7 +260,7 @@ public class FITSOW {
 	public MenuEventListener getMenuEventHandler() {
 		return meh;
 	}
-	
+
     public static void main(String[] args){
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);

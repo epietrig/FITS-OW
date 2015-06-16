@@ -9,6 +9,6 @@ public enum GestureControl {
 	SCALE_SELECTION_EAST,
 	NEXT_COLOR_MAPPING,
 	PREV_COLOR_MAPPING,
-	PAN,
+//	PAN,
 	NONE
 }

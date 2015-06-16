@@ -1,13 +1,14 @@
 package fr.inria.ilda.gestures.events;
 
+import fr.inria.ilda.gesture.InputSource;
 import fr.inria.ilda.gestures.CardinalDirection;
 
 public class MTFreeExternalLinearGesture extends MTGestureEvent {
 
 	protected CardinalDirection cardinalDirection; // attribute linear external gestures
 	
-	public MTFreeExternalLinearGesture(CardinalDirection cardinalDirection, int fingers) {
-		super(false, true, fingers);
+	public MTFreeExternalLinearGesture(InputSource source, CardinalDirection cardinalDirection, int fingers) {
+		super(source, false, true, fingers);
 		this.cardinalDirection = cardinalDirection;
 	}
 

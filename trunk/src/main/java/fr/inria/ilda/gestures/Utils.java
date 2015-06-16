@@ -57,33 +57,6 @@ import java.util.Iterator;
         return new Point[]{middle, other};
     }
 
-    // all vectors are assumed to be resampled and their origin translated to (0,0)
-    // TODO change to incremental computation of variance to lower complexity
-//	public static double variability(ArrayList<ArrayList<Point>> traces) {
-//		if(traces.size() == 0) {
-//			return 0.0;
-//		}
-//		double res = 0;
-//		double mean, var;
-//		for (int i = 0; i < traces.get(0).size(); i++) {
-//			mean = 0;
-//			for (int j = 0; j < traces.size(); j++) {
-//				Point p = traces.get(j).get(i);
-//				mean += Math.sqrt(p.x*p.x + p.y*p.y);
-//			}
-//			mean /= traces.size();
-//			var = 0;
-//			for (int j = 0; j < traces.size(); j++) {
-//				Point p = traces.get(j).get(i);
-//				double distToZero = Math.sqrt(p.x*p.x + p.y*p.y);
-//				var += (mean - distToZero)*(mean - distToZero);
-//			}
-//			var /= traces.size();
-//			res += var;
-//		}
-//		res /= traces.get(0).size();
-//		return res;
-//	}
 
     public static double variability(ArrayList<ArrayList<Point>> traces) {
         if(traces.size() == 0) {
