@@ -42,7 +42,7 @@ public class FITSScene {
         this.sm = app.sm;
         System.out.println("Initializing NanoHTTPD Server...");
         server = new FITSServer(app);
-        ServerRunner.executeInstance(server);
+        // ServerRunner.executeInstance(server);
     }
 
     void loadScene(File xmlSceneFile, ProgressListener pl){

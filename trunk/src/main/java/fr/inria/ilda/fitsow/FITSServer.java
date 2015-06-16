@@ -17,7 +17,7 @@ class FITSServer extends NanoHTTPD {
     FITSOW app;
 
     FITSServer(FITSOW app){
-        super(8081);
+        super(Config.HTTPD_PORT);
         this.app = app;
     }
 
