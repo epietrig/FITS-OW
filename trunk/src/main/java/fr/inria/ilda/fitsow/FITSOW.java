@@ -30,10 +30,10 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import fr.inria.ilda.TUIO.TUIOInputDevice;
-import fr.inria.ilda.gesture.BasicSegmenter;
 import fr.inria.ilda.gesture.GestureManager;
-import fr.inria.ilda.gestures.MTRecognitionEngine;
+import fr.inria.ilda.gesture.SegmenterTouch;
 import fr.inria.ilda.gestures.GestureLayer;
+import fr.inria.ilda.gestures.MTRecognitionEngine;
 import fr.inria.ilda.smarties.SmartiesInputDevice;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 import fr.inria.zuist.engine.SceneManager;
@@ -128,7 +128,7 @@ public class FITSOW {
     		// tablet screen size in pixels 1280 x 800
     		// tablet screen size in mms 217.94 x 136.21
     		smartiesDevice.setSurfaceSize(217.94f, 136.21f);
-
+    		
     		TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
 
     		GestureManager gestureManager = GestureManager.getInstance();
@@ -139,7 +139,26 @@ public class FITSOW {
     		smartiesDevice.connect();
     		tuioDevice.connect();
 
-    		BasicSegmenter segmenter = new BasicSegmenter();
+//    		gestureManager.registerSegmenter(new AbstractSegmenter() {
+//    			private long lastTimestamp = 0;
+//				public void update(long timestamp) {
+//					GestureManager gm = GestureManager.getInstance();
+//					if (lastTimestamp == 0) lastTimestamp = timestamp-GestureManager.getInstance().deltaUpdate;
+//					synchronized (gm.lockEvents) {
+//						final List <AbstractInputEvent> events = gm.getEvents(lastTimestamp, timestamp);
+//						if (events != null){
+//					        Iterator<AbstractInputEvent> it = events.iterator();
+//					        while (it.hasNext()) {
+//					        	AbstractInputEvent inputEvent = it.next();
+//					        	System.out.println(inputEvent.source.getDevice().getID() + " - " + inputEvent.source.getID());
+//							}
+//						}
+//						lastTimestamp = timestamp;
+//					}
+//				}
+//			});
+    		
+    		SegmenterTouch segmenter = new SegmenterTouch();
     		gestureManager.registerSegmenter(segmenter);
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
     		segmenter.registerListener(mtRecognizer);
