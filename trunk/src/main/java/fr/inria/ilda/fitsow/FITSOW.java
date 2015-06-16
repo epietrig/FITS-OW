@@ -118,21 +118,23 @@ public class FITSOW {
         gp.setLabel(WEGlassPane.EMPTY_STRING);
         
         if(options.smarties) {
-        	int vsWidth = options.blockWidth*options.numCols;
-    		int vsHeight = options.blockHeight*options.numRows;
-    		SmartiesInputDevice smartiesDevice = new SmartiesInputDevice("smarties", vsWidth, vsHeight, options.numCols, options.numRows, 1280, 800);
+        	//int vsWidth = options.blockWidth*options.numCols;
+    		//int vsHeight = options.blockHeight*options.numRows;
+    		//SmartiesInputDevice smartiesDevice = new SmartiesInputDevice("smarties", vsWidth, vsHeight, options.numCols, options.numRows, 1280, 800);
     		// tablet screen size in pixels 1280 x 800
     		// tablet screen size in mms 217.94 x 136.21 
-    		smartiesDevice.setSurfaceSize(217.94f, 136.21f);
-    		
+    		//smartiesDevice.setSurfaceSize(217.94f, 136.21f);
+
     		TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
     		
     		GestureManager gestureManager = GestureManager.getInstance();
-    		gestureManager.registerDevice(smartiesDevice);	
-    		
+    		//gestureManager.registerDevice(smartiesDevice);	
+    		new SmartiesManager(
+                this, gestureManager, options.blockWidth, options.blockHeight,
+                options.numCols,options.numRows);
     		gestureManager.registerDevice(tuioDevice);	
     		
-    		smartiesDevice.connect();
+    		//smartiesDevice.connect();
     		tuioDevice.connect();
     		
     		BasicSegmenter segmenter = new BasicSegmenter();
@@ -202,6 +204,9 @@ public class FITSOW {
         panelHeight = d.height;
     }
 
+    int getDisplayWidth() { return panelWidth; }
+    int getDisplayHeight() { return panelHeight; }
+
     void loadFITSScene(File zuistSceneFile){
         sm.enableRegionUpdater(false);
         gp.setLabel("Loading " + zuistSceneFile.getName());
@@ -233,11 +238,16 @@ public class FITSOW {
 	public View getView() {
 		return mView;
 	}
-	
+	public boolean runningOnWall() { return false; }
+
 	public Navigation getNavigation() {
 		return nav;
 	}
 	
+    public VirtualSpace getCursorSpace(){
+        return mnSpace;
+    }
+
 	public Camera getZFCamera() {
 		return zfCamera;
 	}
