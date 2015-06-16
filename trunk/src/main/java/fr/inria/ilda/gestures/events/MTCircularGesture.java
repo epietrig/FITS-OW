@@ -1,5 +1,6 @@
 package fr.inria.ilda.gestures.events;
 
+import fr.inria.ilda.gesture.InputSource;
 import fr.inria.ilda.gestures.Circle;
 
 public abstract class MTCircularGesture extends MTGestureEvent {
@@ -8,8 +9,8 @@ public abstract class MTCircularGesture extends MTGestureEvent {
 	protected double angle;
 	protected Circle circle;
 	
-	public MTCircularGesture(boolean anchored, boolean external, boolean clockwise, double angle, Circle circle, int fingers) {
-		super(anchored, external, fingers);
+	public MTCircularGesture(InputSource source, boolean anchored, boolean external, boolean clockwise, double angle, Circle circle, int fingers) {
+		super(source, anchored, external, fingers);
 		this.clockwise = clockwise;
 		this.angle = angle;
 		this.circle = circle;

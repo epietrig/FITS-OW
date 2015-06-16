@@ -1,12 +1,14 @@
 package fr.inria.ilda.gestures.events;
 
+import fr.inria.ilda.gesture.InputSource;
+
 
 public abstract class MTInternalLinearGesture extends MTGestureEvent {
 
 	protected boolean towards; // attribute for linear internal gestures
 
-	public MTInternalLinearGesture(boolean anchored, boolean towards, int fingers) {
-		super(anchored, false, fingers);
+	public MTInternalLinearGesture(InputSource source, boolean anchored, boolean towards, int fingers) {
+		super(source, anchored, false, fingers);
 		this.towards = towards;
 	}
 	

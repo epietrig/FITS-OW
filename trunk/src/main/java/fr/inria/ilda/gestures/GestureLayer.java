@@ -80,8 +80,8 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 				deltaMove = freeFingers.get(0).getLastMove();
 				traceLengthIncrement = traceLength - previousTrace;
 			}
-			if(mtEvent.getFingers() == 2) {
-				gestureControl = GestureControl.PAN;
+			if(mtEvent.getFingers() == 2 && gestureControl == GestureControl.NONE) {
+//				gestureControl = GestureControl.PAN;
 				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, 4.0);
 			} else if(mtEvent.getFingers() == 3) {
 				if(gestureControl == GestureControl.ZOOM_IN || gestureControl == GestureControl.ZOOM_OUT) {
@@ -102,14 +102,14 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 						updateScale(((MTFreeExternalLinearGesture)mtEvent).getCardinalDirection());
 					}
 				} else {
-					if(mtEvent instanceof MTAnchoredCircularGesture) {
+					if(mtEvent instanceof MTAnchoredCircularGesture && gestureControl == GestureControl.NONE) {
 						MTAnchoredCircularGesture mtAnchoredCircularEvent = (MTAnchoredCircularGesture)event;
 						gestureControl = mtAnchoredCircularEvent.isClockwise() ? GestureControl.ZOOM_IN : GestureControl.ZOOM_OUT;
-					} else if(mtEvent instanceof MTFreeCircularGesture) {
+					} else if(mtEvent instanceof MTFreeCircularGesture && gestureControl == GestureControl.NONE) {
 						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
 						gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
 						app.getMenuEventHandler().displayColorSubMenu();
-					} else if(mtEvent instanceof MTFreeExternalLinearGesture) {
+					} else if(mtEvent instanceof MTFreeExternalLinearGesture && gestureControl == GestureControl.NONE) {
 						app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(0, 0));
 						MTFreeExternalLinearGesture mtFreeExtLinearEvent = (MTFreeExternalLinearGesture)event;
 						updateScale(mtFreeExtLinearEvent.getCardinalDirection());

@@ -1,12 +1,15 @@
 package fr.inria.ilda.gestures.events;
 
 import fr.inria.ilda.gesture.AbstractGestureEvent;
+import fr.inria.ilda.gesture.InputSource;
 
 /**
  * Created by appert on 08/03/15.
  */
 public class MTGestureEvent extends AbstractGestureEvent{
 
+	protected InputSource inputSource;
+	
 	protected boolean unknown = false;
 
 	protected boolean dwell = false;
@@ -15,14 +18,16 @@ public class MTGestureEvent extends AbstractGestureEvent{
 
 	protected int fingers = -1;
 
-	public MTGestureEvent(int fingers) {
+	public MTGestureEvent(InputSource inputSource, int fingers) {
+		this.inputSource = inputSource;
 		this.unknown = true;
 		this.fingers = fingers;
 		this.anchored = false;
 		this.external = true;
 	}
 
-	public MTGestureEvent(boolean dwell, int fingers) {
+	public MTGestureEvent(InputSource inputSource, boolean dwell, int fingers) {
+		this.inputSource = inputSource;
 		this.unknown = false;
 		this.fingers = fingers;
 		this.dwell = dwell;
@@ -30,11 +35,13 @@ public class MTGestureEvent extends AbstractGestureEvent{
 		this.external = true;
 	}
 
-	public MTGestureEvent(boolean anchored, boolean external, int fingers) {
+	public MTGestureEvent(InputSource inputSource, boolean anchored, boolean external, int fingers) {
+		this.inputSource = inputSource;
 		this.unknown = false;
 		this.anchored = anchored;
 		this.external = external;
 		this.fingers = fingers;
+		// TODO what is that?
 		if (this.fingers > 5)
 			System.out.println("Break");
 	}
@@ -94,6 +101,14 @@ public class MTGestureEvent extends AbstractGestureEvent{
 
 	public void setFingers(int fingers) {
 		this.fingers = fingers;
+	}
+
+	public InputSource getInputSource() {
+		return inputSource;
+	}
+
+	public void setInputSource(InputSource inputSource) {
+		this.inputSource = inputSource;
 	}
 
 

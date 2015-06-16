@@ -12,6 +12,7 @@ import fr.inria.ilda.gesture.AbstractInputEvent;
 import fr.inria.ilda.gesture.GestureStateEnum;
 import fr.inria.ilda.gesture.IGestureEventListener;
 import fr.inria.ilda.gesture.InputEvent2D;
+import fr.inria.ilda.gesture.InputSource;
 import fr.inria.ilda.gestures.events.MTAnchoredCircularGesture;
 import fr.inria.ilda.gestures.events.MTAnchoredInternalLinearGesture;
 import fr.inria.ilda.gestures.events.MTFreeCircularGesture;
@@ -26,9 +27,6 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 	protected HashMap<String,Finger> fingers;		///< List of fingers position
 	protected int pointerDownCount;
 
-	protected ArrayList<MTGestureEvent> recentEvents = new ArrayList<MTGestureEvent>();
-	protected int recentEventsCount = 3;//4;
-	
 	public static final int TRACE_LENGTH = 25;//20;
 
 	public MTRecognitionEngine(String ID){
@@ -36,45 +34,20 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		fingers = new HashMap<String,Finger>();
 		pointerDownCount = 0;
 	}
-	
+
 	public void startRecognition(AbstractInputEvent event) {
 		state = GestureStateEnum.RUNNING; 
 		InputEvent2D event2D = (InputEvent2D)event;  
 		Point pt = new Point((int)event2D.x,(int)event2D.y);
 		fingerDown(event2D.source.getID(), pt);
-		
-		MTStartGestureEvent startEvent = new MTStartGestureEvent();
+
+		MTStartGestureEvent startEvent = new MTStartGestureEvent(event.source);
 		startEvent.setRecognizerSource(this);
 		for (IGestureEventListener listener : listeners) {
 			listener.gestureOccured(startEvent);
 		}
 	}
-	
-	protected void addGestureEvent(MTGestureEvent lastEvent) {
-		if(recentEvents.size() >= recentEventsCount) {
-			recentEvents.remove(recentEvents.size()-1);
-		}
-		recentEvents.add(0, lastEvent);
-	}
-	
-	public MTGestureEvent getStableGesture() {
-		if(recentEvents.size() == 0) {
-			MTGestureEvent event = new MTGestureEvent(fingersInContactCount());
-			event.setRecognizerSource(MTRecognitionEngine.this);
-			return event;
-		}
-		String gestureName = recentEvents.get(0).toString();
-		for (int i = 1; i < recentEvents.size(); i++) {
-			MTGestureEvent tt = recentEvents.get(i);
-			if(tt.toString().compareTo(gestureName) != 0) {
-				MTGestureEvent event = new MTGestureEvent(fingersInContactCount());
-				event.setRecognizerSource(MTRecognitionEngine.this);
-				return event;
-			}
-		}
-		return recentEvents.get(0);
-	}
-	
+
 	@Override
 	public void updateRecognition(AbstractInputEvent event) {
 		InputEvent2D event2D = (InputEvent2D)event;  
@@ -82,22 +55,19 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		switch (event.state) {
 		case START:
 			fingerDown(event2D.source.getID(), pt);
-//			break;
 		case UPDATE:
 			fingerMove(event2D.source.getID(), pt);
-			MTGestureEvent recognized = recognize();
+			MTGestureEvent recognized = recognize(event.source);
 			recognized.setRecognizerSource(MTRecognitionEngine.this);
-			addGestureEvent(recognized);
-			MTGestureEvent filteredResult = getStableGesture();
 			for (IGestureEventListener listener : listeners) {
-				listener.gestureOccured(filteredResult);
+				listener.gestureOccured(recognized);
 			}
 			break;
 		case STOP:
 			fingerUp(event.source.getID());
 			break;
 		}    
-		
+
 
 	}
 
@@ -106,14 +76,12 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		state = GestureStateEnum.IDLE; 	
 		InputEvent2D event2D = (InputEvent2D)event;  
 		fingerUp(event2D.source.getID());
-		
-		MTStopGestureEvent stopEvent = new MTStopGestureEvent();
+
+		MTStopGestureEvent stopEvent = new MTStopGestureEvent(event.source);
 		stopEvent.setRecognizerSource(this);
 		for (IGestureEventListener listener : listeners) {
 			listener.gestureOccured(stopEvent);
 		}
-		
-		recentEvents.clear();
 	}
 
 	public void fingerDown(String id, Point position){
@@ -304,41 +272,37 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		}
 		return Utils.standardDeviation(distancesToAnchor);
 	}
-	
-	public MTGestureEvent recognize() {
+
+	public MTGestureEvent recognize(InputSource source) {
+		int fingersCount = fingersInContactCount();
+		if(fingersCount < 2) {
+			return new MTGestureEvent(source, fingersCount);
+		}
+		if(fingersCount == 2) { // PAN in FITS-OW
+			return new MTGestureEvent(source, fingersCount);
+		}
+		
 		boolean clockwiseStatus = false;
 		boolean towardsStatus = false;
 		CardinalDirection cardinalDirection = CardinalDirection.NORTH;
 
+		
 		ArrayList<Finger> anchoredFingers = getAnchoredFingersWithoutId();
 		ArrayList<Finger> freeFingers = getFreeFingersWithoutId();
 		int anchoredFingersCount = anchoredFingers.size();
 		int freeFingersCount = freeFingers.size();
-		int fingersCount = fingersInContactCount();
-
-		if(fingersCount < 2) {
-			return new MTGestureEvent(fingersCount);
-		}
-		if(fingersCount == 2) { // PAN in FITTS-OW
-			return new MTGestureEvent(fingersCount);
-		}
+		
 		if(anchoredFingersCount == fingersCount) { // DWELL
-			return new MTGestureEvent(true, fingersCount);
+			return new MTGestureEvent(source, true, fingersCount);
 		}
 		if(freeFingersCount == 0) {
-			return new MTGestureEvent(fingersCount);
+			return new MTGestureEvent(source, fingersCount);
 		}
-		
+
 		Finger firstFreeFinger = getFreeFingersWithoutId().get(0);
-//		int index = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
-//		long when = firstFreeFinger.getTimeStamps().get(index);
-//		if((System.currentTimeMillis() - when) > 500) { // movement information is too old
-//			return new MTGestureEvent(fingersCount);
-//		}
-		
 		Object[] polygons = getPolygons(TRACE_LENGTH);
 		if(polygons == null || polygons.length < 2) {
-			return new MTGestureEvent(fingersCount);
+			return new MTGestureEvent(source, fingersCount);
 		}
 
 		ArrayList<Point> startPolygon = (ArrayList<Point>)polygons[0];
@@ -363,18 +327,18 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 				} else if(freeFingersCount >= 3) {
 					circle = Utils.getCircle(freeFingers.get(0).getLastPoint(), freeFingers.get(1).getLastPoint(), freeFingers.get(2).getLastPoint());
 				} else {
-					return new MTGestureEvent(fingersCount);
+					return new MTGestureEvent(source, fingersCount);
 				}
 				Point2D angleFirstFreeFinger = new Point2D.Double(
 						freeFingers.get(0).getLastPoint().getX() - circle.getCenter().getX(),
 						freeFingers.get(0).getLastPoint().getY() - circle.getCenter().getY());
 				Point2D xAxis = new Point2D.Double(1, 0);
 				double a = Utils.angleBetweenVectors(xAxis, angleFirstFreeFinger);
-				return new MTFreeCircularGesture(clockwiseStatus, a, circle, false, fingersCount);
+				return new MTFreeCircularGesture(source, clockwiseStatus, a, circle, false, fingersCount);
 			} else {
 				if(Math.abs(diffArea) >= 10) {
 					towardsStatus = diffArea < 0;
-					return new MTFreeInternalLinearGesture(towardsStatus, fingersCount);
+					return new MTFreeInternalLinearGesture(source, towardsStatus, fingersCount);
 				} else {
 					ArrayList<Point> midPolygon = (ArrayList<Point>)(getPolygons(TRACE_LENGTH/2)[0]);
 					Point midCentroid = Utils.centroid(midPolygon);
@@ -384,7 +348,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 					diffAngleThreshold = Math.PI/12;
 					if(angleSuccessiveCentroids <= diffAngleThreshold || angleSuccessiveCentroids >= (2*Math.PI - diffAngleThreshold)) {
 						cardinalDirection = Utils.cardinalDirection(midPolygon.get(0), endPolygon.get(0));
-						return new MTFreeExternalLinearGesture(cardinalDirection, fingersCount);
+						return new MTFreeExternalLinearGesture(source, cardinalDirection, fingersCount);
 					} else {
 						Point endFirstFreeFinger = firstFreeFinger.getLastPoint();
 						int indexStart = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
@@ -402,26 +366,26 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 									freeFingers.get(0).getLastPoint().getY() - c1.getCenter().getY());
 							Point2D xAxis = new Point2D.Double(1, 0);
 							double a = Utils.angleBetweenVectors(xAxis, angleFirstFreeFinger);
-							return new MTFreeCircularGesture(clockwiseStatus, a, c1, true, fingersCount);
+							return new MTFreeCircularGesture(source, clockwiseStatus, a, c1, true, fingersCount);
 						} else {
-							return new MTGestureEvent(fingersCount);
+							return new MTGestureEvent(source, fingersCount);
 						}
 					}
 				}
 			}
 		} else {
 			if(freeFingersCount == 0) {
-				return new MTGestureEvent(fingersCount);
+				return new MTGestureEvent(source, fingersCount);
 			}
 			Point endFirstFreeFinger = firstFreeFinger.getLastPoint();
 			int indexStart = Finger.getStartIndexTrace(TRACE_LENGTH, firstFreeFinger.getPositions());
 			Point startFirstFreeFinger = firstFreeFinger.getPositions().get(indexStart);
 			int indexMid = Finger.getStartIndexTrace(TRACE_LENGTH/2, firstFreeFinger.getPositions());
 			Point midFirstFreeFinger = firstFreeFinger.getPositions().get(indexMid);
-			
+
 			int indexBack = Finger.getStartIndexTrace(TRACE_LENGTH + TRACE_LENGTH/2, firstFreeFinger.getPositions());
 			Point backFirstFreeFinger = firstFreeFinger.getPositions().get(indexBack);
-			
+
 			Circle c1 = Utils.getCircle(startFirstFreeFinger, midFirstFreeFinger, endFirstFreeFinger);
 			Circle c2 = Utils.getCircle(backFirstFreeFinger, startFirstFreeFinger, midFirstFreeFinger);
 			double sdDistancesToAnchor = sdDistancesToAnchor();
@@ -432,7 +396,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 				Point2D angleFirstFreeFinger = new Point2D.Double(endFirstFreeFinger.getX() - anchorPosition.getX(), endFirstFreeFinger.getY() - anchorPosition.getY()); 
 				Point2D xAxis = new Point2D.Double(1, 0);
 				double a = Utils.angleBetweenVectors(xAxis, angleFirstFreeFinger);
-				return new MTAnchoredCircularGesture(clockwiseStatus, getAnchoredFingersWithoutId().get(0).getLastPoint(), 
+				return new MTAnchoredCircularGesture(source, clockwiseStatus, getAnchoredFingersWithoutId().get(0).getLastPoint(), 
 						a, c, false, fingersCount);
 			} else {
 				if(c1.getCenter().distance(c2.getCenter()) < 10 && Math.abs(c1.getRadius() - c2.getRadius()) < 10) {
@@ -442,7 +406,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 							endFirstFreeFinger.getY() - c1.getCenter().getY());
 					Point2D xAxis = new Point2D.Double(1, 0);
 					double a = Utils.angleBetweenVectors(xAxis, angleFirstFreeFinger);
-					return new MTAnchoredCircularGesture(clockwiseStatus, getAnchoredFingersWithoutId().get(0).getLastPoint(), 
+					return new MTAnchoredCircularGesture(source, clockwiseStatus, getAnchoredFingersWithoutId().get(0).getLastPoint(), 
 							a, c1, true, fingersCount);
 				} else {
 					Point2D vector1 = new Point2D.Double(midFirstFreeFinger.getX() - startFirstFreeFinger.getX(), midFirstFreeFinger.getY() - startFirstFreeFinger.getY());
@@ -451,9 +415,9 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 					if(sinAngleSuccessiveFreePoints < 0.1) {
 						double diffArea = polygonAreaChange(startPolygon, endPolygon);
 						towardsStatus = diffArea < 0;
-						return new MTAnchoredInternalLinearGesture(getAnchoredFingersWithoutId().get(0).getLastPoint(), towardsStatus, fingersCount);
+						return new MTAnchoredInternalLinearGesture(source, getAnchoredFingersWithoutId().get(0).getLastPoint(), towardsStatus, fingersCount);
 					} else {
-						return new MTGestureEvent(fingersCount);
+						return new MTGestureEvent(source, fingersCount);
 					}
 				}
 			}
