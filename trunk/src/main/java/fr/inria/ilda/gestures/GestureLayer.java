@@ -14,7 +14,9 @@ import javax.swing.Timer;
 import fr.inria.ilda.fitsow.Config;
 import fr.inria.ilda.fitsow.FITSOW;
 import fr.inria.ilda.gesture.AbstractGestureEvent;
+import fr.inria.ilda.gesture.AbstractInputDevice;
 import fr.inria.ilda.gesture.IGestureEventListener;
+import fr.inria.ilda.gesture.InputSource;
 import fr.inria.ilda.gestures.events.MTAnchoredCircularGesture;
 import fr.inria.ilda.gestures.events.MTCircularGesture;
 import fr.inria.ilda.gestures.events.MTFreeCircularGesture;
@@ -26,6 +28,9 @@ import fr.inria.zvtm.engine.Java2DPainter;
 
 public class GestureLayer implements IGestureEventListener, Java2DPainter, ActionListener {
 
+	public static int CM_STEP = 40; 
+	private static Font FONT_DEBUG = new Font("Verdana", Font.PLAIN, 30);
+
 	protected FITSOW app;
 	protected double traceLength = 0;
 	protected double traceLengthIncrement = 0;
@@ -33,32 +38,40 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 	protected Point deltaMove = new Point();
 	protected GestureControl gestureControl = GestureControl.NONE;
 
-	protected Timer dwellTimer;
-
-	public static int CM_STEP = 40; 
-	public static int TRACE_LENGTH_START_PAN = 50; 
-
-	private static Font FONT_DEBUG = new Font("Verdana", Font.PLAIN, 30);
+	protected Timer dwellTimer5Fingers;
+	protected Timer dwellTimer3Fingers;
 
 	public GestureLayer(FITSOW app) {
 		this.app = app;
-		this.dwellTimer = new Timer(1000, this);
-		this.dwellTimer.setRepeats(false);
+		this.dwellTimer5Fingers = new Timer(1000, this);
+		this.dwellTimer5Fingers.setRepeats(false);
+		this.dwellTimer3Fingers = new Timer(500, this);
+		this.dwellTimer3Fingers.setRepeats(false);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// Dwell
-		app.getNavigation().getGlobalView(null);
+		if(e.getSource() == dwellTimer5Fingers) {
+			app.getNavigation().getGlobalView(null);
+		} else if(e.getSource() == dwellTimer3Fingers) {
+			if(gestureControl == GestureControl.NONE) {
+				gestureControl = GestureControl.SCALE_SELECTION;
+				app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(0, 0));
+			}
+		}
 	}
 
 	public void gestureOccured(AbstractGestureEvent event) {
 		if(!(event instanceof MTGestureEvent)) {
 			return;
 		}
-		dwellTimer.stop();
+		dwellTimer5Fingers.stop();
+		dwellTimer3Fingers.stop();
 		MTGestureEvent mtEvent = (MTGestureEvent)event;
 		if(mtEvent.getFingers() == 5) {
-			dwellTimer.restart();
+			dwellTimer5Fingers.restart();
+		} else if(mtEvent.getFingers() == 3) {
+			dwellTimer3Fingers.restart();
 		}
 		if((event instanceof MTStopGestureEvent) || (event instanceof MTStartGestureEvent)) {
 			traceLength = 0;
@@ -81,7 +94,6 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 				traceLengthIncrement = traceLength - previousTrace;
 			}
 			if(mtEvent.getFingers() == 2 && gestureControl == GestureControl.NONE) {
-//				gestureControl = GestureControl.PAN;
 				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, 4.0);
 			} else if(mtEvent.getFingers() == 3) {
 				if(gestureControl == GestureControl.ZOOM_IN || gestureControl == GestureControl.ZOOM_OUT) {
@@ -93,6 +105,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 						gestureControl = ((MTCircularGesture)mtEvent).isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
 					}
 				} else if(
+						gestureControl == GestureControl.SCALE_SELECTION ||
 						gestureControl == GestureControl.SCALE_SELECTION_NORTH ||
 						gestureControl == GestureControl.SCALE_SELECTION_SOUTH ||
 						gestureControl == GestureControl.SCALE_SELECTION_WEST ||
@@ -109,17 +122,16 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
 						gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
 						app.getMenuEventHandler().displayColorSubMenu();
-					} else if(mtEvent instanceof MTFreeExternalLinearGesture && gestureControl == GestureControl.NONE) {
-						app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(0, 0));
-						MTFreeExternalLinearGesture mtFreeExtLinearEvent = (MTFreeExternalLinearGesture)event;
-						updateScale(mtFreeExtLinearEvent.getCardinalDirection());
-					}
+					} 
 				}
 				if(gestureControl == GestureControl.ZOOM_IN) {
-					// Cursor activeCursor = app.getCursorManager().getActiveCursor(deviceID);
-					// double cursorX = activeCursor.getCoordsInVirtualSpace().x;
-					// double cursorY = activeCursor.getCoordsInVirtualSpace().y;
-					// app.getNavigation().czoomIn(app.getZFCamera(), 1f, cursorX, cursorY);
+					// for Olivier
+					InputSource inputSource = mtEvent.getInputSource();
+					String inputSourceID = inputSource.getID();
+					int cursorID = Integer.parseInt(inputSourceID.split("_")[0]);
+					AbstractInputDevice device = inputSource.getDevice();
+//					System.out.println("cursorID="+cursorID+" - device="+device.getID());
+					// adapt the method call below 
 					app.getNavigation().czoomIn(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
 				} else if(gestureControl == GestureControl.ZOOM_OUT) {
 					app.getNavigation().czoomOut(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);

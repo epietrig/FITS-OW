@@ -114,10 +114,8 @@ class SmartiesManager implements Observer {
 				// 
 				SmartiesDeviceGestures sdg =  devGesturesMap.get(se.device);
 				if (sdg != null){ // should be always true
-					// TODO
-					sdg.setSurfaceSize(
-						se.device.getTouchpadWidth()/se.device.getXPixelsByMM(),
-						se.device.getTouchpadHeight()/se.device.getYPixelsByMM());
+					sdg.setSmartiesTouchWidthInMm(se.device.getTouchpadWidth()/se.device.getXPixelsByMM());
+					sdg.setSmartiesTouchHeightInMm(se.device.getTouchpadHeight()/se.device.getYPixelsByMM());
 				}
 				break;
 			}

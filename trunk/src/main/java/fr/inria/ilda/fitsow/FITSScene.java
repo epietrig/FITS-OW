@@ -23,6 +23,8 @@ import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
+import fi.iki.elonen.ServerRunner;
+
 public class FITSScene {
 
     File SCENE_FILE, SCENE_FILE_DIR;
@@ -33,9 +35,14 @@ public class FITSScene {
     String zuistColorMapping = Config.COLOR_MAPPING_LIST[0];
     String zuistScale = Config.SCALE_LINEAR;
 
+    FITSServer server;
+
     FITSScene(FITSOW app){
         this.app = app;
         this.sm = app.sm;
+        System.out.println("Initializing NanoHTTPD Server...");
+        server = new FITSServer(app);
+        // ServerRunner.executeInstance(server);
     }
 
     void loadScene(File xmlSceneFile, ProgressListener pl){

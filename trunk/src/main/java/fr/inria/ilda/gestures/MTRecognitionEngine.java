@@ -27,12 +27,40 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 	protected HashMap<String,Finger> fingers;		///< List of fingers position
 	protected int pointerDownCount;
 
+	protected ArrayList<MTGestureEvent> recentEvents = new ArrayList<MTGestureEvent>();
+	protected int recentEventsCount = 3;//4;
+	
 	public static final int TRACE_LENGTH = 25;//20;
 
 	public MTRecognitionEngine(String ID){
 		super(ID);
 		fingers = new HashMap<String,Finger>();
 		pointerDownCount = 0;
+	}
+	
+	protected void addGestureEvent(MTGestureEvent lastEvent) {
+		if(recentEvents.size() >= recentEventsCount) {
+			recentEvents.remove(recentEvents.size()-1);
+		}
+		recentEvents.add(0, lastEvent);
+	}
+	
+	public MTGestureEvent getStableGesture(InputSource inputSource, int fingers) {
+		if(recentEvents.size() == 0) {
+			MTGestureEvent event = new MTGestureEvent(inputSource, fingers);
+			event.setRecognizerSource(MTRecognitionEngine.this);
+			return event;
+		}
+		String gestureName = recentEvents.get(0).toString();
+		for (int i = 1; i < recentEvents.size(); i++) {
+			MTGestureEvent tt = recentEvents.get(i);
+			if(tt.toString().compareTo(gestureName) != 0) {
+				MTGestureEvent event = new MTGestureEvent(inputSource, fingers);
+				event.setRecognizerSource(MTRecognitionEngine.this);
+				return event;
+			}
+		}
+		return recentEvents.get(0);
 	}
 
 	public void startRecognition(AbstractInputEvent event) {
@@ -59,8 +87,10 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 			fingerMove(event2D.source.getID(), pt);
 			MTGestureEvent recognized = recognize(event.source);
 			recognized.setRecognizerSource(MTRecognitionEngine.this);
+			addGestureEvent(recognized);
+			MTGestureEvent filteredResult = getStableGesture(recognized.getInputSource(), recognized.getFingers());
 			for (IGestureEventListener listener : listeners) {
-				listener.gestureOccured(recognized);
+				listener.gestureOccured(filteredResult);
 			}
 			break;
 		case STOP:
@@ -82,6 +112,8 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		for (IGestureEventListener listener : listeners) {
 			listener.gestureOccured(stopEvent);
 		}
+		
+		recentEvents.clear();
 	}
 
 	public void fingerDown(String id, Point position){
@@ -275,10 +307,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 
 	public MTGestureEvent recognize(InputSource source) {
 		int fingersCount = fingersInContactCount();
-		if(fingersCount < 2) {
-			return new MTGestureEvent(source, fingersCount);
-		}
-		if(fingersCount == 2) { // PAN in FITS-OW
+		if(fingersCount <= 2) {
 			return new MTGestureEvent(source, fingersCount);
 		}
 		

@@ -65,6 +65,8 @@ import fr.inria.zvtm.fits.filters.ColorGradient;
 
 public class Config {
 
+    static final int HTTPD_PORT = 8081;
+
     static final Color BACKGROUND_COLOR = Color.BLACK;
     static final Color CURSOR_COLOR = Color.WHITE;
 
