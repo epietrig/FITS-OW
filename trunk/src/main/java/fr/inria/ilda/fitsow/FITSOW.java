@@ -127,7 +127,7 @@ public class FITSOW {
 
     		new SmartiesManager(
                 this, gestureManager, options.blockWidth, options.blockHeight,
-                options.numCols,options.numRows);
+                options.numCols, options.numRows);
 
             TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
     		gestureManager.registerDevice(tuioDevice);
