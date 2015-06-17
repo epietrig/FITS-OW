@@ -122,13 +122,15 @@ public class FITSOW {
 
         if(options.smarties) {
     		GestureManager gestureManager = GestureManager.getInstance();
-    		new SmartiesManager(
+    		SmartiesManager msmarties = new SmartiesManager(
                 this, gestureManager, options.blockWidth, options.blockHeight,
                 options.numCols, options.numRows);
+            cm.registerDevice(msmarties,"Smarties");
 
             // tablet screen size in pixels 1280 x 800
             // tablet screen size in mms 217.94 x 136.21
             TUIOInputDevice tuioDevice = new TUIOInputDevice(3334, 217.94f, 136.21f);
+            cm.registerDevice(tuioDevice,"tuioDevice");
 
     		gestureManager.registerDevice(tuioDevice);
     		tuioDevice.connect();

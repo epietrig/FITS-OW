@@ -10,6 +10,8 @@ import java.awt.geom.Point2D;
 
 import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.Camera;
+import fr.inria.zvtm.engine.Location;
+
 import fr.inria.zvtm.animation.EndAction;
 import fr.inria.zvtm.animation.Animation;
 import fr.inria.zvtm.animation.interpolation.SlowInSlowOutInterpolator;
@@ -124,4 +126,46 @@ public class Navigation {
         }
     }
 
+    // -----------------------------------------------------------
+    // from zraildr7
+
+    /* x,y in (X Window) screen coordinate */
+    public void directTranslate(double x, double y){
+        double a = (app.zfCamera.focal+Math.abs(app.zfCamera.altitude)) / app.zfCamera.focal;
+        Location l = app.zfCamera.getLocation();
+        double newx = l.getX() + a*x;
+        double newy = l.getY() + a*y;
+        app.zfCamera.setLocation(new Location(newx, newy, l.getAltitude()));
+    }
+
+    void centeredZoom(double f, double x, double y){
+        Location l = app.zfCamera.getLocation();
+        double a = (app.zfCamera.focal+Math.abs(app.zfCamera.altitude)) / app.zfCamera.focal;
+        double newz = app.zfCamera.focal * a * f - app.zfCamera.focal;
+        if (newz < 0){
+            newz = 0;
+            f = app.zfCamera.focal / (a*app.zfCamera.focal);
+        }
+        double[] r = windowToViewCoordinate(x, y);
+        double dx = l.getX() - r[0];
+        double dy = l.getY() - r[1];
+        double newx = l.getX() + (f*dx - dx); // *a/(zfCamera.altitude+ zfCamera.focal));
+        double newy = l.getY() + (f*dy - dy);
+        app.zfCamera.setLocation(new Location(newx, newy, newz));
+    }
+
+    public double[] windowToViewCoordinate(double x, double y){
+        Location l = app.zfCamera.getLocation();
+        double a = (app.zfCamera.focal + app.zfCamera.getAltitude()) / app.zfCamera.focal;
+        //
+        double xx = (long)((double)x - ((double)app.getDisplayWidth()/2.0));
+        double yy = (long)(-(double)y + ((double)app.getDisplayHeight()/2.0));
+        //
+        xx = l.getX()+ a*xx;
+        yy = l.getY()+ a*yy;
+        double[] r = new double[2];
+        r[0] = xx;
+        r[1] = yy;
+        return r;
+    }
 }
