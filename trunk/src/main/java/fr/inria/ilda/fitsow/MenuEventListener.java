@@ -263,6 +263,10 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (subPieMenu == null){return;}
         subPieMenu.destroy(0);
         subPieMenu = null;
+        Vector<Glyph> leftOvers = app.mnSpace.getGlyphsOfType(Config.T_SPMISc);
+        if (leftOvers.size() > 0){
+            app.mnSpace.removeGlyphs(leftOvers.toArray(new Glyph[leftOvers.size()]), true);
+        }
     }
 
     short mainPieMenuEvent(Glyph menuItem){
@@ -293,14 +297,14 @@ public class MenuEventListener implements ViewListener, PickerListener {
             else if (label == SCALEPM_HISTEQ){app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);}
         }
     }
-    
+
     public void unhighlightAllScalePieMenuItems() {
     	Glyph[] items = subPieMenu.getItems();
     	for (int i = 0; i < items.length; i++) {
 			items[i].highlight(false, null);
 		}
     }
-    
+
     public Glyph getScalePieMenuGlyphByScaleType(String scaleType) {
     	String label = "";
     	if(scaleType.equals(Config.SCALE_LOG)) {
