@@ -39,7 +39,7 @@ public class FOWOptions {
     public boolean noaa = false;
 
     @Option(name = "-fits", aliases = {"--fits-file"}, usage = "FITS file")
-    public String path_to_fits = null;
+    public String fits_file_name = null;
 
     @Option(name = "-zfits", aliases = {"--zuist-fits-file"}, usage = "ZUIST FITS file")
     public String path_to_zuist_fits = null;
@@ -49,6 +49,12 @@ public class FOWOptions {
 
     @Option(name = "-fitsDir", aliases = {"--fits-dir"}, usage = "FITS download directory")
     public String path_to_fits_dir = "/tmp";
+
+    @Option(name = "-IP", aliases = {"--fits-http-ip"}, usage = "IP of NanoHTTPD server providing FITS images")
+    public String httpdIP = Config.HTTPD_IP;
+
+    @Option(name = "-port", aliases = {"--fits-http-port"}, usage = "port of NanoHTTPD server providing FITS images")
+    public int httpdPort = Config.HTTPD_PORT;
 
     @Argument
     List<String> arguments = new ArrayList<String>();

@@ -108,14 +108,13 @@ public class FITSOW {
         sm = new SceneManager(sceneSpaces, sceneCameras, new HashMap<String,String>(1,1));
         sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                               new JSkyFitsResourceHandler());
-        scene = new FITSScene(this, options.path_to_fits_dir);
+        scene = new FITSScene(this, options.path_to_fits_dir, options.httpdIP, options.httpdPort);
         if (options.path_to_zuist_fits != null){
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);
 		}
-        if (options.path_to_fits != null){
-            File fitsFile = new File(options.path_to_fits);
-            scene.loadImage(fitsFile);
+        if (options.fits_file_name != null){
+            scene.loadImage(options.fits_file_name);
         }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
@@ -153,7 +152,7 @@ public class FITSOW {
 //					}
 //				}
 //			});
-    		
+
     		SegmenterTouch segmenter = new SegmenterTouch();
     		gestureManager.registerSegmenter(segmenter);
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
@@ -264,11 +263,11 @@ public class FITSOW {
 	public boolean runningOnWall() { return false; }
     int getColumnCount(){ return 1; }
     int getRowCount(){ return 1; }
-    
+
 	public Navigation getNavigation() {
 		return nav;
 	}
-	
+
     public VirtualSpace getCursorSpace(){
         return mnSpace;
     }

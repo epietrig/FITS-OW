@@ -36,16 +36,17 @@ public class FITSScene {
 
     FITSServer server;
 
-    FITSScene(FITSOW app, String fitsDir){
+    FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
         this.sm = app.sm;
-        System.out.println("Initializing NanoHTTPD Server...");
-        server = new FITSServer(app, fitsDir);
+        System.out.println("Initializing NanoHTTPD Server ("+ip+":"+port+")...");
+        server = new FITSServer(app, fitsDir, ip, port);
         try {
             server.start();
+            System.out.println("OK");
         }
         catch (IOException ex){
-            System.out.println("Failed to start HTTPD server on port "+Config.HTTPD_PORT);
+            System.out.println("Failed");
         }
     }
 
@@ -67,21 +68,16 @@ public class FITSScene {
         addImage(img);
     }
 
-    void loadImage(File f){
-        if (f != null){
-            String path = f.getAbsolutePath();
-            if (File.separatorChar != '/'){
-                path = path.replace(File.separatorChar, '/');
-            }
-            if (!path.startsWith("/")){
-                path = "/" + path;
-            }
-            try {
-                loadImage(new URL("file:" + path));
-            }
-            catch (MalformedURLException mue){
-                System.out.println("Error loading FITS image from " + path);
-            }
+    void loadImage(String fitsFileName){
+        // assumes that the file is in the FITS dir served with NanoHTTPD
+        String urlS = "http://" + Config.HTTPD_IP + ":" + Config.HTTPD_PORT + "/" + fitsFileName;
+        try {
+            URL fitsURL = new URL(urlS);
+            //System.out.println("Fetching "+fitsURL);
+            loadImage(fitsURL);
+        }
+        catch (MalformedURLException mue){
+            System.out.println("Error loading FITS image from " + urlS);
         }
     }
 

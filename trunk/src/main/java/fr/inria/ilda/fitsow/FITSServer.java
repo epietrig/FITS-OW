@@ -24,8 +24,10 @@ class FITSServer extends NanoHTTPD {
 
     FITSOW app;
 
-    FITSServer(FITSOW app, String fitsDir){
-        super(Config.HTTPD_PORT);
+    FITSServer(FITSOW app, String fitsDir, String ip, int port){
+        super(port);
+        Config.HTTPD_IP = ip;
+        Config.HTTPD_PORT = port;
         this.app = app;
         initFitsDir(fitsDir);
     }
@@ -33,11 +35,11 @@ class FITSServer extends NanoHTTPD {
     void initFitsDir(String dir){
         File f = new File(dir);
         if (!f.exists()){
-            System.out.println("Creating temporary FITS dir at:\n" + f.getAbsolutePath());
+            System.out.println("Creating temporary FITS dir at: " + f.getAbsolutePath());
             f.mkdir();
         }
         else {
-            System.out.println("Will store FITS images in:\n" + f.getAbsolutePath());
+            System.out.println("Will store FITS images in: " + f.getAbsolutePath());
         }
         FITS_DIR = f.getAbsolutePath();
     }
