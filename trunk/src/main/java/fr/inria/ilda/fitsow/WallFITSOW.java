@@ -44,6 +44,31 @@ public class WallFITSOW extends FITSOW {
         cv.setBackgroundColor(Config.BACKGROUND_COLOR);
     }
 
+    @Override
+    boolean runningOnWall(){
+        return true;
+    }
+
+    @Override
+    int getDisplayWidth(){
+        return cg.getWidth();
+    }
+
+    @Override
+    int getDisplayHeight(){
+        return cg.getHeight();
+    }
+
+    @Override
+    int getColumnCount(){
+        return cg.getColumns();
+    }
+
+    @Override
+    int getRowCount(){
+        return cg.getRows();
+    }
+    
     public static void main(String[] args){
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);

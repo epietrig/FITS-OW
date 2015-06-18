@@ -19,6 +19,8 @@ import java.awt.Color;
 import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.engine.VirtualSpace;
 
+import fr.inria.ilda.smarties.SmartiesDeviceGestures;
+
 //import ilda.zcsample.cursors.*;
 import fr.inria.ilda.fitsow.cursors.*;
 
@@ -45,14 +47,18 @@ public class CursorManager {
 	public void registerDevice(Object obj, String name){
 		ZcsDevice dev = getDevice(obj, false);
 		if (dev != null){
-			System.out.println("InputManager[registerDevice:]: device already registred "+ obj);
+			System.out.println("CursorManager[registerDevice:]: device already registred "+ obj);
 			return;
 		}
 		_devices.put(obj.hashCode(), new ZcsDevice(name)); 
-		System.out.println("InputManager[registerDevice]: registered "+ obj);
+		System.out.println("CursorManager[registerDevice]: registered "+ obj);
 	}
 
 	private ZcsDevice getDevice(Object obj){
+		if (obj instanceof SmartiesDeviceGestures){
+			SmartiesDeviceGestures sdg = (SmartiesDeviceGestures)obj;
+			obj = sdg.getMasterID();
+		}
 		return getDevice(obj, true);
 	}
 
@@ -60,7 +66,7 @@ public class CursorManager {
 		ZcsDevice dev = _devices.get((obj).hashCode());
 		if (warn && dev == null){
 			// WARN!
-			System.out.println("InputManager[getDevice]: Device not found!! " + obj);
+			System.out.println("CursorManager[getDevice]: Device not found!! " + obj);
 		}
 		return dev;
 	}
@@ -74,7 +80,7 @@ public class CursorManager {
 		if (dev == null){ return null; }
 		ZcsCursor cur = dev.cursors.get(id);
 		if (warn && cur == null){
-			System.out.println("InputManager[getCursor]: Cursor not found!! " + obj + " "+ id);
+			System.out.println("CursorManager[getCursor]: Cursor not found!! " + obj + " "+ id);
 		}
 		return cur;
 	}
@@ -93,7 +99,7 @@ public class CursorManager {
 		if (dev == null){ return; }
 		ZcsCursor cur = getCursor(obj, id, false);
 		if (cur != null){
-			System.out.println("InputManager[createCursor]: cursor already exists "+ obj+ " "+ id);
+			System.out.println("CursorManager[createCursor]: cursor already exists "+ obj+ " "+ id);
 			return;
 		}
 		dev.createCursor(id, x, y, c, hide);
@@ -173,7 +179,7 @@ public class CursorManager {
 		if (dev == null){ return; }
 		//ZcsCursor cur = dev.cursors.get(id);
 		//if (cur == null){ return; }
-		nav.directTranslate( speedFac*dx*app.getDisplayWidth(),speedFac*dy*app.getDisplayHeight());
+		nav.directTranslate(speedFac*dx*app.getDisplayWidth(),speedFac*dy*app.getDisplayHeight());
 		// CHECK
 		//nav.pan(
 		//	dx*app.getDisplayWidth(), dy*app.getDisplayHeight(), speedFac);
@@ -204,14 +210,17 @@ public class CursorManager {
 		if (cur != null){
 			cx = cur.x; cy = cur.y;
 		}
-		zoom(obj,-1, cx, cy, f);
+		//System.out.println("zoom "+ cx+" "+cy+ " "+ f);
+		zoom(f, cx, cy);
 	}
 
-	public void zoom(Object obj, int id, double x, double y, double f){
+	public void zoom(Object obj, int id, double f, double x, double y){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
-		//ZcsCursor cur = dev.cursors.get(id);
-		//if (cur == null){ return; }
+		zoom(f, x, y);
+	}
+
+	private void zoom(double f, double x, double y){
 		nav.centeredZoom(f, x*app.getDisplayWidth(), y*app.getDisplayHeight());
 
 	}
@@ -267,7 +276,7 @@ public class CursorManager {
 
 			wc = new OlivierCursor(
 				crSpace,
-				(app.runningOnWall()) ? 2 : 20, (app.runningOnWall()) ? 8 : 160,
+				(!(app.runningOnWall())) ? 2 : 20, (!(app.runningOnWall())) ? 8 : 160,
 				this.color);
 			moveTo(x, y);
 		}

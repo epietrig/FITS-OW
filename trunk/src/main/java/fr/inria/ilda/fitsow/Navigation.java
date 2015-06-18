@@ -127,9 +127,9 @@ public class Navigation {
     }
 
     // -----------------------------------------------------------
-    // from zraildr7
+    // from zraildr
 
-    /* x,y in (X Window) screen coordinate */
+    /* x,y in (X Window) display coordinate */
     public void directTranslate(double x, double y){
         double a = (app.zfCamera.focal+Math.abs(app.zfCamera.altitude)) / app.zfCamera.focal;
         Location l = app.zfCamera.getLocation();

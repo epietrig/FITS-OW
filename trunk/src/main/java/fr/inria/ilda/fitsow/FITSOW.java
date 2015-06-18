@@ -261,13 +261,19 @@ public class FITSOW {
 	}
 
 	public boolean runningOnWall() { return false; }
-
+    int getColumnCount(){ return 1; }
+    int getRowCount(){ return 1; }
+    
 	public Navigation getNavigation() {
 		return nav;
 	}
 	
     public VirtualSpace getCursorSpace(){
         return mnSpace;
+    }
+
+    public CursorManager getCursorManager(){
+        return cm;
     }
 
 	public Camera getZFCamera() {

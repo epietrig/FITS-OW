@@ -33,7 +33,8 @@ class SmartiesManager implements Observer {
 	int countWidget;
 	// gesture
 	HashMap<SmartiesDevice, SmartiesDeviceGestures> devGesturesMap = new HashMap<SmartiesDevice, SmartiesDeviceGestures>();
-	boolean gmConnected = true;
+	boolean useGM = true;
+	myCursor nullCur;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
 
@@ -41,6 +42,8 @@ class SmartiesManager implements Observer {
 		this.nav = application.getNavigation();
 	    this.smarties = new Smarties(app_width, app_height, col, row);
 	    this.inputManager = app.cm;
+
+	    nullCur = new myCursor();
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
 	    
@@ -56,6 +59,14 @@ class SmartiesManager implements Observer {
 	    smarties.Run();
 	}
 
+	class myCursor{
+		double prevMFPinchD;
+		double prevMFMoveX, prevMFMoveY;
+		myCursor(){
+			prevMFPinchD = prevMFMoveX = prevMFMoveY = 0;
+		}
+	}
+
 	public void update(Observable obj, Object arg)
 	{
 		if (!(arg instanceof SmartiesEvent)) { return; }
@@ -66,7 +77,7 @@ class SmartiesManager implements Observer {
 			{
 				SmartiesDeviceGestures sdg = new SmartiesDeviceGestures(se.device, this);
 				GestureManager.getInstance().registerDevice(sdg);
-				if (gmConnected) { sdg.connect(); }
+				if (useGM) { sdg.connect(); }
 				devGesturesMap.put(se.device, sdg);				
 				break;
 			}
@@ -82,6 +93,7 @@ class SmartiesManager implements Observer {
 			}
 			case SmartiesEvent.SMARTIES_EVENTS_TYPE_RAW_DOWN:
 			{
+				if (!useGM) break;
 				SmartiesDeviceGestures sdg =  devGesturesMap.get(se.device);
 				if (sdg != null){ // should be always true
 					sdg.down(se);
@@ -90,6 +102,7 @@ class SmartiesManager implements Observer {
 			}
 			case SmartiesEvent.SMARTIES_EVENTS_TYPE_RAW_MOVE:
 			{
+				if (!useGM) { break; }
 				SmartiesDeviceGestures sdg =  devGesturesMap.get(se.device);
 				if (sdg != null){ // should be always true
 					sdg.move(se);
@@ -99,6 +112,7 @@ class SmartiesManager implements Observer {
 			
 			case SmartiesEvent.SMARTIES_EVENTS_TYPE_RAW_UP:
 			{
+				if (!useGM) { break; }
 				SmartiesDeviceGestures sdg =  devGesturesMap.get(se.device);
 				if (sdg != null){ // should be always true
 					sdg.up(se);
@@ -109,6 +123,7 @@ class SmartiesManager implements Observer {
                 //System.out.println("Create Puck: " + se.id);
                 inputManager.createCursor(
                     this, se.id, se.p.x, se.p.y, SmartiesColors.getPuckColorById(se.id));
+                se.p.app_data = new myCursor();
                 break;
             }
             case SmartiesEvent.SMARTIE_EVENTS_TYPE_SELECT:{
@@ -161,6 +176,81 @@ class SmartiesManager implements Observer {
 				if (se.widget.handler != null){
 					se.widget.handler.callback(se.widget, se, this);
 				}
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFMOVE:{
+                if (useGM) { break;}
+                System.out.println("SMARTIE_EVENTS_TYPE_START_MFMOVE");
+                if (se.p != null){
+                	myCursor cur = (myCursor)se.p.app_data;
+                	cur.prevMFMoveX = se.x;
+                    cur.prevMFMoveY = se.y;
+                }
+                else{
+                	nullCur.prevMFMoveX = se.x;
+                    nullCur.prevMFMoveY = se.y;
+                }
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFMOVE:{
+                if (useGM) { break;}
+                myCursor cur;
+                double x,y;
+                if (se.p != null){
+                	cur = (myCursor)se.p.app_data;
+                }
+                else{
+                	cur = nullCur;
+                }
+                double dx = (se.x - cur.prevMFMoveX); 
+                double dy = (se.y - cur.prevMFMoveY);
+                inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
+                cur.prevMFMoveX = se.x;
+                cur.prevMFMoveY = se.y;
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFMOVE:{
+            	if (useGM) { break;}
+                System.out.println("SMARTIE_EVENTS_TYPE_END_MFMOVE");
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFPINCH:
+            {
+            	if (useGM) { break;}
+                System.out.println("SMARTIE_EVENTS_TYPE_START_MFPINCH");
+                if (se.p != null){
+                	myCursor cur = (myCursor)se.p.app_data;
+                	cur.prevMFPinchD = se.d;
+                }
+                else{
+                	nullCur.prevMFPinchD = se.d;                
+                }
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFPINCH:{
+            	if (useGM) { break;}
+                //System.out.println("SMARTIE_EVENTS_TYPE_MFPINCH");
+                myCursor cur;
+                double x,y;
+                if (se.p != null){
+                	cur = (myCursor)se.p.app_data;
+                	x = se.p.x; y = se.p.y;
+                }
+                else{
+                	cur = nullCur;
+                	x = se.x; y = se.y;
+                }
+                if (se.d>0){
+                	double f = cur.prevMFPinchD/se.d;
+                	System.out.println("zoom: "+ se.id+" "+x+" "+y+" "+cur.prevMFPinchD+" "+se.d + " "+f);
+                	inputManager.zoom(this, se.id, f, x,y);
+                }
+                cur.prevMFPinchD = se.d;
+                break;
+            }
+            case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFPINCH:{
+            	if (useGM) { break;}
+                System.out.println("SMARTIE_EVENTS_TYPE_END_MFPINCH");
                 break;
             }
             default:{
