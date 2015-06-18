@@ -108,7 +108,7 @@ public class FITSOW {
         sm = new SceneManager(sceneSpaces, sceneCameras, new HashMap<String,String>(1,1));
         sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                               new JSkyFitsResourceHandler());
-        scene = new FITSScene(this);
+        scene = new FITSScene(this, options.path_to_fits_dir);
         if (options.path_to_zuist_fits != null){
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);
@@ -253,6 +253,7 @@ public class FITSOW {
     }
 
     void exit(){
+        scene.server.stop();
         System.exit(0);
     }
 

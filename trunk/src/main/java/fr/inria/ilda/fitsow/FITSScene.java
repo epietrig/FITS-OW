@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -22,8 +23,6 @@ import fr.inria.zvtm.glyphs.VCircle;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
-
-import fi.iki.elonen.ServerRunner;
 
 public class FITSScene {
 
@@ -37,12 +36,17 @@ public class FITSScene {
 
     FITSServer server;
 
-    FITSScene(FITSOW app){
+    FITSScene(FITSOW app, String fitsDir){
         this.app = app;
         this.sm = app.sm;
         System.out.println("Initializing NanoHTTPD Server...");
-        server = new FITSServer(app);
-        // ServerRunner.executeInstance(server);
+        server = new FITSServer(app, fitsDir);
+        try {
+            server.start();
+        }
+        catch (IOException ex){
+            System.out.println("Failed to start HTTPD server on port "+Config.HTTPD_PORT);
+        }
     }
 
     void loadScene(File xmlSceneFile, ProgressListener pl){

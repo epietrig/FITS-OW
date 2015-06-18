@@ -10,76 +10,54 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import fi.iki.elonen.NanoHTTPD;
 
 class FITSServer extends NanoHTTPD {
 
+    static final String FITS_MIME_TYPE = "image/fits";
+
+    static String FITS_DIR = "/tmp";
+
     FITSOW app;
 
-    FITSServer(FITSOW app){
+    FITSServer(FITSOW app, String fitsDir){
         super(Config.HTTPD_PORT);
         this.app = app;
+        initFitsDir(fitsDir);
+    }
+
+    void initFitsDir(String dir){
+        File f = new File(dir);
+        if (!f.exists()){
+            System.out.println("Creating temporary FITS dir at:\n" + f.getAbsolutePath());
+            f.mkdir();
+        }
+        else {
+            System.out.println("Will store FITS images in:\n" + f.getAbsolutePath());
+        }
+        FITS_DIR = f.getAbsolutePath();
     }
 
     @Override public Response serve(IHTTPSession session) {
         Map<String, List<String>> decodedQueryParameters =
             decodeParameters(session.getQueryParameterString());
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<head><title>Debug Server</title></head>");
-        sb.append("<body>");
-        sb.append("<h1>Debug Server</h1>");
-
-        sb.append("<p><blockquote><b>URI</b> = ").append(
-            String.valueOf(session.getUri())).append("<br />");
-
-        sb.append("<b>Method</b> = ").append(
-            String.valueOf(session.getMethod())).append("</blockquote></p>");
-
-        sb.append("<h3>Headers</h3><p><blockquote>").
-            append(toString(session.getHeaders())).append("</blockquote></p>");
-
-        sb.append("<h3>Parms</h3><p><blockquote>").
-            append(toString(session.getParms())).append("</blockquote></p>");
-
-        sb.append("<h3>Parms (multi values?)</h3><p><blockquote>").
-            append(toString(decodedQueryParameters)).append("</blockquote></p>");
-
+        String uri = session.getUri();
+        String[] tokens = uri.split("/");
         try {
-            Map<String, String> files = new HashMap<String, String>();
-            session.parseBody(files);
-            sb.append("<h3>Files</h3><p><blockquote>").
-                append(toString(files)).append("</blockquote></p>");
-        } catch (Exception e) {
-            e.printStackTrace();
+            File f = new File(FITS_DIR + File.separator + tokens[tokens.length-1]);
+            //System.out.println("Serving "+f.getAbsolutePath());
+            FileInputStream fis = new FileInputStream(f);
+            return new Response(Response.Status.OK, FITS_MIME_TYPE, fis);
+        }
+        catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            return new Response(Response.Status.NOT_FOUND, FITS_MIME_TYPE, "");
         }
 
-        sb.append("</body>");
-        sb.append("</html>");
-        return new Response(sb.toString());
-    }
-
-    private String toString(Map<String, ? extends Object> map) {
-        if (map.size() == 0) {
-            return "";
-        }
-        return unsortedList(map);
-    }
-
-    private String unsortedList(Map<String, ? extends Object> map) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<ul>");
-        for (Map.Entry entry : map.entrySet()) {
-            listItem(sb, entry);
-        }
-        sb.append("</ul>");
-        return sb.toString();
-    }
-
-    private void listItem(StringBuilder sb, Map.Entry entry) {
-        sb.append("<li><code><b>").append(entry.getKey()).
-            append("</b> = ").append(entry.getValue()).append("</code></li>");
     }
 
 }
