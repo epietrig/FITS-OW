@@ -71,11 +71,18 @@ public class Config {
     static final Color BACKGROUND_COLOR = Color.BLACK;
     static final Color CURSOR_COLOR = Color.WHITE;
 
+    static final Color FITS_IMG_BORDER_COLOR = Color.GRAY;
+    static final Color FITS_IMG_BORDER_COLOR_CI = Color.LIGHT_GRAY;
+
     static boolean MASTER_ANTIALIASING = true;
     static boolean CLUSTER_ANTIALIASING = true;
 
     static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
     static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
+
+    static final Color INFO_BAR_BACKGROUND = Color.BLACK;
+    static final Color INFO_BAR_FOREGROUND = Color.LIGHT_GRAY;
+    static final int INFO_BAR_HEIGHT = 16;
 
     /* PIEMENU */
 

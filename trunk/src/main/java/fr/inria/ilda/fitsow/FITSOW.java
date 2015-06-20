@@ -56,8 +56,8 @@ public class FITSOW {
     /* screen dimensions, actual dimensions of windows */
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
-    static int VIEW_MAX_W = 1600;
-    static int VIEW_MAX_H = 1024;
+    static int VIEW_MAX_W = 1200;
+    static int VIEW_MAX_H = 600;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;
     /* dimensions of zoomable panel */
@@ -109,6 +109,7 @@ public class FITSOW {
         sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                               new JSkyFitsResourceHandler());
         scene = new FITSScene(this, options.path_to_fits_dir, options.httpdIP, options.httpdPort);
+        mView.setJava2DPainter(scene, Java2DPainter.FOREGROUND);
         if (options.path_to_zuist_fits != null){
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);

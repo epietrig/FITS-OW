@@ -7,6 +7,8 @@
 package fr.inria.ilda.fitsow;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,15 +18,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import fr.inria.zvtm.engine.Java2DPainter;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.glyphs.VCircle;
+import fr.inria.zvtm.glyphs.Translucent;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
+import fr.inria.zvtm.widgets.TranslucentWidget;
 
-public class FITSScene {
+public class FITSScene implements Java2DPainter {
 
     File SCENE_FILE, SCENE_FILE_DIR;
 
@@ -35,6 +40,9 @@ public class FITSScene {
     String zuistScale = Config.SCALE_LINEAR;
 
     FITSServer server;
+
+    static final String EMPTY_STRING = "";
+    String wcsStr = EMPTY_STRING;
 
     FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
@@ -87,6 +95,9 @@ public class FITSScene {
             img.setColorLookupTable(Config.DEFAULT_COLOR_LOOKUP_TABLE, false);
             img.setScaleAlgorithm(Config.DEFAULT_SCALE, false);
             img.updateDisplayedImage();
+            img.setDrawBorder(true);
+            img.setBorderColor(Config.FITS_IMG_BORDER_COLOR);
+            img.setCursorInsideHighlightColor(Config.FITS_IMG_BORDER_COLOR_CI);
             // menu.buildHistogram();
         }
     }
@@ -164,6 +175,28 @@ public class FITSScene {
         ci = (ci <= 0) ? Config.COLOR_MAPPING_LIST.length-1 : ci - 1;
         setColorMapping(img, Config.COLOR_MAPPING_LIST[ci]);
         return Config.COLOR_MAPPING_LIST[ci];
+    }
+
+    /* ----------------------- WCS coordinates --------------------- */
+
+    void updateWCSCoordinates(double vx, double vy, JSkyFitsImage img){
+        if (img != null){
+            Point2D.Double wcs = img.vs2wcs(vx, vy);
+            wcsStr = wcs.x + " " + wcs.y;
+            app.mView.repaint();
+        }
+        else {
+            wcsStr = EMPTY_STRING;
+        }
+    }
+
+    public void	paint(Graphics2D g2d, int viewWidth, int viewHeight){
+        g2d.setColor(Config.INFO_BAR_BACKGROUND);
+        g2d.setComposite(TranslucentWidget.AB_08);
+        g2d.fillRect(0, 0, viewWidth, Config.INFO_BAR_HEIGHT);
+        g2d.setColor(Config.INFO_BAR_FOREGROUND);
+        g2d.setComposite(Translucent.acO);
+        g2d.drawString(wcsStr, 4, 10);
     }
 
 }

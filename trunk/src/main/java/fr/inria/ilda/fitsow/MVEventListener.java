@@ -23,9 +23,7 @@ import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.ViewPanel;
 import fr.inria.zvtm.glyphs.Glyph;
-import fr.inria.zvtm.glyphs.VCircle;
-import fr.inria.zvtm.glyphs.VText;
-import fr.inria.zvtm.glyphs.VPolygon;
+import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.event.ViewListener;
 import fr.inria.zvtm.event.CameraListener;
 import fr.inria.zvtm.engine.portals.Portal;
@@ -62,6 +60,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     Glyph lge;
 
     boolean panning = false;
+
+    JSkyFitsImage ciFITSImage = null;
 
     MVEventListener(FITSOW app){
         this.app = app;
@@ -111,6 +111,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         currentJPX = jpx;
         currentJPY = jpy;
         updateDataSpacePicker(jpx, jpy);
+        app.scene.updateWCSCoordinates(vsCoords.x, vsCoords.y, ciFITSImage);
     }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
@@ -136,9 +137,25 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
     }
 
-    public void enterGlyph(Glyph g){}
+    public void enterGlyph(Glyph g){
+        g.highlight(true, null);
+        if (g.getType().equals(Config.T_FITS)){
+            ciFITSImage = (JSkyFitsImage)g;
+        }
+    }
 
-    public void exitGlyph(Glyph g){}
+    public void exitGlyph(Glyph g){
+        g.highlight(false, null);
+        if (g.getType().equals(Config.T_FITS)){
+            Glyph[] insideOtherFITS = app.dSpacePicker.getPickedGlyphList(Config.T_FITS);
+            if (insideOtherFITS.length > 0){
+                ciFITSImage = (JSkyFitsImage)insideOtherFITS[insideOtherFITS.length-1];
+            }
+            else {
+                ciFITSImage = null;
+            }
+        }
+    }
 
     public void Kpress(ViewPanel v,char c,int code,int mod, KeyEvent e){
         if (code==KeyEvent.VK_PAGE_UP){app.nav.getHigherView();}
