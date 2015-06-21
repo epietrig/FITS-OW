@@ -27,13 +27,12 @@ public aspect FitsGlyphCreation {
         JSkyFitsImageReplicator(JSkyFitsImage source){
             super(source);
             this.scaleFactor = source.scaleFactor;
-            this.imageLocation = source.getImageLocation();
+            this.imageLocation = source.getFITSImageURL();
         }
 
         Glyph doCreateGlyph(){
             try{
-                System.out.println("XXX "+imageLocation);
-                return new JSkyFitsImage(imageLocation);
+                return new JSkyFitsImage(0, 0, 0, imageLocation, scaleFactor, 1);
             } catch(Exception e){
                 System.out.println("JSkyFitsGlyphCreation - doCreateGlyph - catch");
                 throw new Error(e);
