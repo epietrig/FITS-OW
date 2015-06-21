@@ -45,7 +45,7 @@ public class WallFITSOW extends FITSOW {
     }
 
     @Override
-    boolean runningOnWall(){
+    public boolean runningOnWall(){
         return true;
     }
 
@@ -68,7 +68,7 @@ public class WallFITSOW extends FITSOW {
     int getRowCount(){
         return cg.getRows();
     }
-    
+
     public static void main(String[] args){
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);
