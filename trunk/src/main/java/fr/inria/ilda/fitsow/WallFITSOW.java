@@ -7,6 +7,7 @@
 package fr.inria.ilda.fitsow;
 
 import java.util.Vector;
+import java.util.Locale;
 
 import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
@@ -70,6 +71,7 @@ public class WallFITSOW extends FITSOW {
     }
 
     public static void main(String[] args){
+        Locale.setDefault(new Locale("en", "US"));
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);
         try {

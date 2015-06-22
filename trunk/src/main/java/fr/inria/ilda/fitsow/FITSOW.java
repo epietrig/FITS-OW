@@ -19,9 +19,12 @@ import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+
 import java.io.File;
+
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.Locale;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -57,7 +60,7 @@ public class FITSOW {
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
     static int VIEW_MAX_W = 1200;
-    static int VIEW_MAX_H = 600;
+    static int VIEW_MAX_H = 800;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;
     /* dimensions of zoomable panel */
@@ -290,6 +293,7 @@ public class FITSOW {
 	}
 
     public static void main(String[] args){
+        Locale.setDefault(new Locale("en", "US"));
         FOWOptions options = new FOWOptions();
         CmdLineParser parser = new CmdLineParser(options);
         try {

@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.Vector;
 
+import java.text.DecimalFormat;
+
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
@@ -65,32 +67,32 @@ import fr.inria.zvtm.fits.filters.ColorGradient;
 
 public class Config {
 
-    static String HTTPD_IP = "127.0.0.1";
-    static int HTTPD_PORT = 8081;
+    public static String HTTPD_IP = "127.0.0.1";
+    public static int HTTPD_PORT = 8081;
 
-    static final Color BACKGROUND_COLOR = Color.BLACK;
-    static final Color CURSOR_COLOR = Color.WHITE;
+    public static final Color BACKGROUND_COLOR = Color.BLACK;
+    public static final Color CURSOR_COLOR = Color.WHITE;
 
-    static final Color FITS_IMG_BORDER_COLOR = Color.GRAY;
-    static final Color FITS_IMG_BORDER_COLOR_CI = Color.LIGHT_GRAY;
+    public static final Color FITS_IMG_BORDER_COLOR = Color.GRAY;
+    public static final Color FITS_IMG_BORDER_COLOR_CI = Color.LIGHT_GRAY;
 
-    static boolean MASTER_ANTIALIASING = true;
-    static boolean CLUSTER_ANTIALIASING = true;
+    public static boolean MASTER_ANTIALIASING = true;
+    public static boolean CLUSTER_ANTIALIASING = true;
 
-    static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
-    static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
+    public static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
+    public static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
 
-    static final Color INFO_BAR_BACKGROUND = Color.BLACK;
-    static final Color INFO_BAR_FOREGROUND = Color.LIGHT_GRAY;
-    static final int INFO_BAR_HEIGHT = 16;
+    public static final Color INFO_BAR_BACKGROUND = Color.BLACK;
+    public static final Color INFO_BAR_FOREGROUND = Color.LIGHT_GRAY;
+    public static final int INFO_BAR_HEIGHT = 16;
 
     /* PIEMENU */
 
-    static final Font PIEMENU_FONT = DEFAULT_FONT;
+    public static final Font PIEMENU_FONT = DEFAULT_FONT;
 
-    static Color PIEMENU_FILL_COLOR = Color.BLACK;
-    static Color PIEMENU_BORDER_COLOR = Color.WHITE;
-    static Color PIEMENU_INSIDE_COLOR = Color.DARK_GRAY;
+    public static Color PIEMENU_FILL_COLOR = Color.BLACK;
+    public static Color PIEMENU_BORDER_COLOR = Color.WHITE;
+    public static Color PIEMENU_INSIDE_COLOR = Color.DARK_GRAY;
 
     static {
         PieMenuFactory.setItemFillColor(PIEMENU_FILL_COLOR);
@@ -104,31 +106,36 @@ public class Config {
 
     /* ------------ Widget geometry and color ---------- */
     // color lookup table buttons
-    static final int CLT_BTN_PADDING = 12;
-    static final int CLT_BTN_W = 200;
-    static final int CLT_BTN_H = 20;
-    static final int CLT_BTN_HOFFSET = 6;
-    static final int CLT_BTN_VOFFSET = 4;
-    static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
-    static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
-    static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
+    public static final int CLT_BTN_PADDING = 12;
+    public static final int CLT_BTN_W = 200;
+    public static final int CLT_BTN_H = 20;
+    public static final int CLT_BTN_HOFFSET = 6;
+    public static final int CLT_BTN_VOFFSET = 4;
+    public static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
+    public static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
+    public static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
 
     /* ------------ Glyph z-index ---------- */
     // static final int Z_MPMI = 10;
     // static final int Z_SPMI = 12;
     // color lookup table buttons
-    static final int Z_CLT_BKG = 100;
-    static final int Z_CLT_BTN = 110;
+    public static final int Z_CLT_BKG = 100;
+    public static final int Z_CLT_BTN = 110;
+    public static final int Z_QUERY_REGION = 50;
 
     /* ------------ Glyph types ---------- */
 
-    static final String T_MPMI = "mpm";
-    static final String T_SPMI = "spm_";
-    static final String T_SPMISc = T_SPMI + "sc";
+    public static final String T_MPMI = "mpm";
+    public static final String T_SPMI = "spm_";
+    public static final String T_SPMISc = T_SPMI + "sc";
 
-    static final String T_FITS = "fits";
+    public static final String T_FITS = "fits";
 
-    static final String T_CLT_BTN = "clt";
+    public static final String T_CLT_BTN = "clt";
+
+    public static final String T_ASTRO_OBJ_PREFIX = "ao";
+    public static final String T_ASTRO_OBJ_CR = T_ASTRO_OBJ_PREFIX + "Cr";
+    public static final String T_ASTRO_OBJ_LB = T_ASTRO_OBJ_PREFIX + "Lb";
 
     /* ------------ Scales and color mappings ---------- */
 
@@ -137,16 +144,16 @@ public class Config {
     public static final String SCALE_SQRT = "SQRT";
     public static final String SCALE_HISTEQ = "HIST";
 
-    static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
+    public static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
     static {
         SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
         SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
         SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
         SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
     };
-    static final String[] SCALE_LIST = SCALES.keySet().toArray(new String[SCALES.size()]);
+    public static final String[] SCALE_LIST = SCALES.keySet().toArray(new String[SCALES.size()]);
 
-    static final String[][] COLOR_MAPPINGS = {
+    public static final String[][] COLOR_MAPPINGS = {
             {"Standard", "Aips0", "Background", "Color"},
             {"Red", "Green", "Blue", "Blulut", "Ramp", "Real", "Heat"},
             {"Light", "Pastel", "Smooth"},
@@ -155,7 +162,7 @@ public class Config {
             {"Random", "Random1", "Random2", "Random3", "Random4"},
             {"Rainbow", "Rainbow1", "Rainbow2", "Rainbow3", "Rainbow4"}
     };
-    static int LARGEST_COLOR_MAPPING_CAT;
+    public static int LARGEST_COLOR_MAPPING_CAT;
     static {
         LARGEST_COLOR_MAPPING_CAT = COLOR_MAPPINGS[0].length;
         for (int i=1;i<COLOR_MAPPINGS.length;i++){
@@ -165,7 +172,7 @@ public class Config {
         }
     }
 
-    static String[] COLOR_MAPPING_LIST;
+    public static String[] COLOR_MAPPING_LIST;
     static {
         Vector<String> v = new Vector();
         for (String[] aos:COLOR_MAPPINGS){
@@ -176,7 +183,7 @@ public class Config {
         COLOR_MAPPING_LIST = v.toArray(new String[v.size()]);
     }
 
-    static final HashMap<String,RGBImageFilter> COLOR_MAPPING_GRADIENTS = new HashMap(40,1);
+    public static final HashMap<String,RGBImageFilter> COLOR_MAPPING_GRADIENTS = new HashMap(40,1);
     static {
         COLOR_MAPPING_GRADIENTS.put("Standard", new StandardFilter());
         COLOR_MAPPING_GRADIENTS.put("Aips0", new Aips0Filter());
@@ -228,5 +235,18 @@ public class Config {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
         JSkyFitsResourceHandler.DEFAULT_COLOR_LOOKUP_TABLE = DEFAULT_COLOR_LOOKUP_TABLE;
     }
+
+    /* ------------ Simbad queries ---------- */
+
+    public static final BasicStroke QUERY_REGION_STROKE = new BasicStroke(2f);
+    public static final Color QUERY_REGION_COLOR = Color.RED;
+    public static final float QUERY_REGION_ALPHA = .5f;
+
+    public static final BasicStroke SIMBAD_AO_STROKE = new BasicStroke(2f);
+    public static final Color SIMBAD_AO_COLOR = Color.RED;
+    public static final Color SIMBAD_AO_BACKGROUND = Color.BLACK;
+    public static final float SIMBAD_AO_ALPHA = .6f;
+
+    public static final DecimalFormat ARCMIN_FORMATTER = new DecimalFormat("#0.0000");
 
 }

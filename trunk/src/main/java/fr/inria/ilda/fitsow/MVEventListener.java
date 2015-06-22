@@ -7,6 +7,7 @@
 package fr.inria.ilda.fitsow;
 
 import java.awt.Cursor;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -22,22 +23,29 @@ import fr.inria.zvtm.engine.VCursor;
 import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.ViewPanel;
-import fr.inria.zvtm.glyphs.Glyph;
-import fr.inria.zvtm.glyphs.JSkyFitsImage;
-import fr.inria.zvtm.event.ViewListener;
-import fr.inria.zvtm.event.CameraListener;
+import fr.inria.zvtm.engine.Location;
+import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.portals.Portal;
 import fr.inria.zvtm.engine.portals.OverviewPortal;
 import fr.inria.zvtm.engine.Utils;
+
+import fr.inria.zvtm.animation.Animation;
+import fr.inria.zvtm.animation.AnimationManager;
+import fr.inria.zvtm.animation.EndAction;
+import fr.inria.zvtm.animation.interpolation.IdentityInterpolator;
+
+import fr.inria.zvtm.glyphs.Glyph;
+import fr.inria.zvtm.glyphs.VCircle;
+import fr.inria.zvtm.glyphs.JSkyFitsImage;
+
+import fr.inria.zvtm.event.ViewListener;
+import fr.inria.zvtm.event.CameraListener;
 import fr.inria.zvtm.event.PortalListener;
 import fr.inria.zvtm.event.PickerListener;
 
 import fr.inria.zuist.engine.Region;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.TextDescription;
-
-import fr.inria.zvtm.engine.Location;
-import fr.inria.zvtm.engine.VirtualSpaceManager;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -60,32 +68,60 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     Glyph lge;
 
     boolean panning = false;
+    boolean querying = false;
+    boolean draggingFITS = false;
 
+    // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
+
+    Point2D.Double queryRegionCenter;
+    VCircle queryRegionG = new VCircle(0, 0, Config.Z_QUERY_REGION, 1,
+                                       Color.BLACK, Config.QUERY_REGION_COLOR, Config.QUERY_REGION_ALPHA);
+
+    AnimationManager am;
 
     MVEventListener(FITSOW app){
         this.app = app;
+        am = VirtualSpaceManager.INSTANCE.getAnimationManager();
     }
 
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
         lge = app.dSpacePicker.lastGlyphEntered();
-        if (lge != null){
-            // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
-            app.dSpacePicker.stickGlyph(lge);
+        if (querying){
+            app.dSpace.addGlyph(queryRegionG);
+            queryRegionG.setVisible(false);
+            queryRegionG.sizeTo(1);
+            queryRegionCenter = v.getVCursor().getVSCoordinates(app.dCamera);
+            queryRegionG.moveTo(queryRegionCenter.x, queryRegionCenter.y);
+            queryRegionG.setVisible(true);
         }
         else {
-            // pressed button in empty space (or background ZUIST image)
-            panning = true;
+            if (lge != null){
+                // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
+                draggingFITS = true;
+                app.dSpacePicker.stickGlyph(lge);
+            }
+            else {
+                // pressed button in empty space (or background ZUIST image)
+                panning = true;
+            }
         }
     }
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
-        lge = app.dSpacePicker.lastGlyphEntered();
-        if (lge != null){
+        if (draggingFITS){
             app.dSpacePicker.unstickLastGlyph();
+            draggingFITS = false;
+        }
+        if (querying){
+            exitQueryMode();
+            Point2D.Double queryRegionRelease = v.getVCursor().getVSCoordinates(app.dCamera);
+            // make query
+            app.scene.querySimbad(queryRegionCenter, queryRegionRelease, ciFITSImage);
+            queryRegionCenter = null;
         }
     }
 
@@ -117,11 +153,17 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
         currentJPX = jpx;
         currentJPY = jpy;
-        updateDataSpacePicker(jpx, jpy);
         if (panning){
             app.nav.pan(app.zfCamera, lastJPX-jpx, jpy-lastJPY, 1);
             lastJPX = jpx;
             lastJPY = jpy;
+        }
+        else if (queryRegionCenter != null){
+            Point2D.Double p = v.getVCursor().getVSCoordinates(app.dCamera);
+            queryRegionG.sizeTo(2*Math.sqrt((p.x-queryRegionCenter.x)*(p.x-queryRegionCenter.x)+(p.y-queryRegionCenter.y)*(p.y-queryRegionCenter.y)));
+        }
+        else {
+            updateDataSpacePicker(jpx, jpy);
         }
     }
 
@@ -207,6 +249,32 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, vsCoords);
         app.dSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
         app.dSpacePicker.computePickedGlyphList(app.dCamera);
+    }
+
+    /*------------------ Simbad -------------------------*/
+
+    void enterQueryMode(){
+        querying = true;
+        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+        app.scene.setStatusBarMessage("Select region to query:");
+    }
+
+    void exitQueryMode(){
+        app.scene.setStatusBarMessage(null);
+        querying = false;
+    }
+
+    void fadeOutQueryRegion(){
+        Animation a = am.getAnimationFactory().createTranslucencyAnim(1000,
+                            queryRegionG, 0f, false, IdentityInterpolator.getInstance(),
+                            new EndAction(){
+                                public void execute(Object subject, Animation.Dimension dimension){
+                                    queryRegionG.setTranslucencyValue(Config.QUERY_REGION_ALPHA);
+                                    app.dSpace.removeGlyph(queryRegionG);
+                                    app.scene.setStatusBarMessage(null);
+                                }
+                            });
+        am.startAnimation(a, true);
     }
 
 }

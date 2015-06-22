@@ -280,9 +280,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
                 displayColorSubMenu();
                 return FITSOW.MENU_LAYER;
             }
-            // else if (label == MPM_QUERY){
-            //
-            // }
+            else if (label == MPM_QUERY){
+                app.eh.enterQueryMode();
+            }
         }
         return FITSOW.DATA_LAYER;
     }
@@ -401,7 +401,6 @@ public class MenuEventListener implements ViewListener, PickerListener {
             items[i].setType(Config.T_SPMISc);
         }
     }
-
 
 }
 
