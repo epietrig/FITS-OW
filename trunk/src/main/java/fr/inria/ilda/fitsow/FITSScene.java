@@ -12,7 +12,6 @@ import java.awt.geom.Point2D;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,11 +19,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import fr.inria.zvtm.engine.Java2DPainter;
-import fr.inria.zvtm.engine.SwingWorker;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
-import fr.inria.zvtm.glyphs.VCircle;
-import fr.inria.zvtm.glyphs.VText;
-import fr.inria.zvtm.glyphs.VCross;
 import fr.inria.zvtm.glyphs.Translucent;
 import fr.inria.zvtm.widgets.TranslucentWidget;
 import fr.inria.zuist.engine.SceneManager;
@@ -32,11 +27,6 @@ import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 import fr.inria.zuist.event.ProgressListener;
-
-import fr.inria.ilda.simbad.AstroObject;
-import fr.inria.ilda.simbad.SimbadCatQuery;
-
-import jsky.coords.WorldCoords;
 
 public class FITSScene implements Java2DPainter {
 
@@ -197,58 +187,6 @@ public class FITSScene implements Java2DPainter {
         }
         else {
             wcsStr = EMPTY_STRING;
-        }
-    }
-
-    /* ----------------------- Status bar --------------------- */
-
-    void querySimbad(Point2D.Double center, Point2D.Double onCircle, final JSkyFitsImage img){
-        if (img == null){return;}
-        Point2D.Double centerWCS = img.vs2wcs(center.x, center.y);
-        Point2D.Double onCircleWCS = img.vs2wcs(onCircle.x, onCircle.y);
-        //compute radius in arcmin
-        final WorldCoords wc = new WorldCoords(centerWCS.getX(), centerWCS.getY());
-        WorldCoords wcDummy = new WorldCoords(onCircleWCS.getX(), onCircleWCS.getY());
-        final double distArcMin = wc.dist(wcDummy);
-        //perform catalog query
-        String queryInfo = "Querying Simbad at " + wc + " with a radius of " + Config.ARCMIN_FORMATTER.format(distArcMin) + " arcminutes";
-        app.scene.setStatusBarMessage(queryInfo);
-        // symbolSpace.removeAllGlyphs();
-        new SwingWorker(){
-            @Override public List<AstroObject> construct(){
-                List<AstroObject> objs = null;
-                try{
-                    objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
-                } catch(IOException ioe){
-                    ioe.printStackTrace();
-                } finally {
-                    return objs;
-                }
-            }
-            @Override public void finished(){
-                List<AstroObject> objs = (List<AstroObject>)get();
-                displayQueryResults(objs, img);
-                app.eh.fadeOutQueryRegion();
-            }
-        }.start();
-    }
-
-    void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
-        for(AstroObject obj: objs){
-            Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
-            VCross cr = new VCross(p.x, p.y, 100, 10, 10, Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
-            VText lb = new VText(p.x+10, p.y+10, 101, Config.SIMBAD_AO_COLOR, obj.getIdentifier(), VText.TEXT_ANCHOR_START);
-            app.dSpace.addGlyph(cr);
-            app.dSpace.addGlyph(lb);
-            cr.setStroke(Config.SIMBAD_AO_STROKE);
-            lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
-            lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
-            cr.setOwner(obj);
-            lb.setOwner(obj);
-            img.stick(cr);
-            img.stick(lb);
-            cr.setType(Config.T_ASTRO_OBJ_CR);
-            lb.setType(Config.T_ASTRO_OBJ_LB);
         }
     }
 

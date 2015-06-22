@@ -29,11 +29,6 @@ import fr.inria.zvtm.engine.portals.Portal;
 import fr.inria.zvtm.engine.portals.OverviewPortal;
 import fr.inria.zvtm.engine.Utils;
 
-import fr.inria.zvtm.animation.Animation;
-import fr.inria.zvtm.animation.AnimationManager;
-import fr.inria.zvtm.animation.EndAction;
-import fr.inria.zvtm.animation.interpolation.IdentityInterpolator;
-
 import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VCircle;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
@@ -74,15 +69,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
 
-    Point2D.Double queryRegionCenter;
-    VCircle queryRegionG = new VCircle(0, 0, Config.Z_QUERY_REGION, 1,
-                                       Color.BLACK, Config.QUERY_REGION_COLOR, Config.QUERY_REGION_ALPHA);
-
-    AnimationManager am;
+    SimbadQuery sq;
 
     MVEventListener(FITSOW app){
         this.app = app;
-        am = VirtualSpaceManager.INSTANCE.getAnimationManager();
     }
 
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
@@ -90,12 +80,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         lastJPY = jpy;
         lge = app.dSpacePicker.lastGlyphEntered();
         if (querying){
-            app.dSpace.addGlyph(queryRegionG);
-            queryRegionG.setVisible(false);
-            queryRegionG.sizeTo(1);
-            queryRegionCenter = v.getVCursor().getVSCoordinates(app.dCamera);
-            queryRegionG.moveTo(queryRegionCenter.x, queryRegionCenter.y);
-            queryRegionG.setVisible(true);
+            sq = new SimbadQuery(app);
+            sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera));
         }
         else {
             if (lge != null){
@@ -118,10 +104,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
         if (querying){
             exitQueryMode();
-            Point2D.Double queryRegionRelease = v.getVCursor().getVSCoordinates(app.dCamera);
-            // make query
-            app.scene.querySimbad(queryRegionCenter, queryRegionRelease, ciFITSImage);
-            queryRegionCenter = null;
+            if (sq != null){
+                sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+                sq = null;
+            }
         }
     }
 
@@ -158,9 +144,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             lastJPX = jpx;
             lastJPY = jpy;
         }
-        else if (queryRegionCenter != null){
-            Point2D.Double p = v.getVCursor().getVSCoordinates(app.dCamera);
-            queryRegionG.sizeTo(2*Math.sqrt((p.x-queryRegionCenter.x)*(p.x-queryRegionCenter.x)+(p.y-queryRegionCenter.y)*(p.y-queryRegionCenter.y)));
+        else if (querying && sq != null){
+            sq.setRadius(v.getVCursor().getVSCoordinates(app.dCamera));
         }
         else {
             updateDataSpacePicker(jpx, jpy);
@@ -262,19 +247,6 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     void exitQueryMode(){
         app.scene.setStatusBarMessage(null);
         querying = false;
-    }
-
-    void fadeOutQueryRegion(){
-        Animation a = am.getAnimationFactory().createTranslucencyAnim(1000,
-                            queryRegionG, 0f, false, IdentityInterpolator.getInstance(),
-                            new EndAction(){
-                                public void execute(Object subject, Animation.Dimension dimension){
-                                    queryRegionG.setTranslucencyValue(Config.QUERY_REGION_ALPHA);
-                                    app.dSpace.removeGlyph(queryRegionG);
-                                    app.scene.setStatusBarMessage(null);
-                                }
-                            });
-        am.startAnimation(a, true);
     }
 
 }

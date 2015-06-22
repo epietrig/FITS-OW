@@ -122,6 +122,8 @@ public class Config {
     public static final int Z_CLT_BKG = 100;
     public static final int Z_CLT_BTN = 110;
     public static final int Z_QUERY_REGION = 50;
+    public static final int Z_ASTRO_OBJ_CR = 100;
+    public static final int Z_ASTRO_OBJ_LB = 99;
 
     /* ------------ Glyph types ---------- */
 
@@ -241,6 +243,7 @@ public class Config {
     public static final BasicStroke QUERY_REGION_STROKE = new BasicStroke(2f);
     public static final Color QUERY_REGION_COLOR = Color.RED;
     public static final float QUERY_REGION_ALPHA = .5f;
+    public static final double QUERY_REGION_LB_OFFSET = 1.1;
 
     public static final BasicStroke SIMBAD_AO_STROKE = new BasicStroke(2f);
     public static final Color SIMBAD_AO_COLOR = Color.RED;
