@@ -14,6 +14,8 @@ import java.util.Locale;
 
 import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zvtm.engine.VirtualSpace;
+import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.glyphs.VImage;
 
 import fr.inria.zvtm.cluster.ClusterGeometry;
@@ -34,6 +36,9 @@ public class WallFITSOW extends FITSOW {
     ClusteredView cv;
     ClusterGeometry cg;
 
+    VirtualSpace logoSpace;
+    Camera logoCam;
+
     public WallFITSOW(FOWOptions options){
         super(options);
     }
@@ -41,19 +46,26 @@ public class WallFITSOW extends FITSOW {
     void initGUI(FOWOptions options){
         VirtualSpaceManager.INSTANCE.setMaster("WallFITSOW");
         super.initGUI(options);
+        logoSpace = vsm.addVirtualSpace(VirtualSpace.ANONYMOUS);
+        logoCam = logoSpace.addCamera();
         cg = new ClusterGeometry(options.blockWidth, options.blockHeight, options.numCols, options.numRows);
         Vector ccameras = new Vector(2);
         ccameras.add(zfCamera);
         ccameras.add(dCamera);
         ccameras.add(mnCamera);
         ccameras.add(crCamera);
+        ccameras.add(logoCam);
         cv = new ClusteredView(cg, options.numRows-1, options.numCols, options.numRows, ccameras);
         vsm.addClusteredView(cv);
         cv.setBackgroundColor(Config.BACKGROUND_COLOR);
-        double x = (options.numCols * options.blockWidth - LOGOS.getWidth(null)) / 2;
-        double y = (options.numRows * options.blockHeight - LOGOS.getHeight(null)) / 2;
+        showLogosOnWall();
+    }
+
+    void showLogosOnWall(){
+        double x = (getDisplayWidth() - LOGOS.getWidth(null)) / 2;
+        double y = (getDisplayHeight() - LOGOS.getHeight(null)) / 2;
         VImage logos = new VImage(x, y, 0, LOGOS, 1, .7f);
-        mnSpace.addGlyph(logos);
+        logoSpace.addGlyph(logos);
         logos.setSensitivity(false);
     }
 
