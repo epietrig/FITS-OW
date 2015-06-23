@@ -104,17 +104,6 @@ public class Config {
         PieMenuFactory.setAngle(0);
     }
 
-    /* ------------ Widget geometry and color ---------- */
-    // color lookup table buttons
-    public static final int CLT_BTN_PADDING = 12;
-    public static final int CLT_BTN_W = 200;
-    public static final int CLT_BTN_H = 20;
-    public static final int CLT_BTN_HOFFSET = 6;
-    public static final int CLT_BTN_VOFFSET = 4;
-    public static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
-    public static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
-    public static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
-
     /* ------------ Glyph z-index ---------- */
     // static final int Z_MPMI = 10;
     // static final int Z_SPMI = 12;
@@ -124,6 +113,7 @@ public class Config {
     public static final int Z_QUERY_REGION = 50;
     public static final int Z_ASTRO_OBJ_CR = 100;
     public static final int Z_ASTRO_OBJ_LB = 99;
+    public static final int Z_FITS_IMG = 10;
 
     /* ------------ Glyph types ---------- */
 
@@ -237,6 +227,22 @@ public class Config {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
         JSkyFitsResourceHandler.DEFAULT_COLOR_LOOKUP_TABLE = DEFAULT_COLOR_LOOKUP_TABLE;
     }
+
+    /* ------------ Widget geometry and color ---------- */
+    // color lookup table buttons
+    public static final int CLT_BTN_PADDING = 12;
+    public static final int CLT_BTN_W = 200;
+    public static final int CLT_BTN_H = 20;
+    public static final int CLT_BTN_HOFFSET = 6;
+    public static final int CLT_BTN_VOFFSET = 4;
+    public static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
+    public static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
+    public static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
+
+    public static final double CLT_MENU_W = COLOR_MAPPINGS.length * (CLT_BTN_W + 2*CLT_BTN_PADDING);
+    public static final double CLT_MENU_H = LARGEST_COLOR_MAPPING_CAT * (CLT_BTN_H + 2*CLT_BTN_PADDING);
+
+    public static final double FITS_THUMB_MARGIN = 20;
 
     /* ------------ Simbad queries ---------- */
 

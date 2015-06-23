@@ -58,14 +58,16 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     JSkyFitsImage selectedFITSImage = null;
 
+    String previewedScale = null;
+    String previewedCLT = null;
+
     MenuEventListener(FITSOW app){
         this.app = app;
     }
 
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         if (showingCLTmenu){
-            hideColorSubMenu();
-            app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+            closeColorSubMenu();
         }
     }
 
@@ -181,8 +183,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
         else if (code==KeyEvent.VK_ESCAPE){
             if (showingCLTmenu){
-                hideColorSubMenu();
-                app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+                closeColorSubMenu();
             }
         }
     }
@@ -267,6 +268,10 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (leftOvers.size() > 0){
             app.mnSpace.removeGlyphs(leftOvers.toArray(new Glyph[leftOvers.size()]), true);
         }
+        // XXX following is making the assumption that there is only one possible
+        // subpiemenu: the scale submenu
+        app.scene.hideThumbnails();
+        app.scene.applyScaleToZuistTiles(previewedScale);
     }
 
     short mainPieMenuEvent(Glyph menuItem){
@@ -291,10 +296,22 @@ public class MenuEventListener implements ViewListener, PickerListener {
         int index = subPieMenu.getItemIndex(menuItem);
         if (index != -1){
             String label = subPieMenu.getLabels()[index].getText();
-            if (label == SCALEPM_LOG){app.scene.setScale(selectedFITSImage, Config.SCALE_LOG);}
-            else if (label == SCALEPM_LINEAR){app.scene.setScale(selectedFITSImage, Config.SCALE_LINEAR);}
-            else if (label == SCALEPM_SQRT){app.scene.setScale(selectedFITSImage, Config.SCALE_SQRT);}
-            else if (label == SCALEPM_HISTEQ){app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);}
+            if (label == SCALEPM_LOG){
+                app.scene.setScale(selectedFITSImage, Config.SCALE_LOG);
+                previewedScale = Config.SCALE_LOG;
+            }
+            else if (label == SCALEPM_LINEAR){
+                app.scene.setScale(selectedFITSImage, Config.SCALE_LINEAR);
+                previewedScale = Config.SCALE_LINEAR;
+            }
+            else if (label == SCALEPM_SQRT){
+                app.scene.setScale(selectedFITSImage, Config.SCALE_SQRT);
+                previewedScale = Config.SCALE_SQRT;
+            }
+            else if (label == SCALEPM_HISTEQ){
+                app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);
+                previewedScale = Config.SCALE_HISTEQ;
+            }
         }
     }
 
@@ -332,6 +349,12 @@ public class MenuEventListener implements ViewListener, PickerListener {
     HashMap<String,CLTButton> clt2button = new HashMap(Config.COLOR_MAPPING_GRADIENTS.size(),1);
     String currentCLT;
 
+    public void closeColorSubMenu(){
+        hideColorSubMenu();
+        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+        app.scene.applyCLTToZuistTiles(previewedCLT);
+    }
+
     public void displayColorSubMenu(){
         currentCLT = (selectedFITSImage != null) ? selectedFITSImage.getColorLookupTable() : app.scene.zuistColorMapping;
         Vector<Glyph> cltMenuGs = new Vector(2*Config.COLOR_MAPPING_LIST.length+1);
@@ -339,17 +362,19 @@ public class MenuEventListener implements ViewListener, PickerListener {
         double gridW = Config.COLOR_MAPPINGS.length;
         double cellW = (Config.CLT_BTN_W + 2*Config.CLT_BTN_PADDING);
         double cellH = (Config.CLT_BTN_H + 2*Config.CLT_BTN_PADDING);
-        double bkgW = gridW * cellW;
-        double bkgH = gridH * cellH;
-        VRectangle bkg = new VRectangle(0, 0, Config.Z_CLT_BKG, bkgW, 1.05*bkgH, Color.BLACK, Color.BLACK, .8f);
+        // double bkgW = gridW * cellW;
+        // double bkgH = gridH * cellH;
+        VRectangle bkg = new VRectangle(0, 0, Config.Z_CLT_BKG,
+                                        Config.CLT_MENU_W, 1.05*Config.CLT_MENU_H,
+                                        Color.BLACK, Color.BLACK, .8f);
         bkg.setType(Config.T_CLT_BTN);
         bkg.setSensitivity(false);
         cltMenuGs.add(bkg);
         clt2button.clear();
         for (int i=0;i<Config.COLOR_MAPPINGS.length;i++){
             for (int j=0;j<Config.COLOR_MAPPINGS[i].length;j++){
-                double x = i * cellW - bkgW/2d + cellW/2d;
-                double y = -j * cellH + bkgH/2d - cellH/2d;
+                double x = i * cellW - Config.CLT_MENU_W/2d + cellW/2d;
+                double y = -j * cellH + Config.CLT_MENU_H/2d - cellH/2d;
                 RGBImageFilter f = Config.COLOR_MAPPING_GRADIENTS.get(Config.COLOR_MAPPINGS[i][j]);
                 MultipleGradientPaint mgp = Utils.makeGradient(f);
                 PRectangle filterG = new PRectangle(x, y, Config.Z_CLT_BTN,
@@ -368,6 +393,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
             }
         }
         app.mnSpace.addGlyphs(cltMenuGs.toArray(new Glyph[cltMenuGs.size()]));
+        app.scene.showThumbnails();
         showingCLTmenu = true;
         clt2button.get(currentCLT).select();
     }
@@ -375,6 +401,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
    public void hideColorSubMenu(){
         Vector v = app.mnSpace.getGlyphsOfType(Config.T_CLT_BTN);
         app.mnSpace.removeGlyphs((Glyph[])v.toArray(new Glyph[v.size()]), true);
+        app.scene.hideThumbnails();
         showingCLTmenu = false;
     }
 
@@ -382,6 +409,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (!clt.equals(currentCLT)){
             updateHighlightedCLT(clt);
             app.scene.setColorMapping(selectedFITSImage, clt);
+            previewedCLT = clt;
         }
     }
 
@@ -400,6 +428,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         for (int i=0;i<items.length;i++){
             items[i].setType(Config.T_SPMISc);
         }
+        app.scene.showThumbnails();
     }
 
 }
