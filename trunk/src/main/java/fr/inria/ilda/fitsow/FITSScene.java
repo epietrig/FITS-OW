@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 
 import fr.inria.zvtm.engine.Java2DPainter;
 import fr.inria.zvtm.engine.SwingWorker;
+import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.glyphs.Translucent;
 import fr.inria.zvtm.widgets.TranslucentWidget;
@@ -29,8 +30,9 @@ import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 import fr.inria.zuist.engine.Level;
 import fr.inria.zuist.event.ProgressListener;
+import fr.inria.zvtm.event.PickerListener;
 
-public class FITSScene implements Java2DPainter {
+public class FITSScene implements Java2DPainter, PickerListener {
 
     File SCENE_FILE, SCENE_FILE_DIR;
 
@@ -299,6 +301,12 @@ public class FITSScene implements Java2DPainter {
             wcsStr = EMPTY_STRING;
         }
     }
+
+    /* ----------------------- Zuist scene picker --------------------- */
+
+    public void enterGlyph(Glyph g){}
+
+    public void exitGlyph(Glyph g){}
 
     /* ----------------------- Status bar --------------------- */
 

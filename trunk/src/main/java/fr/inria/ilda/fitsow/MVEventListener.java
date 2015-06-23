@@ -132,8 +132,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void mouseMoved(ViewPanel v, int jpx, int jpy, MouseEvent e){
         currentJPX = jpx;
         currentJPY = jpy;
+        updateZUISTSpacePicker(jpx, jpy);
         updateDataSpacePicker(jpx, jpy);
-        app.scene.updateWCSCoordinates(vsCoords.x, vsCoords.y, ciFITSImage);
+        if (ciFITSImage != null){
+            app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y, ciFITSImage);
+        }
+        else {
+            app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+        }
     }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
@@ -148,6 +154,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             sq.setRadius(v.getVCursor().getVSCoordinates(app.dCamera));
         }
         else {
+            updateZUISTSpacePicker(jpx, jpy);
             updateDataSpacePicker(jpx, jpy);
         }
     }
@@ -228,11 +235,18 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     public void cameraMoved(Camera cam, Point2D.Double coord, double a){}
 
-    Point2D.Double vsCoords = new Point2D.Double();
+    Point2D.Double zvsCoords = new Point2D.Double();
+    Point2D.Double dvsCoords = new Point2D.Double();
+
+    void updateZUISTSpacePicker(int jpx, int jpy){
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.zfCamera, zvsCoords);
+        app.zfSpacePicker.setVSCoordinates(zvsCoords.x, zvsCoords.y);
+        app.zfSpacePicker.computePickedGlyphList(app.zfCamera);
+    }
 
     void updateDataSpacePicker(int jpx, int jpy){
-        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, vsCoords);
-        app.dSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, dvsCoords);
+        app.dSpacePicker.setVSCoordinates(dvsCoords.x, dvsCoords.y);
         app.dSpacePicker.computePickedGlyphList(app.dCamera);
     }
 
