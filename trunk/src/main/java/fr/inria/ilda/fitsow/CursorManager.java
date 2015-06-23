@@ -6,43 +6,43 @@
 
 package fr.inria.ilda.fitsow;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
-import java.awt.Color;
+import javax.swing.Timer;
 
-import fr.inria.zvtm.engine.Camera;
-import fr.inria.zvtm.engine.VirtualSpace;
-
-import fr.inria.ilda.smarties.SmartiesDeviceGestures;
-
+import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 //import ilda.zcsample.cursors.*;
-import fr.inria.ilda.fitsow.cursors.*;
+import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
+import fr.inria.ilda.fitsow.cursors.OlivierCursor;
+import fr.inria.ilda.gestures.CardinalDirection;
+import fr.inria.ilda.smarties.SmartiesDeviceGestures;
+import fr.inria.zvtm.engine.VirtualSpace;
 
 public class CursorManager {
 
-    FITSOW app;
-    Navigation nav;
+	FITSOW app;
+	Navigation nav;
 
-    // space that holds cursors
-    VirtualSpace crSpace;
+	// space that holds cursors
+	VirtualSpace crSpace;
 
-    private HashMap<Object, ZcsDevice> _devices;
+	private HashMap<Object, ZcsDevice> _devices;
 
-    CursorManager(FITSOW app){
-        this.app = app;
-        this.nav = app.nav;
-        this.crSpace = app.crSpace;
+	CursorManager(FITSOW app){
+		this.app = app;
+		this.nav = app.nav;
+		this.crSpace = app.crSpace;
 
-        _devices = new HashMap<Object, ZcsDevice>();
-    }
+		_devices = new HashMap<Object, ZcsDevice>();
+	}
 
-    // --------------------------
+	// --------------------------
 	//
 	public void registerDevice(Object obj, String name){
 		ZcsDevice dev = getDevice(obj, false);
@@ -145,6 +145,7 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur == null){ return; }
 		cur.moveTo(x, y);
+		updateScaleSubMenu(dev, cur, x, y);
 	}
 
 	public void moveCursor(Object obj, int id, double dx, double dy){
@@ -153,6 +154,16 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur == null){ return; }
 		cur.move(dx, dy);
+	}
+
+	public void addCursorDwellListener(Object obj, int id, CursorDwellListener cursorDwellListener) {
+		ZcsCursor cursor = getCursor(obj, id);
+		cursor.addCursorDwellListener(cursorDwellListener);
+	}
+
+	public void removeCursorDwellListener(Object obj, int id, CursorDwellListener cursorDwellListener) {
+		ZcsCursor cursor = getCursor(obj, id);
+		cursor.removeCursorDwellListener(cursorDwellListener);
 	}
 
 	public void endMoveCursor(Object obj, int id){
@@ -183,7 +194,7 @@ public class CursorManager {
 		// CHECK
 		//nav.pan(
 		//	dx*app.getDisplayWidth(), dy*app.getDisplayHeight(), speedFac);
-		
+
 	}
 
 	public void endDrag(Object obj, int id){
@@ -201,6 +212,87 @@ public class CursorManager {
 		if (cur == null){ return; }
 		// do something maybe...
 	}
+
+	double scaleSubMenuX = -1;
+	double scaleSubMenuY = -1;
+	ZcsDevice scaleSubMenuDeviceOwner = null;
+	ZcsCursor cursorSubMenuDeviceOwner = null;
+
+	public void displayScaleSubMenu(Object obj, int id){ 
+		ZcsDevice dev = getDevice(obj);
+		if (dev == null){ return; }
+		double cx = 0.5, cy = 0.5;
+		ZcsCursor cur = dev.cursors.get(id);
+		if (cur != null){
+			cx = cur.x; cy = cur.y;
+		}
+		if(app.getMenuEventHandler().subPieMenu == null) {
+			System.out.println("DISPLAY SUB PIE MENU");
+			app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(cx*app.getDisplayWidth() - app.getDisplayWidth()/2, -cy*app.getDisplayHeight() + app.getDisplayHeight()/2));
+			scaleSubMenuX = cx;
+			scaleSubMenuY = cy;
+			scaleSubMenuDeviceOwner = dev;
+			cursorSubMenuDeviceOwner = cur;
+		}
+	}
+	
+	public void hideScaleSubMenu(Object obj, int id){ 
+		ZcsDevice dev = getDevice(obj);
+		if (dev == null){ return; }
+		ZcsCursor cur = dev.cursors.get(id);
+		if(app.getMenuEventHandler().subPieMenu != null && dev == scaleSubMenuDeviceOwner && cur == cursorSubMenuDeviceOwner) {
+			app.getMenuEventHandler().hideSubPieMenu();
+			System.out.println("HIDE SUB PIE MENU");
+			scaleSubMenuX = -1;
+			scaleSubMenuY = -1;
+			scaleSubMenuDeviceOwner = null;
+			cursorSubMenuDeviceOwner = null;
+		}
+	}
+	
+	public void updateScaleSubMenu(ZcsDevice dev, ZcsCursor cur, double x, double y) { 
+		if(app.getMenuEventHandler().subPieMenu != null && dev == scaleSubMenuDeviceOwner && cur == cursorSubMenuDeviceOwner) {
+			CardinalDirection direction = fr.inria.ilda.gestures.Utils.cardinalDirection(scaleSubMenuX, scaleSubMenuY, x, y);
+			System.out.println("update PIE MENU to direction "+direction);
+			switch(direction) {
+			case NORTH : 
+//				if(!app.getScene().getCurrentScale(null).equals(Config.SCALE_HISTEQ)) {
+					app.getScene().setScale(null, Config.SCALE_HISTEQ);
+					System.out.println("\t --> "+Config.SCALE_HISTEQ);
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_HISTEQ).highlight(true, null);
+//				}
+				break;
+			case SOUTH : 
+//				if(!app.getScene().getCurrentScale(null).equals(Config.SCALE_SQRT)) {
+					app.getScene().setScale(null, Config.SCALE_SQRT);
+					System.out.println("\t --> "+Config.SCALE_SQRT);
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_SQRT).highlight(true, null);
+//				}
+				break;
+			case WEST :
+//				if(!app.getScene().getCurrentScale(null).equals(Config.SCALE_LINEAR)) {
+					app.getScene().setScale(null, Config.SCALE_LINEAR);
+					System.out.println("\t --> "+Config.SCALE_LINEAR);
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LINEAR).highlight(true, null);
+//				}
+				break;
+			case EAST : 
+//				if(!app.getScene().getCurrentScale(null).equals(Config.SCALE_LOG)) {
+					app.getScene().setScale(null, Config.SCALE_LOG);
+					System.out.println("\t --> "+Config.SCALE_LOG);
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LOG).highlight(true, null);
+//				}
+				break;
+			default :
+				break;
+			}
+		}
+	}
+
 
 	public void zoom(Object obj, int id, double f){
 		ZcsDevice dev = getDevice(obj);
@@ -248,18 +340,62 @@ public class CursorManager {
 		//public DragMag linkedDragMag = null;
 		//public double deltax,deltay;
 
+		protected int dwellDuration = 1000; // in ms
+		protected ArrayList<CursorDwellListener> cursorDwellListeners = new ArrayList<CursorDwellListener>();
+		protected ActionListener dwellTimerListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fireDwellEvent(new CursorDwellEvent(ZcsCursor.this));
+			}
+		};
+		protected Timer dwellTimer = new Timer(dwellDuration, dwellTimerListener);
+
+		public void addCursorDwellListener(CursorDwellListener cursorDwellListener) {
+			cursorDwellListeners.add(cursorDwellListener);
+			if(!dwellTimer.isRunning()) {
+				dwellTimer.start();
+			}
+		}
+
+		public void removeCursorDwellListener(CursorDwellListener cursorDwellListener) {
+			cursorDwellListeners.remove(cursorDwellListener);
+			if(cursorDwellListeners.size() == 0 && dwellTimer.isRunning()) {
+				dwellTimer.start();
+			}
+		}
+
+		// TODO synchronize iteration to avoid concurrent modifications
+		protected void fireDwellEvent(CursorDwellEvent cursorDwellEvent) {
+			for (Iterator<CursorDwellListener> iterator = cursorDwellListeners.iterator(); iterator.hasNext();) {
+				CursorDwellListener cursorDwellListener = iterator.next();
+				cursorDwellListener.cursorDwelled(cursorDwellEvent);
+			}
+		}
+
 		public void moveTo(double x, double y)
 		{
+			if(dwellTimer.isRunning()) {
+				dwellTimer.stop();
+			}
+			if(cursorDwellListeners.size() > 0) {
+				dwellTimer.restart();
+			}
+
 			this.x = x; this.y = y;
 			//System.out.println("move "+ x+" "+y);
 			double w = app.getDisplayWidth();
 			double h = app.getDisplayHeight();
 			wc.moveTo(x*w - w/2.0, h/2.0 - y*h);
+
+
 		}
+
+
+
 		public void move(double dx, double dy)
 		{
 			x = x+dx; y = y+dy;
 			wc.moveTo(x, y);
+
 		}
 		public void hide() { wc.setVisible(false); }
 		public void show() {
@@ -273,11 +409,12 @@ public class CursorManager {
 			this.x = x;
 			this.y = y;
 			this.color = c;
+			this.dwellTimer.setRepeats(false);
 
 			wc = new OlivierCursor(
-				crSpace,
-				(!(app.runningOnWall())) ? 2 : 20, (!(app.runningOnWall())) ? 8 : 160,
-				this.color);
+					crSpace,
+					(!(app.runningOnWall())) ? 2 : 20, (!(app.runningOnWall())) ? 8 : 160,
+							this.color);
 			moveTo(x, y);
 		}
 
@@ -287,7 +424,7 @@ public class CursorManager {
 	// ---------------------------------------------------------------------------
 	public  class ZcsDevice
 	{
-		
+
 		public HashMap<Integer, ZcsCursor> cursors;
 
 		public ZcsDevice(String name)
@@ -298,7 +435,7 @@ public class CursorManager {
 		public void createCursor(int id, double x, double y, Color c, boolean hide)
 		{
 			if (c == null) c = Color.RED;
-				
+
 			ZcsCursor cur = new ZcsCursor(x,y,c);
 			cursors.put(id, cur);
 			if (hide) { cur.hide(); }

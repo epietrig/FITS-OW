@@ -265,7 +265,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }.start();
     }
 
-    String getCurrentCLT(JSkyFitsImage img){
+    public String getCurrentCLT(JSkyFitsImage img){
         String currentCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
         if (img != null){
             currentCLT = img.getColorLookupTable();

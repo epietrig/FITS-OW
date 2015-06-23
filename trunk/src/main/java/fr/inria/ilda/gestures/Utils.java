@@ -279,7 +279,27 @@ import java.util.Iterator;
             }
         }
     }
-
+    
+    public static CardinalDirection cardinalDirection(double x1, double y1, double x2, double y2) {
+        if(Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
+            // x-axis is dominant
+            if((x2 - x1) > 0) {
+                return CardinalDirection.EAST;
+            } else {
+                return CardinalDirection.WEST;
+            }
+        } else {
+            // y-axis is dominant
+            if((y2 - y1) > 0) {
+                return CardinalDirection.SOUTH;
+            } if((y2 - y1) < 0) {
+                return CardinalDirection.NORTH;
+            } else {
+                return CardinalDirection.UNKNOWN;
+            }
+        }
+    }
+    
     public static double straightLength(int distance, ArrayList<Point> points) {
         // to avoid problems with change in direction, we consider the longest segment
         // that is along the main cardinal direction
