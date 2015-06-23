@@ -6,11 +6,15 @@
 
 package fr.inria.ilda.fitsow;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
+
 import java.util.Vector;
 import java.util.Locale;
 
 import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zvtm.glyphs.VImage;
 
 import fr.inria.zvtm.cluster.ClusterGeometry;
 import fr.inria.zvtm.cluster.ClusteredView;
@@ -23,6 +27,9 @@ import org.kohsuke.args4j.CmdLineParser;
  */
 
 public class WallFITSOW extends FITSOW {
+
+    static final String LOGO_PATH_2100 = "/images/fits-ow-logos_2100.png";
+    static final Image LOGOS = (new ImageIcon(WallFITSOW.class.getResource(LOGO_PATH_2100))).getImage();
 
     ClusteredView cv;
     ClusterGeometry cg;
@@ -43,6 +50,11 @@ public class WallFITSOW extends FITSOW {
         cv = new ClusteredView(cg, options.numRows-1, options.numCols, options.numRows, ccameras);
         vsm.addClusteredView(cv);
         cv.setBackgroundColor(Config.BACKGROUND_COLOR);
+        double x = (options.numCols * options.blockWidth - LOGOS.getWidth(null)) / 2;
+        double y = (options.numRows * options.blockHeight - LOGOS.getHeight(null)) / 2;
+        VImage logos = new VImage(x, y, 0, LOGOS, 1, .7f);
+        mnSpace.addGlyph(logos);
+        logos.setSensitivity(false);
     }
 
     @Override

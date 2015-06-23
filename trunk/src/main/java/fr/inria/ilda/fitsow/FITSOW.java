@@ -10,15 +10,19 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.ImageIcon;
 
 import java.io.File;
 
@@ -317,27 +321,38 @@ class WEGlassPane extends JComponent implements ProgressListener {
     static final int BAR_WIDTH = 200;
     static final int BAR_HEIGHT = 10;
 
-    static final AlphaComposite GLASS_ALPHA = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.65f);
-    static final Color MSG_COLOR = Color.DARK_GRAY;
-    GradientPaint PROGRESS_GRADIENT = new GradientPaint(0, 0, Color.ORANGE, 0, BAR_HEIGHT, Color.BLUE);
+    static final String TITLE = "FITS-OW";
+    static final Font TITLE_FONT = new Font("Arial", Font.PLAIN, 36);
+    static FontMetrics TITLE_FONT_FM = null;
+    static int TITLE_WIDTH = 0;
+
+    static final String CONTRIBUTORS = "Contributors: Emmanuel Pietriga, Fernando del Campo, Caroline Appert, Olivier Chapuis, Roberto Muñoz, Romain Primet";
+    static final Font CONTRIBUTORS_FONT = new Font("Arial", Font.PLAIN, 10);
+    static FontMetrics CONTRIBUTORS_FONT_FM = null;
+    static int CONTRIBUTORS_WIDTH = 0;
+
+    static final Color MSG_COLOR = Color.WHITE;
+    static final Color BKG_COLOR = Color.BLACK;
+
+    static final String LOGO_PATH_600 = "/images/fits-ow-logos_600.png";
+
+    static final Image LOGOS = new ImageIcon(WEGlassPane.class.getResource(LOGO_PATH_600)).getImage();
 
     static final String EMPTY_STRING = "";
-    String msg = EMPTY_STRING;
-    int msgX = 0;
-    int msgY = 0;
+    // String msg = EMPTY_STRING;
+    // int msgX = 0;
+    // int msgY = 0;
 
     int completion = 0;
     int prX = 0;
     int prY = 0;
     int prW = 0;
 
-    FITSOW application;
-
-    static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
+    FITSOW app;
 
     WEGlassPane(FITSOW app){
         super();
-        this.application = app;
+        this.app = app;
         addMouseListener(new MouseAdapter(){});
         addMouseMotionListener(new MouseMotionAdapter(){});
         addKeyListener(new KeyAdapter(){});
@@ -345,36 +360,45 @@ class WEGlassPane extends JComponent implements ProgressListener {
 
     public void setValue(int c){
         completion = c;
-        prX = application.panelWidth/2-BAR_WIDTH/2;
-        prY = application.panelHeight/2-BAR_HEIGHT/2;
+        prX = app.panelWidth/2-BAR_WIDTH/2;
+        prY = app.panelHeight/2-BAR_HEIGHT/2;
         prW = (int)(BAR_WIDTH * ((float)completion) / 100.0f);
-        PROGRESS_GRADIENT = new GradientPaint(0, prY, Color.LIGHT_GRAY, 0, prY+BAR_HEIGHT, Color.DARK_GRAY);
         repaint(prX, prY, BAR_WIDTH, BAR_HEIGHT);
     }
 
     public void setLabel(String m){
-        msg = m;
-        msgX = application.panelWidth/2-BAR_WIDTH/2;
-        msgY = application.panelHeight/2-BAR_HEIGHT/2 - 10;
-        repaint(msgX, msgY-50, 400, 70);
+        // msg = m;
+        // msgX = app.panelWidth/2-BAR_WIDTH/2;
+        // msgY = app.panelHeight/2-BAR_HEIGHT/2 - 10;
+        // repaint(msgX, msgY-50, 400, 70);
     }
 
     protected void paintComponent(Graphics g){
         Graphics2D g2 = (Graphics2D)g;
-        Rectangle clip = g.getClipBounds();
-        g2.setComposite(GLASS_ALPHA);
-        g2.setColor(Color.WHITE);
-        g2.fillRect(clip.x, clip.y, clip.width, clip.height);
-        g2.setComposite(AlphaComposite.Src);
-        if (msg != EMPTY_STRING){
-            g2.setColor(MSG_COLOR);
-            g2.setFont(GLASSPANE_FONT);
-            g2.drawString(msg, msgX, msgY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (TITLE_FONT_FM == null){
+            TITLE_FONT_FM = g2.getFontMetrics(TITLE_FONT);
+            TITLE_WIDTH = TITLE_FONT_FM.stringWidth(TITLE);
         }
-        g2.setPaint(PROGRESS_GRADIENT);
-        g2.fillRect(prX, prY, prW, BAR_HEIGHT);
+        if (CONTRIBUTORS_FONT_FM == null){
+            CONTRIBUTORS_FONT_FM = g2.getFontMetrics(CONTRIBUTORS_FONT);
+            CONTRIBUTORS_WIDTH = CONTRIBUTORS_FONT_FM.stringWidth(CONTRIBUTORS);
+        }
+        Rectangle clip = g.getClipBounds();
+        g2.setColor(BKG_COLOR);
+        g2.fillRect(clip.x, clip.y, clip.width, clip.height);
         g2.setColor(MSG_COLOR);
+        g2.setFont(TITLE_FONT);
+        g2.drawString(TITLE, app.panelWidth/2-TITLE_WIDTH/2, app.panelHeight/2-100);
+        g2.setFont(CONTRIBUTORS_FONT);
+        g2.drawString(CONTRIBUTORS, app.panelWidth/2-CONTRIBUTORS_WIDTH/2, app.panelHeight/2+200);
+        // if (msg != EMPTY_STRING){
+        //     g2.drawString(msg, msgX, msgY);
+        // }
+        g2.fillRect(prX, prY, prW, BAR_HEIGHT);
         g2.drawRect(prX, prY, BAR_WIDTH, BAR_HEIGHT);
+
+        g2.drawImage(LOGOS, app.panelWidth/2-LOGOS.getWidth(null)/2, app.panelHeight-4*LOGOS.getHeight(null)/2, null);
     }
 
 }
