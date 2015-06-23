@@ -271,7 +271,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
         // XXX following is making the assumption that there is only one possible
         // subpiemenu: the scale submenu
         app.scene.hideThumbnails();
-        app.scene.applyScaleToZuistTiles(previewedScale);
+        if (selectedFITSImage == null){
+            app.scene.applyScaleToZuistTiles(previewedScale);            
+        }
     }
 
     short mainPieMenuEvent(Glyph menuItem){
@@ -352,7 +354,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
     public void closeColorSubMenu(){
         hideColorSubMenu();
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-        app.scene.applyCLTToZuistTiles(previewedCLT);
+        if (selectedFITSImage == null){
+            app.scene.applyCLTToZuistTiles(previewedCLT);
+        }
     }
 
     public void displayColorSubMenu(){
@@ -393,7 +397,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
             }
         }
         app.mnSpace.addGlyphs(cltMenuGs.toArray(new Glyph[cltMenuGs.size()]));
-        app.scene.showThumbnails();
+        if (selectedFITSImage == null){
+            app.scene.showThumbnails();
+        }
         showingCLTmenu = true;
         clt2button.get(currentCLT).select();
     }
@@ -428,7 +434,9 @@ public class MenuEventListener implements ViewListener, PickerListener {
         for (int i=0;i<items.length;i++){
             items[i].setType(Config.T_SPMISc);
         }
-        app.scene.showThumbnails();
+        if (selectedFITSImage == null){
+            app.scene.showThumbnails();
+        }
     }
 
 }
