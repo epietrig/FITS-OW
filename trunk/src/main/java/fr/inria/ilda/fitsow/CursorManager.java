@@ -392,6 +392,7 @@ public class CursorManager {
 				vsCoords.y = h/2.0 - y*h;
 				pickerVS.setVSCoordinates(vsCoords.x, vsCoords.y);
 			}
+			System.out.println("hop: "+x+" "+y+" "+vsCoords.x+" "+vsCoords.y+ " " + w+" "+h);
 
 			if(app.getMenuEventHandler().subPieMenu != null) {
 				pickerVS.computePickedGlyphList(app.mnCamera);

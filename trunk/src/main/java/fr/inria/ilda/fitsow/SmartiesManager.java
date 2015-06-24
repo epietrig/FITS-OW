@@ -56,10 +56,10 @@ class SmartiesManager implements Observer {
 		SmartiesWidget sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Reset Recognizer", 5, 4, 2, 3);
 		sw2.handler = new EventResetRecognizer();
 
-        sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 5, 1, 4, 1);
-        sw.handler = new ColorMenuHandler();
+        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 5, 1, 4, 1);
+        sw2.handler = new ColorMenuHandler();
 
-        sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
+        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
         //sw.handler = new ColorMenuHandler();
 
 	    smarties.addObserver(this);

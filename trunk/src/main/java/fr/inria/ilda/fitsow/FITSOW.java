@@ -127,6 +127,8 @@ public class FITSOW {
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
 
+        new WallTouchManager(this, cm);
+        
         if(options.smarties) {
     		GestureManager gestureManager = GestureManager.getInstance();
     		SmartiesManager msmarties = new SmartiesManager(
