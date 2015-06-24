@@ -73,6 +73,12 @@ public class SimbadQuery {
         if (img == null){return;}
         Point2D.Double centerWCS = img.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         Point2D.Double onCircleWCS = img.vs2wcs(onCircle.x, onCircle.y);
+        if (centerWCS == null || onCircleWCS == null){
+            String queryInfo = "Invalid query";
+            app.scene.setStatusBarMessage(queryInfo);
+            fadeOutQueryRegion();
+            return;
+        }
         //compute radius in arcmin
         final WorldCoords wc = new WorldCoords(centerWCS.getX(), centerWCS.getY());
         WorldCoords wcDummy = new WorldCoords(onCircleWCS.getX(), onCircleWCS.getY());

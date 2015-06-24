@@ -114,7 +114,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
                     sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
                 }
                 else {
-                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera), (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
+                                   (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
                 }
                 sq = null;
             }
@@ -148,7 +149,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y, ciFITSImage);
         }
         else {
-            app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+            try {
+                app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+            }
+            catch (Exception ex){
+                // be silent about it, only happens at init time when getting
+                // mouse moved events before pickers have been created.
+            }
         }
     }
 
