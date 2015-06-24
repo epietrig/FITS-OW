@@ -58,9 +58,6 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     JSkyFitsImage selectedFITSImage = null;
 
-    String previewedScale = null;
-    String previewedCLT = null;
-
     MenuEventListener(FITSOW app){
         this.app = app;
     }
@@ -272,7 +269,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         // subpiemenu: the scale submenu
         app.scene.hideThumbnails();
         if (selectedFITSImage == null){
-            app.scene.applyScaleToZuistTiles(previewedScale);            
+            app.scene.applyScaleToZuistTiles();
         }
     }
 
@@ -300,19 +297,15 @@ public class MenuEventListener implements ViewListener, PickerListener {
             String label = subPieMenu.getLabels()[index].getText();
             if (label == SCALEPM_LOG){
                 app.scene.setScale(selectedFITSImage, Config.SCALE_LOG);
-                previewedScale = Config.SCALE_LOG;
             }
             else if (label == SCALEPM_LINEAR){
                 app.scene.setScale(selectedFITSImage, Config.SCALE_LINEAR);
-                previewedScale = Config.SCALE_LINEAR;
             }
             else if (label == SCALEPM_SQRT){
                 app.scene.setScale(selectedFITSImage, Config.SCALE_SQRT);
-                previewedScale = Config.SCALE_SQRT;
             }
             else if (label == SCALEPM_HISTEQ){
                 app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);
-                previewedScale = Config.SCALE_HISTEQ;
             }
         }
     }
@@ -355,7 +348,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         hideColorSubMenu();
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
         if (selectedFITSImage == null){
-            app.scene.applyCLTToZuistTiles(previewedCLT);
+            app.scene.applyCLTToZuistTiles();
         }
     }
 
@@ -415,7 +408,6 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (!clt.equals(currentCLT)){
             updateHighlightedCLT(clt);
             app.scene.setColorMapping(selectedFITSImage, clt);
-            previewedCLT = clt;
         }
     }
 

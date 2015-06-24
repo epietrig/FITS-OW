@@ -221,7 +221,7 @@ public class Config {
         COLOR_MAPPING_GRADIENTS.put("Stairs9", new Stairs9Filter());
     }
 
-    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.LINEAR;
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = SCALES.get(SCALE_LINEAR);
     public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
     static {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;

@@ -52,6 +52,8 @@ public class FITSScene implements Java2DPainter, PickerListener {
     // used to show previews of what a change in scale algo or color lookup table will be like
     // on representative images from the ZUIST scene
     JSkyFitsImage[] fitsThumbs;
+    String previewedScale = Config.SCALE_LINEAR;
+    String previewedCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
 
     FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
@@ -190,6 +192,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
             // doing it on the background ZUIST scene
             // do it on the thumbnail previews only,
             // the new scale will be applied to the tiles only when the change is confirmed
+            previewedScale = scale;
             if (fitsThumbs != null){
                 JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
                 for (JSkyFitsImage timg:fitsThumbs){
@@ -199,8 +202,8 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }
     }
 
-    public void applyScaleToZuistTiles(String scale){
-        final JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
+    public void applyScaleToZuistTiles(){
+        final JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(previewedScale);
         new SwingWorker(){
             @Override public Object construct(){
                 for (ObjectDescription desc:sm.getObjectDescriptions()){
@@ -213,6 +216,22 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }.start();
     }
 
+    // public String getCurrentScale(JSkyFitsImage img){
+    //     int currentScale = Config.DEFAULT_SCALE;
+    //     if (img != null){
+    //         currentScale = img.getScale();
+    //     }
+    //     else {
+    //         for (ObjectDescription desc:sm.getObjectDescriptions()){
+    //             if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+    //                 currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return currentCLT;
+    // }
+
     /* ---------------- Color mapping ---------------------- */
 
     public void setColorMapping(JSkyFitsImage img, String clt){
@@ -224,6 +243,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
             // doing it on the background ZUIST scene
             // do it on the thumbnail previews only,
             // the new CLT will be applied to the tiles only when the change is confirmed
+            previewedCLT = clt;
             if (fitsThumbs != null){
                 for (JSkyFitsImage timg:fitsThumbs){
                     timg.setColorLookupTable(clt, true);
@@ -232,12 +252,12 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }
     }
 
-    public void applyCLTToZuistTiles(final String clt){
+    public void applyCLTToZuistTiles(){
         new SwingWorker(){
             @Override public Object construct(){
                 for (ObjectDescription desc:sm.getObjectDescriptions()){
                     if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                        ((JSkyFitsImageDescription)desc).setColorLookupTable(clt, true);
+                        ((JSkyFitsImageDescription)desc).setColorLookupTable(previewedCLT, true);
                     }
                 }
                 return null;
@@ -251,12 +271,13 @@ public class FITSScene implements Java2DPainter, PickerListener {
             currentCLT = img.getColorLookupTable();
         }
         else {
-            for (ObjectDescription desc:sm.getObjectDescriptions()){
-                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                    currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
-                    break;
-                }
-            }
+            // for (ObjectDescription desc:sm.getObjectDescriptions()){
+            //     if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+            //         currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+            //         break;
+            //     }
+            // }
+            currentCLT = previewedCLT;
         }
         return currentCLT;
     }
