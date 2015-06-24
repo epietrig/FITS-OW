@@ -28,7 +28,7 @@ import fr.inria.zvtm.engine.Java2DPainter;
 
 public class GestureLayer implements IGestureEventListener, Java2DPainter, ActionListener {
 
-	public static int CM_STEP = 40; 
+	public static int CM_STEP = 40;
 	private static Font FONT_DEBUG = new Font("Verdana", Font.PLAIN, 30);
 
 	protected FITSOW app;
@@ -108,7 +108,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 			}
 
 			if(mtEvent.getFingers() == 2 && gestureControl == GestureControl.NONE) {
-				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, 4.0);
+				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, Config.PAN_GESTURE_GAIN);
 			} else if(mtEvent.getFingers() == 3) {
 				if(gestureControl == GestureControl.ZOOM_IN || gestureControl == GestureControl.ZOOM_OUT) {
 					if(mtEvent instanceof MTCircularGesture) {
@@ -136,7 +136,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 						MTFreeCircularGesture mtFreeCircularEvent = (MTFreeCircularGesture)event;
 						gestureControl = mtFreeCircularEvent.isClockwise() ? GestureControl.NEXT_COLOR_MAPPING : GestureControl.PREV_COLOR_MAPPING;
 						app.getMenuEventHandler().displayColorSubMenu();
-					} 
+					}
 				}
 				InputSource inputSource = mtEvent.getInputSource();
 				String inputSourceID = inputSource.getID();
@@ -144,7 +144,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 				AbstractInputDevice device = inputSource.getDevice();
 				if(gestureControl == GestureControl.ZOOM_IN) {
 					// for Olivier
-					// adapt the method call below 
+					// adapt the method call below
 					//app.getNavigation().czoomIn(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
 					app.getCursorManager().zoom(device, cursorID, 1/1.005);
 				} else if(gestureControl == GestureControl.ZOOM_OUT) {
@@ -172,7 +172,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 
 	protected void updateScale(CardinalDirection direction) {
 		switch(direction) {
-		case NORTH : 
+		case NORTH :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_NORTH)) {
 				app.getScene().setScale(null, Config.SCALE_HISTEQ);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
@@ -180,7 +180,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 				gestureControl = GestureControl.SCALE_SELECTION_NORTH;
 			}
 			break;
-		case SOUTH : 
+		case SOUTH :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_SOUTH)) {
 				app.getScene().setScale(null, Config.SCALE_SQRT);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
@@ -196,7 +196,7 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 				gestureControl = GestureControl.SCALE_SELECTION_WEST;
 			}
 			break;
-		case EAST : 
+		case EAST :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_EAST)) {
 				app.getScene().setScale(null, Config.SCALE_LOG);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();

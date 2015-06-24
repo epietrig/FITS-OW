@@ -23,6 +23,7 @@ import fr.inria.zvtm.engine.PickerVS;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.event.PickerListener;
 import fr.inria.zvtm.glyphs.Glyph;
+import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 public class CursorManager {
 
@@ -50,7 +51,7 @@ public class CursorManager {
 			System.out.println("CursorManager[registerDevice:]: device already registred "+ obj);
 			return;
 		}
-		_devices.put(obj.hashCode(), new ZcsDevice(name)); 
+		_devices.put(obj.hashCode(), new ZcsDevice(name));
 		System.out.println("CursorManager[registerDevice]: registered "+ obj);
 	}
 
@@ -71,11 +72,11 @@ public class CursorManager {
 		return dev;
 	}
 
-	private ZcsCursor getCursor(Object obj, int id){
+	public ZcsCursor getCursor(Object obj, int id){
 		return getCursor(obj, id, true);
 	}
 
-	private ZcsCursor getCursor(Object obj, int id, boolean warn){
+	public ZcsCursor getCursor(Object obj, int id, boolean warn){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return null; }
 		ZcsCursor cur = dev.cursors.get(id);
@@ -162,6 +163,24 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur == null){ return; }
 		// do something maybe...
+	}
+
+	public void startCircularSelection(Object obj, int id){
+		ZcsCursor cur = getCursor(obj, id);
+		if (cur == null){ return; }
+		cur.startCircularSelection();
+	}
+
+	public void resizeCircularSelection(Object obj, int id){
+		ZcsCursor cur = getCursor(obj, id);
+		if (cur == null){ return; }
+		cur.resizeCircularSelection();
+	}
+
+	public void endCircularSelection(Object obj, int id){
+		ZcsCursor cur = getCursor(obj, id);
+		if (cur == null){ return; }
+		cur.endCircularSelection();
 	}
 
 	public void startDrag(Object obj, int id){
@@ -339,8 +358,10 @@ public class CursorManager {
 		protected boolean down = false;
 		protected long downTime = -1;
 
-		protected PickerVS pickerVS;
+		protected PickerVS mnSpacePicker, zfSpacePicker, dSpacePicker;
 		protected Point2D.Double vsCoords = new Point2D.Double();
+
+		protected SimbadQuery sq;
 
 		public ZcsCursor(double x, double y, Color c) {
 			this.x = x;
@@ -356,6 +377,19 @@ public class CursorManager {
 			pickerVS = new PickerVS();
 			app.mnSpace.registerPicker(pickerVS);
 			pickerVS.setListener(this);
+
+			zfSpacePicker = new PickerVS();
+			app.zfSpace.registerPicker(zfSpacePicker);
+			zfSpacePicker.setListener(this);
+
+			dSpacePicker = new PickerVS();
+			app.dSpace.registerPicker(dSpacePicker);
+			dSpacePicker.setListener(this);
+
+			mnSpacePicker = new PickerVS();
+			app.mnSpace.registerPicker(mnSpacePicker);
+			mnSpacePicker.setListener(this);
+
 			moveTo(x, y);
 		}
 
@@ -371,7 +405,7 @@ public class CursorManager {
 		public void up() {
 			down = false;
 			setCursorDwellListener(null);
-			
+
 			if((System.currentTimeMillis() -  downTime) < 200 && app.getMenuEventHandler().showingCLTmenu) { // tap time is set to 200ms
 				app.getMenuEventHandler().hideColorSubMenu();
 				app.getMenuEventHandler().closeColorSubMenu();
@@ -381,7 +415,7 @@ public class CursorManager {
 				dwellTimer.stop();
 			}
 			if(app.getMenuEventHandler().mainPieMenu != null) {
-				Glyph g = pickerVS.lastGlyphEntered();
+				Glyph g = mnSpacePicker.lastGlyphEntered();
 				short layerToActivate = FITSOW.DATA_LAYER;
 				if (g != null){
 					if (g.getType() == Config.T_MPMI){
@@ -449,18 +483,20 @@ public class CursorManager {
 			double w = app.getDisplayWidth();
 			double h = app.getDisplayHeight();
 			wc.moveTo(x*w - w/2.0, h/2.0 - y*h);
-			if(pickerVS != null) {
+			if(mnSpacePicker != null) {
 				vsCoords.x = x*w - w/2.0;
 				vsCoords.y = h/2.0 - y*h;
-				pickerVS.setVSCoordinates(vsCoords.x, vsCoords.y);
+				System.out.println("xxx "+x+" "+y +" "+w+" "+h);
+				System.out.println(vsCoords.x+" "+vsCoords.y);
+				mnSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
 			}
 
 			if(app.getMenuEventHandler().subPieMenu != null) {
-				pickerVS.computePickedGlyphList(app.mnCamera, false);
+				mnSpacePicker.computePickedGlyphList(app.mnCamera, false);
 			} else if(app.getMenuEventHandler().mainPieMenu != null) {
-				pickerVS.computePickedGlyphList(app.mnCamera, false);
+				mnSpacePicker.computePickedGlyphList(app.mnCamera, false);
 			} else if(app.getMenuEventHandler().showingCLTmenu) {
-				pickerVS.computePickedGlyphList(app.mnCamera, false);
+				mnSpacePicker.computePickedGlyphList(app.mnCamera, false);
 			}
 		}
 
@@ -469,14 +505,60 @@ public class CursorManager {
 		//			wc.moveTo(x, y);
 		//		}
 
-		public void hide() { 
-			wc.setVisible(false); 
+		public void hide() {
+			wc.setVisible(false);
 		}
 
 		public void show() {
 			wc.setVisible(true);
 		}
 		public void dispose() { wc.dispose(); }
+
+		public double[] getCoordsInZfSpace() {
+			double jpx = x * app.getDisplayWidth();
+			double jpy = y * app.getDisplayHeight();
+			double[] vxy = app.nav.windowToViewCoordinates(jpx, jpy, app.zfCamera);
+			return vxy;
+		}
+
+		public void startCircularSelection() {
+			sq = new SimbadQuery(app);
+			double[] vxy = getCoordsInZfSpace();
+			sq = new SimbadQuery(app);
+			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
+			// if (ciFITSImage != null){
+			// 	sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+			// }
+			// else {
+
+				sq.setCenter(new Point2D.Double(vxy[0], vxy[1]),
+							(JSkyFitsImage)(zfSpacePicker.lastGlyphEntered()));
+			// }
+		}
+
+		public void resizeCircularSelection() {
+			double[] vxy = getCoordsInZfSpace();
+			sq.setRadius(new Point2D.Double(vxy[0], vxy[1]));
+			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
+		}
+
+		public void endCircularSelection() {
+			double[] vxy = getCoordsInZfSpace();
+			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
+			if (sq != null){
+                // if (ciFITSImage != null){
+                //     sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+                // }
+                // else {
+                    sq.querySimbad(new Point2D.Double(vxy[0], vxy[1]),
+                                   (JSkyFitsImage)(zfSpacePicker.lastGlyphEntered()));
+                // }
+                sq = null;
+            }
+		}
 
 		@Override
 		public void enterGlyph(Glyph g) {
@@ -515,7 +597,7 @@ public class CursorManager {
 			else {
 				if (app.getMenuEventHandler().mainPieMenu != null && g == app.getMenuEventHandler().mainPieMenu.getBoundary()){
 					// crossing the main pie menu's trigger
-					Glyph lge = pickerVS.lastGlyphEntered();
+					Glyph lge = mnSpacePicker.lastGlyphEntered();
 					if (lge != null && lge.getType() == Config.T_MPMI){
 						if (app.getMenuEventHandler().displaySubPieMenu(lge, new Point2D.Double(vsCoords.x, vsCoords.y))){
 							app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
