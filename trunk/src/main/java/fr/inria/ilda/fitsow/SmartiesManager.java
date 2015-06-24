@@ -47,13 +47,18 @@ class SmartiesManager implements Observer {
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
 	    
-	    smarties.initWidgets(12,6);
-		SmartiesWidget sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 3, 4, 2, 3);
-	    sw.handler = new EventGlobalView();
-	        
-	    countWidget++;
-	    smarties.addObserver(this);
+	    smarties.initWidgets(12,2);
 
+		SmartiesWidget sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 1, 1, 4, 1);
+	    sw.handler = new GlobalViewHandler();
+
+        sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 5, 1, 4, 1);
+        sw.handler = new ColorMenuHandler();
+
+        sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
+        //sw.handler = new ColorMenuHandler();
+
+	    smarties.addObserver(this);
 	    smarties.setRawTouchEventsConf(true);
 		
 	    smarties.Run();
@@ -238,11 +243,12 @@ class SmartiesManager implements Observer {
                 }
                 else{
                 	cur = nullCur;
-                	x = se.x; y = se.y;
+                	//x = se.x; y = se.y;
+                	x = 0.5; y = 0.5;
                 }
                 if (se.d>0){
                 	double f = cur.prevMFPinchD/se.d;
-                	System.out.println("zoom: "+ se.id+" "+x+" "+y+" "+cur.prevMFPinchD+" "+se.d + " "+f);
+                	//System.out.println("zoom: "+ se.id+" "+x+" "+y+" "+cur.prevMFPinchD+" "+se.d + " "+f);
                 	inputManager.zoom(this, se.id, f, x,y);
                 }
                 cur.prevMFPinchD = se.d;
@@ -260,10 +266,18 @@ class SmartiesManager implements Observer {
         }
 	}
 
-    class EventGlobalView implements SmartiesWidgetHandler{
+    class GlobalViewHandler implements SmartiesWidgetHandler{
         public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
             System.out.println("GlobalView");
             nav.getGlobalView(null);
+            return true;
+        }
+    }
+
+    class ColorMenuHandler implements SmartiesWidgetHandler{
+        public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+            System.out.println("ColorMenu");
+            application.meh.displayColorSubMenu();
             return true;
         }
     }
