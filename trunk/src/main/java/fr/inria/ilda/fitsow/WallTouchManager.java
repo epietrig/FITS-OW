@@ -126,7 +126,7 @@ public void update(Observable obj, Object arg)
 			System.out.println("SimpleTap");
 			//cursorManager.createTouchCursor(this, 0, ee.x, ee.y, Color.BLUE);
 			cursorManager.createCursor(this, 0, ee.x, ee.y, Color.BLUE);
-			//cursorManager.tap(this, 0, ee.x, ee.y, ee.contacts);
+			cursorManager.tap(this, 0, ee.x, ee.y, ee.contacts);
 			cursorManager.removeCursor(this, 0);
 			break;
 		}

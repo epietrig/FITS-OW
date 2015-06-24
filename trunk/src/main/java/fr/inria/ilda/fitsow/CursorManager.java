@@ -219,6 +219,29 @@ public class CursorManager {
 		}
 	}
 
+	public void tap(Object obj, int id, double x, double y, e.contacts) {
+		ZcsCursor cursor = getCursor(obj, id);
+		if(cursor == null) { return; }
+		double xx = x*app.getDisplayWidth() - app.getDisplayWidth()/2;
+		double yy = -y*app.getDisplayHeight() + app.getDisplayHeight()/2);
+		if(app.getMenuEventHandler().mainPieMenu == null) {
+			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy);
+		}
+		else{
+			// now we pick
+			pickerVS.setVSCoordinates(vsCoords.x, vsCoords.y);
+			if(app.getMenuEventHandler().subPieMenu != null) {
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
+			} else if(app.getMenuEventHandler().mainPieMenu != null) {
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
+			} else if(app.getMenuEventHandler().showingCLTmenu) {
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
+			}
+			Glyph g = pickerVS.lastGlyphEntered();
+			if ()
+		}
+	}
+
 	// ZOOM MANAGEMENT
 
 	public void zoom(Object obj, int id, double f){
@@ -288,7 +311,7 @@ public class CursorManager {
 
 			wc = new OlivierCursor(
 					crSpace,
-					(!(app.runningOnWall())) ? 2 : 20, (!(app.runningOnWall())) ? 8 : 160,
+					(!(app.runningOnWall())) ? 2 : 8, (!(app.runningOnWall())) ? 16 : 100,
 							this.color);
 			moveTo(x, y);
 

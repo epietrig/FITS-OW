@@ -1,10 +1,9 @@
 cmdlines.txt
 
 
-olivier@opale4:~/src/zvtm/FITS-OW/trunk$ ./wilder_all_run.sh -ip=144 --  -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
+## change 144 to your ip
+
+./wilder_all_run.sh -ip=144 --  -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
 
 
-./local_run.sh -fitsDir /media/ssd/Demos/zvtm/coadd_AIT_shrink -zfits /media/ssd/Demos/tm/coadd_AIT_shrink/scene.xml  -smarties
-
-
-./run.sh  -fitsDir /home/olivier/bigimages/zuist/fits/ -fits 502nmos.zip
+./local_run.sh -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
