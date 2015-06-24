@@ -46,7 +46,7 @@ class SmartiesManager implements Observer {
 			public void cursorDwelled(CursorDwellEvent event) {
 				System.out.println("DWELL");
 				if(activePuck != null) {
-					inputManager.displayScaleSubMenu(SmartiesManager.this, activePuck.id);
+					inputManager.displayMainMenu(SmartiesManager.this, activePuck.id);
 				}
 			}
 		};
@@ -140,9 +140,8 @@ class SmartiesManager implements Observer {
 			//				System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
 			if(activePuck != null) {
 				inputManager.removeCursorDwellListener(this, se.id, cursorDwellListener);
-//				inputManager.hideScaleSubMenu(SmartiesManager.this, activePuck.id);
-				inputManager.hideScaleSubMenu(this, activePuck.id);
 				inputManager.up(this, se.id);
+				inputManager.hideMainMenu(this, activePuck.id);
 			}
 			break;
 		}

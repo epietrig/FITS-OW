@@ -222,7 +222,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         displayMainPieMenu(vsCoords);
     }
 
-    void displayMainPieMenu(Point2D.Double coords){
+    public void displayMainPieMenu(Point2D.Double coords){
         PieMenuFactory.setSensitivityRadius(0.6);
         PieMenuFactory.setRadius(140);
         PieMenuFactory.setTranslucency(0.7f);
@@ -234,7 +234,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
     }
 
-    void hideMainPieMenu(){
+    public void hideMainPieMenu(){
         if (mainPieMenu == null){return;}
         mainPieMenu.destroy(0);
         mainPieMenu = null;

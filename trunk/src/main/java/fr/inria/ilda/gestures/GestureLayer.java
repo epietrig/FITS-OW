@@ -74,6 +74,9 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 			dwellTimer3Fingers.restart();
 		}
 		if((event instanceof MTStopGestureEvent) || (event instanceof MTStartGestureEvent)) {
+			if(gestureControl == GestureControl.NEXT_COLOR_MAPPING || gestureControl == GestureControl.PREV_COLOR_MAPPING) {
+				app.getMenuEventHandler().closeColorSubMenu();
+			}
 			traceLength = 0;
 			traceLengthIncrement = 0;
 			traceLengthLastCMSetting = 0;
