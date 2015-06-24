@@ -116,6 +116,21 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		recentEvents.clear();
 	}
 
+	public void forceReset() {
+		ArrayList<Finger> fingersInContact = getFingersInContact();
+		for (Iterator<Finger> iterator = fingersInContact.iterator(); iterator.hasNext();) {
+			Finger finger = iterator.next();
+			fingerUp(finger.getID());
+		}
+		state = GestureStateEnum.IDLE; 	
+		MTStopGestureEvent stopEvent = new MTStopGestureEvent(null);
+		stopEvent.setRecognizerSource(this);
+		for (IGestureEventListener listener : listeners) {
+			listener.gestureOccured(stopEvent);
+		}
+		recentEvents.clear();
+	}
+	
 	public void fingerDown(String id, Point position){
 		//    	System.out.println("fingerDown "+id+" x "+position.x+" y "+position.y);
 		for (Entry<String, Finger> entry : fingers.entrySet()) {

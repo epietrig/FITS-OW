@@ -7,6 +7,7 @@ import java.util.Observer;
 import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
 import fr.inria.ilda.gesture.GestureManager;
+import fr.inria.ilda.gestures.MTRecognitionEngine;
 import fr.inria.ilda.smarties.SmartiesDeviceGestures;
 import fr.lri.smarties.libserver.Smarties;
 import fr.lri.smarties.libserver.SmartiesColors;
@@ -33,6 +34,8 @@ class SmartiesManager implements Observer {
 	SmartiesPuck activePuck = null;
 	int fingerCount = 0;
 	long lastPuckSelectionTime = -1;
+	
+	MTRecognitionEngine mtRecognizer = null;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
 
@@ -46,8 +49,10 @@ class SmartiesManager implements Observer {
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
 
 		smarties.initWidgets(12,6);
-		SmartiesWidget sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 3, 4, 2, 3);
-		sw.handler = new EventGlobalView();
+		SmartiesWidget sw1 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 3, 4, 2, 3);
+		sw1.handler = new EventGlobalView();
+		SmartiesWidget sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Reset Recognizer", 5, 4, 2, 3);
+		sw2.handler = new EventResetRecognizer();
 
 		countWidget++;
 		smarties.addObserver(this);
@@ -63,6 +68,10 @@ class SmartiesManager implements Observer {
 		myCursor(){
 			prevMFPinchD = prevMFMoveX = prevMFMoveY = 0;
 		}
+	}
+	
+	public void setGestureRecognizer(MTRecognitionEngine mtRecognizer) {
+		this.mtRecognizer = mtRecognizer;
 	}
 
 	public void update(Observable obj, Object arg)
@@ -294,6 +303,16 @@ class SmartiesManager implements Observer {
 		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
 			System.out.println("GlobalView");
 			nav.getGlobalView(null);
+			return true;
+		}
+	}
+	
+	class EventResetRecognizer implements SmartiesWidgetHandler{
+		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+			System.out.println("ResetRecognizer");
+			if(mtRecognizer != null) {
+				mtRecognizer.forceReset();
+			}
 			return true;
 		}
 	}

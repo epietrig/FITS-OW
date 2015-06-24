@@ -142,25 +142,6 @@ public class FITSOW {
     		gestureManager.registerDevice(tuioDevice);
     		tuioDevice.connect();
 
-//    		gestureManager.registerSegmenter(new AbstractSegmenter() {
-//    			private long lastTimestamp = 0;
-//				public void update(long timestamp) {
-//					GestureManager gm = GestureManager.getInstance();
-//					if (lastTimestamp == 0) lastTimestamp = timestamp-GestureManager.getInstance().deltaUpdate;
-//					synchronized (gm.lockEvents) {
-//						final List <AbstractInputEvent> events = gm.getEvents(lastTimestamp, timestamp);
-//						if (events != null){
-//					        Iterator<AbstractInputEvent> it = events.iterator();
-//					        while (it.hasNext()) {
-//					        	AbstractInputEvent inputEvent = it.next();
-//					        	System.out.println(inputEvent.source.getDevice().getID() + " - " + inputEvent.source.getID());
-//							}
-//						}
-//						lastTimestamp = timestamp;
-//					}
-//				}
-//			});
-
     		SegmenterTouch segmenter = new SegmenterTouch();
     		gestureManager.registerSegmenter(segmenter);
     		MTRecognitionEngine mtRecognizer = new MTRecognitionEngine("MTG");
