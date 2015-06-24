@@ -395,11 +395,11 @@ public class CursorManager {
 			System.out.println("hop: "+x+" "+y+" "+vsCoords.x+" "+vsCoords.y+ " " + w+" "+h);
 
 			if(app.getMenuEventHandler().subPieMenu != null) {
-				pickerVS.computePickedGlyphList(app.mnCamera);
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
 			} else if(app.getMenuEventHandler().mainPieMenu != null) {
-				pickerVS.computePickedGlyphList(app.mnCamera);
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
 			} else if(app.getMenuEventHandler().showingCLTmenu) {
-				pickerVS.computePickedGlyphList(app.mnCamera);
+				pickerVS.computePickedGlyphList(app.mnCamera, false);
 			}
 		}
 

@@ -94,15 +94,19 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 			app.getView().repaint();
 		} else {
 			ArrayList<Finger> freeFingers = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFreeFingersWithoutId();
+			ArrayList<Finger> fingersInContact = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFingersInContact();
 			double previousTrace = traceLength;
 			traceLength = 0;
 			deltaMove.setLocation(0, 0);
 			traceLengthIncrement = 0;
 			if(freeFingers.size() > 0) {
 				traceLength = freeFingers.get(0).getTraceLength();
-				deltaMove = freeFingers.get(0).getLastMove();
 				traceLengthIncrement = traceLength - previousTrace;
 			}
+			if(fingersInContact.size() > 0) {
+				deltaMove = fingersInContact.get(0).getLastMove();
+			}
+
 			if(mtEvent.getFingers() == 2 && gestureControl == GestureControl.NONE) {
 				app.getNavigation().pan(app.getZFCamera(), -deltaMove.x, deltaMove.y, 4.0);
 			} else if(mtEvent.getFingers() == 3) {

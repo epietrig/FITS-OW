@@ -208,7 +208,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
     void updateMenuSpacePicker(int jpx, int jpy){
         app.mView.fromPanelToVSCoordinates(jpx, jpy, app.mnCamera, vsCoords);
         app.mnSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
-        app.mnSpacePicker.computePickedGlyphList(app.mnCamera);
+        app.mnSpacePicker.computePickedGlyphList(app.mnCamera, false);
     }
 
     void setSelectedFITSImage(Glyph[] pickedImages){
