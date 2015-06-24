@@ -261,13 +261,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     void updateZUISTSpacePicker(int jpx, int jpy){
         app.mView.fromPanelToVSCoordinates(jpx, jpy, app.zfCamera, zvsCoords);
         app.zfSpacePicker.setVSCoordinates(zvsCoords.x, zvsCoords.y);
-        app.zfSpacePicker.computePickedGlyphList(app.zfCamera);
+        app.zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
     }
 
     void updateDataSpacePicker(int jpx, int jpy){
         app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, dvsCoords);
         app.dSpacePicker.setVSCoordinates(dvsCoords.x, dvsCoords.y);
-        app.dSpacePicker.computePickedGlyphList(app.dCamera);
+        app.dSpacePicker.computePickedGlyphList(app.dCamera, false);
     }
 
     /*------------------ Simbad -------------------------*/
