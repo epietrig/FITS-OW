@@ -37,6 +37,7 @@ public class SimbadQuery {
 
     AnimationManager am = VirtualSpaceManager.INSTANCE.getAnimationManager();
 
+    JSkyFitsImage centerImg, onCircleImg;
 
     Point2D.Double queryRegionCenter;
     VCircle queryRegionG = new VCircle(0, 0, Config.Z_QUERY_REGION, 1,
@@ -49,7 +50,9 @@ public class SimbadQuery {
     }
 
 
-    void setCenter(Point2D.Double p){
+    void setCenter(Point2D.Double p, JSkyFitsImage cImg){
+        if (cImg == null){return;}
+        this.centerImg = cImg;
         app.dSpace.addGlyph(queryRegionG);
         // app.dSpace.addGlyph(queryRegionLb);
         queryRegionG.setVisible(false);
@@ -69,10 +72,18 @@ public class SimbadQuery {
         // queryRegionLb.moveTo(queryRegionG.vx, queryRegionG.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
     }
 
-    void querySimbad(Point2D.Double onCircle, final JSkyFitsImage img){
-        if (img == null){return;}
-        Point2D.Double centerWCS = img.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
-        Point2D.Double onCircleWCS = img.vs2wcs(onCircle.x, onCircle.y);
+    void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
+        this.onCircleImg = ocImg;
+        if (centerImg == null || onCircleImg == null){return;}
+        Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
+        Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
+        System.out.println(centerWCS+" "+onCircleWCS);
+        if (centerWCS == null || onCircleWCS == null){
+            String queryInfo = "Invalid query";
+            app.scene.setStatusBarMessage(queryInfo);
+            fadeOutQueryRegion();
+            return;
+        }
         //compute radius in arcmin
         final WorldCoords wc = new WorldCoords(centerWCS.getX(), centerWCS.getY());
         WorldCoords wcDummy = new WorldCoords(onCircleWCS.getX(), onCircleWCS.getY());
@@ -94,7 +105,7 @@ public class SimbadQuery {
             }
             @Override public void finished(){
                 List<AstroObject> objs = (List<AstroObject>)get();
-                displayQueryResults(objs, img);
+                displayQueryResults(objs, centerImg);
                 fadeOutQueryRegion();
             }
         }.start();
@@ -113,6 +124,7 @@ public class SimbadQuery {
             cr.setStroke(Config.SIMBAD_AO_STROKE);
             lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
             lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
+            lb.setScaleIndependent(true);
             cr.setOwner(obj);
             lb.setOwner(obj);
             img.stick(cr);

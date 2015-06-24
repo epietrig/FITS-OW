@@ -81,10 +81,11 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         if (querying){
             sq = new SimbadQuery(app);
             if (ciFITSImage != null){
-                sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera));
+                sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
             }
             else {
-                sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera));
+                sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
+                             (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
             }
         }
         else {
@@ -114,7 +115,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
                     sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
                 }
                 else {
-                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera), (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
+                                   (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
                 }
                 sq = null;
             }
@@ -148,7 +150,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y, ciFITSImage);
         }
         else {
-            app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+            try {
+                app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+            }
+            catch (Exception ex){
+                // be silent about it, only happens at init time when getting
+                // mouse moved events before pickers have been created.
+            }
         }
     }
 
@@ -162,6 +170,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
         else if (querying && sq != null){
             sq.setRadius(v.getVCursor().getVSCoordinates((ciFITSImage != null) ? app.dCamera : app.zfCamera));
+            updateZUISTSpacePicker(jpx, jpy);
+            updateDataSpacePicker(jpx, jpy);
         }
         else {
             updateZUISTSpacePicker(jpx, jpy);

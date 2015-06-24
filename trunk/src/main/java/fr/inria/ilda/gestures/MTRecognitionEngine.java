@@ -29,7 +29,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 
 	protected ArrayList<MTGestureEvent> recentEvents = new ArrayList<MTGestureEvent>();
 	protected int recentEventsCount = 3;//4;
-	
+
 	public static final int TRACE_LENGTH = 25;//20;
 
 	public MTRecognitionEngine(String ID){
@@ -37,14 +37,14 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		fingers = new HashMap<String,Finger>();
 		pointerDownCount = 0;
 	}
-	
+
 	protected void addGestureEvent(MTGestureEvent lastEvent) {
 		if(recentEvents.size() >= recentEventsCount) {
 			recentEvents.remove(recentEvents.size()-1);
 		}
 		recentEvents.add(0, lastEvent);
 	}
-	
+
 	public MTGestureEvent getStableGesture(InputSource inputSource, int fingers) {
 		if(recentEvents.size() == 0) {
 			MTGestureEvent event = new MTGestureEvent(inputSource, fingers);
@@ -112,10 +112,25 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		for (IGestureEventListener listener : listeners) {
 			listener.gestureOccured(stopEvent);
 		}
-		
+
 		recentEvents.clear();
 	}
 
+	public void forceReset() {
+		ArrayList<Finger> fingersInContact = getFingersInContact();
+		for (Iterator<Finger> iterator = fingersInContact.iterator(); iterator.hasNext();) {
+			Finger finger = iterator.next();
+			fingerUp(finger.getID());
+		}
+		state = GestureStateEnum.IDLE; 	
+		MTStopGestureEvent stopEvent = new MTStopGestureEvent(null);
+		stopEvent.setRecognizerSource(this);
+		for (IGestureEventListener listener : listeners) {
+			listener.gestureOccured(stopEvent);
+		}
+		recentEvents.clear();
+	}
+	
 	public void fingerDown(String id, Point position){
 		//    	System.out.println("fingerDown "+id+" x "+position.x+" y "+position.y);
 		for (Entry<String, Finger> entry : fingers.entrySet()) {
@@ -310,17 +325,17 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		if(fingersCount <= 2) {
 			return new MTGestureEvent(source, fingersCount);
 		}
-		
+
 		boolean clockwiseStatus = false;
 		boolean towardsStatus = false;
 		CardinalDirection cardinalDirection = CardinalDirection.NORTH;
 
-		
+
 		ArrayList<Finger> anchoredFingers = getAnchoredFingersWithoutId();
 		ArrayList<Finger> freeFingers = getFreeFingersWithoutId();
 		int anchoredFingersCount = anchoredFingers.size();
 		int freeFingersCount = freeFingers.size();
-		
+
 		if(anchoredFingersCount == fingersCount) { // DWELL
 			return new MTGestureEvent(source, true, fingersCount);
 		}

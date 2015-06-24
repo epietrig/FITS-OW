@@ -7,6 +7,7 @@ import java.util.Observer;
 import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
 import fr.inria.ilda.gesture.GestureManager;
+import fr.inria.ilda.gestures.MTRecognitionEngine;
 import fr.inria.ilda.smarties.SmartiesDeviceGestures;
 import fr.lri.smarties.libserver.Smarties;
 import fr.lri.smarties.libserver.SmartiesColors;
@@ -30,10 +31,11 @@ class SmartiesManager implements Observer {
 	boolean useGM = true;
 	myCursor nullCur;
 
-	CursorDwellListener cursorDwellListener; 
 	SmartiesPuck activePuck = null;
 	int fingerCount = 0;
 	long lastPuckSelectionTime = -1;
+	
+	MTRecognitionEngine mtRecognizer = null;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
 
@@ -41,24 +43,18 @@ class SmartiesManager implements Observer {
 		this.nav = application.getNavigation();
 		this.smarties = new Smarties(app_width, app_height, col, row);
 		this.inputManager = app.cm;
-
-		this.cursorDwellListener = new CursorDwellListener() {
-			public void cursorDwelled(CursorDwellEvent event) {
-				System.out.println("DWELL");
-				if(activePuck != null) {
-					inputManager.displayMainMenu(SmartiesManager.this, activePuck.id);
-				}
-			}
-		};
-
+		
 		nullCur = new myCursor();
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
 	    
 	    smarties.initWidgets(12,2);
 
-		SmartiesWidget sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 1, 1, 4, 1);
-	    sw.handler = new GlobalViewHandler();
+		smarties.initWidgets(12,6);
+		SmartiesWidget sw1 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 3, 4, 2, 3);
+		sw1.handler = new EventGlobalView();
+		SmartiesWidget sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Reset Recognizer", 5, 4, 2, 3);
+		sw2.handler = new EventResetRecognizer();
 
         sw = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 5, 1, 4, 1);
         sw.handler = new ColorMenuHandler();
@@ -78,6 +74,10 @@ class SmartiesManager implements Observer {
 		myCursor(){
 			prevMFPinchD = prevMFMoveX = prevMFMoveY = 0;
 		}
+	}
+	
+	public void setGestureRecognizer(MTRecognitionEngine mtRecognizer) {
+		this.mtRecognizer = mtRecognizer;
 	}
 
 	public void update(Observable obj, Object arg)
@@ -112,14 +112,19 @@ class SmartiesManager implements Observer {
 				sdg.down(se);
 			}
 			fingerCount++;
+			System.out.println("SMARTIES_EVENTS_TYPE_RAW_DOWN "+fingerCount);
 			if(activePuck != null) {
-				double distanceInMm = Math.sqrt(
-						((se.x - activePuck.x)*sdg.getWidthInMm()) * ((se.x - activePuck.x)*sdg.getWidthInMm()) +
-						((se.y - activePuck.y)*sdg.getHeightInMm()) * ((se.y - activePuck.y)*sdg.getHeightInMm()));
-				if(distanceInMm < 10 && (System.currentTimeMillis() - lastPuckSelectionTime) >= 200) {
-					//					System.out.println("down close to puck "+se.p+" / "+distance);
-					inputManager.addCursorDwellListener(this, se.id, cursorDwellListener);
+//				double distanceInMm = Math.sqrt(
+//						((se.x - activePuck.x)*sdg.getWidthInMm()) * ((se.x - activePuck.x)*sdg.getWidthInMm()) +
+//						((se.y - activePuck.y)*sdg.getHeightInMm()) * ((se.y - activePuck.y)*sdg.getHeightInMm()));
+//				if(distanceInMm < 10 && (System.currentTimeMillis() - lastPuckSelectionTime) >= 200) {
+//					inputManager.addCursorDwellListener(this, se.id, cursorDwellListener);
+//					inputManager.down(this, se.id);
+//				}
+				if((System.currentTimeMillis() - lastPuckSelectionTime) >= 200 && fingerCount == 1) {
 					inputManager.down(this, se.id);
+				} else if(fingerCount > 1) {
+					inputManager.up(this, activePuck.id);
 				}
 			}
 			break;
@@ -141,12 +146,12 @@ class SmartiesManager implements Observer {
 			if (sdg != null){ // should be always true
 				sdg.up(se);
 			}
-			fingerCount--;
-			//				System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
+			if(fingerCount > 0) {
+				fingerCount--;
+			}
+			System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
 			if(activePuck != null) {
-				inputManager.removeCursorDwellListener(this, se.id, cursorDwellListener);
 				inputManager.up(this, se.id);
-				inputManager.hideMainMenu(this, activePuck.id);
 			}
 			break;
 		}
@@ -160,10 +165,6 @@ class SmartiesManager implements Observer {
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_SELECT:{
 			//System.out.println("Select Puck: " + se.id);
 			//_checkWidgetState(e.device, e.p);
-
-			if(activePuck != null) {
-				inputManager.removeCursorDwellListener(this, activePuck.id, cursorDwellListener);
-			}
 			lastPuckSelectionTime = System.currentTimeMillis();
 			activePuck = se.p;
 			break;
@@ -173,7 +174,6 @@ class SmartiesManager implements Observer {
 			if (se.p != null){
 				inputManager.hideCursor(this, se.id);
 				if(activePuck == se.p) {
-					inputManager.removeCursorDwellListener(this, activePuck.id, cursorDwellListener);
 					activePuck = null;
 				}
 			}
@@ -306,13 +306,6 @@ class SmartiesManager implements Observer {
         }
 	}
 
-    class GlobalViewHandler implements SmartiesWidgetHandler{
-        public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
-            System.out.println("GlobalView");
-            nav.getGlobalView(null);
-            return true;
-        }
-    }
 
     class ColorMenuHandler implements SmartiesWidgetHandler{
         public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
@@ -321,4 +314,21 @@ class SmartiesManager implements Observer {
             return true;
         }
     }
+	class EventGlobalView implements SmartiesWidgetHandler{
+		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+			System.out.println("GlobalView");
+			nav.getGlobalView(null);
+			return true;
+		}
+	}
+	
+	class EventResetRecognizer implements SmartiesWidgetHandler{
+		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+			System.out.println("ResetRecognizer");
+			if(mtRecognizer != null) {
+				mtRecognizer.forceReset();
+			}
+			return true;
+		}
+	}
 }
