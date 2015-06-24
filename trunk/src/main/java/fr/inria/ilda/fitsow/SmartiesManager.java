@@ -114,6 +114,7 @@ class SmartiesManager implements Observer {
 				if(distanceInMm < 10 && (System.currentTimeMillis() - lastPuckSelectionTime) >= 200) {
 					//					System.out.println("down close to puck "+se.p+" / "+distance);
 					inputManager.addCursorDwellListener(this, se.id, cursorDwellListener);
+					inputManager.down(this, se.id);
 				}
 			}
 			break;
@@ -139,7 +140,9 @@ class SmartiesManager implements Observer {
 			//				System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
 			if(activePuck != null) {
 				inputManager.removeCursorDwellListener(this, se.id, cursorDwellListener);
-				inputManager.hideScaleSubMenu(SmartiesManager.this, activePuck.id);
+//				inputManager.hideScaleSubMenu(SmartiesManager.this, activePuck.id);
+				inputManager.hideScaleSubMenu(this, activePuck.id);
+				inputManager.up(this, se.id);
 			}
 			break;
 		}
