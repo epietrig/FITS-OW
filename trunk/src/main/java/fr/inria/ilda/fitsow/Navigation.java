@@ -146,7 +146,7 @@ public class Navigation {
             newz = 0;
             f = app.zfCamera.focal / (a*app.zfCamera.focal);
         }
-        double[] r = windowToViewCoordinate(x, y);
+        double[] r = windowToViewCoordinates(x, y, app.zfCamera);
         double dx = l.getX() - r[0];
         double dy = l.getY() - r[1];
         double newx = l.getX() + (f*dx - dx); // *a/(zfCamera.altitude+ zfCamera.focal));
@@ -154,9 +154,9 @@ public class Navigation {
         app.zfCamera.setLocation(new Location(newx, newy, newz));
     }
 
-    public double[] windowToViewCoordinate(double x, double y){
-        Location l = app.zfCamera.getLocation();
-        double a = (app.zfCamera.focal + app.zfCamera.getAltitude()) / app.zfCamera.focal;
+    public double[] windowToViewCoordinates(double x, double y, Camera c){
+        Location l = c.getLocation();
+        double a = (c.focal + c.getAltitude()) / c.focal;
         //
         double xx = (long)((double)x - ((double)app.getDisplayWidth()/2.0));
         double yy = (long)(-(double)y + ((double)app.getDisplayHeight()/2.0));
@@ -168,4 +168,5 @@ public class Navigation {
         r[1] = yy;
         return r;
     }
+
 }

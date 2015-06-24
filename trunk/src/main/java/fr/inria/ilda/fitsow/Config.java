@@ -258,4 +258,6 @@ public class Config {
 
     public static final DecimalFormat ARCMIN_FORMATTER = new DecimalFormat("#0.0000");
 
+    public static final float PAN_GESTURE_GAIN = 8f;
+
 }

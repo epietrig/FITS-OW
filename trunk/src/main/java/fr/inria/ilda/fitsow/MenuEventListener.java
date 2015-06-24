@@ -224,7 +224,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
 
     public void displayMainPieMenu(Point2D.Double coords){
         PieMenuFactory.setSensitivityRadius(0.6);
-        PieMenuFactory.setRadius(140);
+        PieMenuFactory.setRadius(app.getDisplayHeight()/6);
         PieMenuFactory.setTranslucency(0.7f);
         mainPieMenu = PieMenuFactory.createPieMenu(MPM_COMMANDS, MPM_OFFSETS, 0,
                                                    app.mnSpace, coords);
@@ -246,7 +246,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (index != -1){
             String label = mainPieMenu.getLabels()[index].getText();
             PieMenuFactory.setSensitivityRadius(1);
-            PieMenuFactory.setRadius(100);
+            PieMenuFactory.setRadius(app.getDisplayHeight()/8);
             PieMenuFactory.setTranslucency(0.95f);
             if (label.equals(MPM_SCALE)){
                 displayScaleSubMenu(coords);

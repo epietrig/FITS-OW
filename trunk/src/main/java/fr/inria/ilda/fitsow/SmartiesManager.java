@@ -34,8 +34,10 @@ class SmartiesManager implements Observer {
 	SmartiesPuck activePuck = null;
 	int fingerCount = 0;
 	long lastPuckSelectionTime = -1;
-	
+
 	MTRecognitionEngine mtRecognizer = null;
+
+	SimbadQuery sq;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
 
@@ -43,11 +45,11 @@ class SmartiesManager implements Observer {
 		this.nav = application.getNavigation();
 		this.smarties = new Smarties(app_width, app_height, col, row);
 		this.inputManager = app.cm;
-		
+
 		nullCur = new myCursor();
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
-	    
+
 	    smarties.initWidgets(12,2);
 
 		smarties.initWidgets(12,6);
@@ -64,7 +66,7 @@ class SmartiesManager implements Observer {
 
 	    smarties.addObserver(this);
 	    smarties.setRawTouchEventsConf(true);
-		
+
 	    smarties.Run();
 	}
 
@@ -75,7 +77,7 @@ class SmartiesManager implements Observer {
 			prevMFPinchD = prevMFMoveX = prevMFMoveY = 0;
 		}
 	}
-	
+
 	public void setGestureRecognizer(MTRecognitionEngine mtRecognizer) {
 		this.mtRecognizer = mtRecognizer;
 	}
@@ -91,12 +93,12 @@ class SmartiesManager implements Observer {
 			SmartiesDeviceGestures sdg = new SmartiesDeviceGestures(se.device, this);
 			GestureManager.getInstance().registerDevice(sdg);
 			if (useGM) { sdg.connect(); }
-			devGesturesMap.put(se.device, sdg);				
+			devGesturesMap.put(se.device, sdg);
 			break;
 		}
 		case SmartiesEvent.SMARTIES_EVENTS_TYPE_DEVICE_SIZES:
 		{
-			// 
+			//
 			SmartiesDeviceGestures sdg =  devGesturesMap.get(se.device);
 			if (sdg != null){ // should be always true
 				sdg.setSmartiesTouchWidthInMm(se.device.getTouchpadWidth()/se.device.getXPixelsByMM());
@@ -177,7 +179,7 @@ class SmartiesManager implements Observer {
 					activePuck = null;
 				}
 			}
-			break;  
+			break;
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_UNSTORE:{
 			if (se.p != null){
@@ -200,6 +202,7 @@ class SmartiesManager implements Observer {
 			//System.out.println("SMARTIE_EVENTS_TYPE_START_MOVE");
 			if (se.p != null){
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
+					inputManager.startCircularSelection(this, se.id);
 				}
 			}
 			break;
@@ -209,13 +212,19 @@ class SmartiesManager implements Observer {
 			if (se.p != null){
 				inputManager.moveCursorTo(this, se.id, se.p.x, se.p.y);
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
+					inputManager.resizeCircularSelection(this, se.id);
 				}
-                break;
-            }
+			}
+            break;
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MOVE:{
             //System.out.println("SMARTIE_EVENTS_TYPE_END_MOVE");
-            break;
+			if (se.p != null){
+				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
+					inputManager.endCircularSelection(this, se.id);
+				}
+                break;
+            }
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_WIDGET:{
             if (se.widget.handler != null){
@@ -247,7 +256,7 @@ class SmartiesManager implements Observer {
             else{
             	cur = nullCur;
             }
-            double dx = (se.x - cur.prevMFMoveX); 
+            double dx = (se.x - cur.prevMFMoveX);
             double dy = (se.y - cur.prevMFMoveY);
             inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
             cur.prevMFMoveX = se.x;
@@ -268,7 +277,7 @@ class SmartiesManager implements Observer {
             	cur.prevMFPinchD = se.d;
             }
             else{
-            	nullCur.prevMFPinchD = se.d;                
+            	nullCur.prevMFPinchD = se.d;
             }
             break;
         }
@@ -321,7 +330,7 @@ class SmartiesManager implements Observer {
 			return true;
 		}
 	}
-	
+
 	class EventResetRecognizer implements SmartiesWidgetHandler{
 		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
 			System.out.println("ResetRecognizer");
