@@ -30,7 +30,6 @@ class SmartiesManager implements Observer {
 	boolean useGM = true;
 	myCursor nullCur;
 
-	CursorDwellListener cursorDwellListener; 
 	SmartiesPuck activePuck = null;
 	int fingerCount = 0;
 	long lastPuckSelectionTime = -1;
@@ -41,16 +40,7 @@ class SmartiesManager implements Observer {
 		this.nav = application.getNavigation();
 		this.smarties = new Smarties(app_width, app_height, col, row);
 		this.inputManager = app.cm;
-
-		this.cursorDwellListener = new CursorDwellListener() {
-			public void cursorDwelled(CursorDwellEvent event) {
-				System.out.println("DWELL");
-				if(activePuck != null) {
-					inputManager.displayMainMenu(SmartiesManager.this, activePuck.id);
-				}
-			}
-		};
-
+		
 		nullCur = new myCursor();
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
@@ -107,14 +97,19 @@ class SmartiesManager implements Observer {
 				sdg.down(se);
 			}
 			fingerCount++;
+			System.out.println("SMARTIES_EVENTS_TYPE_RAW_DOWN "+fingerCount);
 			if(activePuck != null) {
-				double distanceInMm = Math.sqrt(
-						((se.x - activePuck.x)*sdg.getWidthInMm()) * ((se.x - activePuck.x)*sdg.getWidthInMm()) +
-						((se.y - activePuck.y)*sdg.getHeightInMm()) * ((se.y - activePuck.y)*sdg.getHeightInMm()));
-				if(distanceInMm < 10 && (System.currentTimeMillis() - lastPuckSelectionTime) >= 200) {
-					//					System.out.println("down close to puck "+se.p+" / "+distance);
-					inputManager.addCursorDwellListener(this, se.id, cursorDwellListener);
+//				double distanceInMm = Math.sqrt(
+//						((se.x - activePuck.x)*sdg.getWidthInMm()) * ((se.x - activePuck.x)*sdg.getWidthInMm()) +
+//						((se.y - activePuck.y)*sdg.getHeightInMm()) * ((se.y - activePuck.y)*sdg.getHeightInMm()));
+//				if(distanceInMm < 10 && (System.currentTimeMillis() - lastPuckSelectionTime) >= 200) {
+//					inputManager.addCursorDwellListener(this, se.id, cursorDwellListener);
+//					inputManager.down(this, se.id);
+//				}
+				if((System.currentTimeMillis() - lastPuckSelectionTime) >= 200 && fingerCount == 1) {
 					inputManager.down(this, se.id);
+				} else if(fingerCount > 1) {
+					inputManager.up(this, activePuck.id);
 				}
 			}
 			break;
@@ -136,12 +131,12 @@ class SmartiesManager implements Observer {
 			if (sdg != null){ // should be always true
 				sdg.up(se);
 			}
-			fingerCount--;
-			//				System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
+			if(fingerCount > 0) {
+				fingerCount--;
+			}
+			System.out.println("SMARTIES_EVENTS_TYPE_RAW_UP "+fingerCount);
 			if(activePuck != null) {
-				inputManager.removeCursorDwellListener(this, se.id, cursorDwellListener);
 				inputManager.up(this, se.id);
-				inputManager.hideMainMenu(this, activePuck.id);
 			}
 			break;
 		}
@@ -155,10 +150,6 @@ class SmartiesManager implements Observer {
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_SELECT:{
 			//System.out.println("Select Puck: " + se.id);
 			//_checkWidgetState(e.device, e.p);
-
-			if(activePuck != null) {
-				inputManager.removeCursorDwellListener(this, activePuck.id, cursorDwellListener);
-			}
 			lastPuckSelectionTime = System.currentTimeMillis();
 			activePuck = se.p;
 			break;
@@ -168,7 +159,6 @@ class SmartiesManager implements Observer {
 			if (se.p != null){
 				inputManager.hideCursor(this, se.id);
 				if(activePuck == se.p) {
-					inputManager.removeCursorDwellListener(this, activePuck.id, cursorDwellListener);
 					activePuck = null;
 				}
 			}

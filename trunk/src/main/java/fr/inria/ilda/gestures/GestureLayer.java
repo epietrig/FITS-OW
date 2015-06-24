@@ -75,15 +75,22 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 		}
 		if((event instanceof MTStopGestureEvent) || (event instanceof MTStartGestureEvent)) {
 			if(gestureControl == GestureControl.NEXT_COLOR_MAPPING || gestureControl == GestureControl.PREV_COLOR_MAPPING) {
+				app.getMenuEventHandler().hideColorSubMenu();
 				app.getMenuEventHandler().closeColorSubMenu();
+			} else if(
+					gestureControl == GestureControl.SCALE_SELECTION ||
+					gestureControl == GestureControl.SCALE_SELECTION_NORTH ||
+					gestureControl == GestureControl.SCALE_SELECTION_SOUTH ||
+					gestureControl == GestureControl.SCALE_SELECTION_WEST ||
+					gestureControl == GestureControl.SCALE_SELECTION_EAST
+					) {
+				app.getMenuEventHandler().hideSubPieMenu();
 			}
 			traceLength = 0;
 			traceLengthIncrement = 0;
 			traceLengthLastCMSetting = 0;
 			deltaMove.setLocation(0, 0);
 			gestureControl = GestureControl.NONE;
-			app.getMenuEventHandler().hideColorSubMenu();
-			app.getMenuEventHandler().hideSubPieMenu();
 			app.getView().repaint();
 		} else {
 			ArrayList<Finger> freeFingers = ((MTRecognitionEngine)(mtEvent.getRecognizerSource())).getFreeFingersWithoutId();
