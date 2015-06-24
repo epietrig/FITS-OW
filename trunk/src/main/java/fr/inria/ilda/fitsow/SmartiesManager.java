@@ -304,7 +304,7 @@ class SmartiesManager implements Observer {
              break;
         }
         }
-	}
+    }
 
 
     class ColorMenuHandler implements SmartiesWidgetHandler{
