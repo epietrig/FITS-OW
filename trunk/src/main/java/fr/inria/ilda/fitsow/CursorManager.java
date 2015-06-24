@@ -241,12 +241,13 @@ public class CursorManager {
 	public void tap(Object obj, int id, double x, double y, int contacts) {
 		ZcsCursor cursor = getCursor(obj, id);
 		if(cursor == null) { return; }
-		cursor.mnSpacePicker.setListener(cursor);
+		cursor.mnSpacePicker.setListener(null); // pbs with CLT ...
 		double w = app.getDisplayWidth();
 		double h = app.getDisplayHeight();
 		double xx = x*w - w/2;
 		double yy = -y*h + h/2;
-		if(app.getMenuEventHandler().mainPieMenu == null && app.getMenuEventHandler().subPieMenu == null) {
+		if(app.getMenuEventHandler().mainPieMenu == null && app.getMenuEventHandler().subPieMenu == null &&
+			!app.getMenuEventHandler().showingCLTmenu) {
 			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy));
 			app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
 		}
@@ -326,6 +327,7 @@ public class CursorManager {
 		public double x, y;
 		public Color color;
 		public OlivierCursor wc;
+		public boolean lockPanZoom;
 		//public DragMag currentDragMag = null;
 		//public DragMag currentVisDragMag = null;
 		//public DragMag attachedDragMag = null;

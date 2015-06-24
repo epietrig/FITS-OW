@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import java.awt.Color;
+
 import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
 import fr.inria.ilda.gesture.GestureManager;
@@ -225,6 +227,15 @@ class SmartiesManager implements Observer {
 				}
                 break;
             }
+        }
+        case SmartiesEvent.SMARTIE_EVENTS_TYPE_TAP:
+        {
+            if (false){  // for emulating wall touch
+                inputManager.createCursor(this, 1000, se.x, se.y, Color.BLUE);
+                inputManager.tap(this, 1000, se.x, se.y, se.num_fingers);
+                inputManager.removeCursor(this, 1000);
+            }
+            break;
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_WIDGET:{
             if (se.widget.handler != null){
