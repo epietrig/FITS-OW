@@ -209,6 +209,8 @@ class SmartiesManager implements Observer {
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MOVE:{
 			//System.out.println("SMARTIE_EVENTS_TYPE_END_MOVE");
+			if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
+			}
 			break;
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_WIDGET:{
