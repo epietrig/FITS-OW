@@ -19,6 +19,8 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import fr.inria.zvtm.engine.Java2DPainter;
+import fr.inria.zvtm.engine.SwingWorker;
+import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.glyphs.Translucent;
 import fr.inria.zvtm.widgets.TranslucentWidget;
@@ -26,9 +28,11 @@ import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
+import fr.inria.zuist.engine.Level;
 import fr.inria.zuist.event.ProgressListener;
+import fr.inria.zvtm.event.PickerListener;
 
-public class FITSScene implements Java2DPainter {
+public class FITSScene implements Java2DPainter, PickerListener {
 
     File SCENE_FILE, SCENE_FILE_DIR;
 
@@ -37,12 +41,19 @@ public class FITSScene implements Java2DPainter {
 
     String zuistColorMapping = Config.COLOR_MAPPING_LIST[0];
     String zuistScale = Config.SCALE_LINEAR;
+    double[] globalMinMax = {0,0};
 
     FITSServer server;
 
     static final String EMPTY_STRING = "";
     String wcsStr = EMPTY_STRING;
     String sbMsg = null;
+
+    // used to show previews of what a change in scale algo or color lookup table will be like
+    // on representative images from the ZUIST scene
+    JSkyFitsImage[] fitsThumbs;
+    String previewedScale = Config.SCALE_LINEAR;
+    String previewedCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
 
     FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
@@ -68,10 +79,78 @@ public class FITSScene implements Java2DPainter {
             // clusteredView.setBackgroundColor((Color)sceneAttributes.get(SceneManager._background));
         }
         // mCamera.setAltitude(0.0f);
+        setupThumbnails();
     }
 
-    void loadImage(URL url){
-        JSkyFitsImage img = new JSkyFitsImage(url);
+    void setupThumbnails(){
+        // root tile
+        ObjectDescription od = sm.getRegionsAtLevel(0)[0].getObjectsInRegion()[0];
+        URL overviewTileURL = null;
+        if (od.getType().equals(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS)){
+            JSkyFitsImageDescription jsid = ((JSkyFitsImageDescription)od);
+            overviewTileURL = jsid.getSrc();
+            globalMinMax = jsid.getGlobalScaleParams();
+        }
+        // tile at deepest level, close to the center of the full image
+        Level deepestLevel = sm.getLevel(sm.getLevelCount()-1);
+        double[] wnes = deepestLevel.getBounds();
+        od = deepestLevel.getClosestRegion(
+                            new Point2D.Double((wnes[0]+wnes[2])/2d,
+                                               (wnes[1]+wnes[3])/2d)).getObjectsInRegion()[0];
+        URL detailTileURL = null;
+        if (od.getType().equals(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS)){
+            detailTileURL = ((JSkyFitsImageDescription)od).getSrc();
+        }
+        loadThumbnails(new URL[]{overviewTileURL, detailTileURL});
+    }
+
+    void loadThumbnails(URL[] thumbURLs){
+        fitsThumbs = new JSkyFitsImage[thumbURLs.length];
+        double cumulatedWidth = 0;
+        double maxHeight = 0;
+        for (int i=0;i<thumbURLs.length;i++){
+            fitsThumbs[i] = new JSkyFitsImage(0, 0, Config.Z_FITS_IMG, thumbURLs[i]);
+            fitsThumbs[i].setType(Config.T_FITS);
+            app.mnSpace.addGlyph(fitsThumbs[i]);
+            fitsThumbs[i].setCutLevels(globalMinMax[0], globalMinMax[1], false);
+            fitsThumbs[i].setVisible(false);
+            fitsThumbs[i].setColorLookupTable(zuistColorMapping, false);
+            fitsThumbs[i].setScaleAlgorithm(Config.SCALES.get(zuistScale), false);
+            fitsThumbs[i].updateDisplayedImage();
+            fitsThumbs[i].setDrawBorder(true);
+            fitsThumbs[i].setBorderColor(Config.FITS_IMG_BORDER_COLOR);
+            cumulatedWidth += fitsThumbs[i].getWidth()+Config.FITS_THUMB_MARGIN;
+            if (fitsThumbs[i].getHeight() > maxHeight){
+                maxHeight = fitsThumbs[i].getHeight();
+            }
+        }
+        // adjust layout of thumbnails on top of color menu
+        double vx = -cumulatedWidth /2d + Config.FITS_THUMB_MARGIN/2d;
+        for (int i=0;i<fitsThumbs.length;i++){
+            fitsThumbs[i].moveTo(vx+fitsThumbs[i].getWidth()/2d,
+                                 .6f*Config.CLT_MENU_H+maxHeight/2d);
+            vx += fitsThumbs[i].getWidth() + Config.FITS_THUMB_MARGIN;
+        }
+    }
+
+    void showThumbnails(){
+        if (fitsThumbs != null){
+            for (JSkyFitsImage img:fitsThumbs){
+                img.setVisible(true);
+            }
+        }
+    }
+
+    void hideThumbnails(){
+        if (fitsThumbs != null){
+            for (JSkyFitsImage img:fitsThumbs){
+                img.setVisible(false);
+            }
+        }
+    }
+
+    void loadImage(URL url, double vx, double vy){
+        JSkyFitsImage img = new JSkyFitsImage(vx, vy, Config.Z_FITS_IMG, url);
         img.setType(Config.T_FITS);
         addImage(img);
     }
@@ -82,7 +161,7 @@ public class FITSScene implements Java2DPainter {
         try {
             URL fitsURL = new URL(urlS);
             //System.out.println("Fetching "+fitsURL);
-            loadImage(fitsURL);
+            loadImage(fitsURL, 0, 0);
         }
         catch (MalformedURLException mue){
             System.out.println("Error loading FITS image from " + urlS);
@@ -106,45 +185,99 @@ public class FITSScene implements Java2DPainter {
 
     public void setScale(JSkyFitsImage img, String scale){
         if (img != null){
+            // doing it on a specific FITS image
             img.setScaleAlgorithm(Config.SCALES.get(scale), true);
         }
         else {
-            JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
-            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                    ((JSkyFitsImageDescription)desc).setScaleAlgorithm(sa, true);
+            // doing it on the background ZUIST scene
+            // do it on the thumbnail previews only,
+            // the new scale will be applied to the tiles only when the change is confirmed
+            previewedScale = scale;
+            if (fitsThumbs != null){
+                JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
+                for (JSkyFitsImage timg:fitsThumbs){
+                    timg.setScaleAlgorithm(sa, true);
                 }
             }
         }
     }
+
+    public void applyScaleToZuistTiles(){
+        final JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(previewedScale);
+        new SwingWorker(){
+            @Override public Object construct(){
+                for (ObjectDescription desc:sm.getObjectDescriptions()){
+                    if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+                        ((JSkyFitsImageDescription)desc).setScaleAlgorithm(sa, true);
+                    }
+                }
+                return null;
+            }
+        }.start();
+    }
+
+    // public String getCurrentScale(JSkyFitsImage img){
+    //     int currentScale = Config.DEFAULT_SCALE;
+    //     if (img != null){
+    //         currentScale = img.getScale();
+    //     }
+    //     else {
+    //         for (ObjectDescription desc:sm.getObjectDescriptions()){
+    //             if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+    //                 currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return currentCLT;
+    // }
 
     /* ---------------- Color mapping ---------------------- */
 
     public void setColorMapping(JSkyFitsImage img, String clt){
         if (img != null){
+            // doing it on a specific FITS image
             img.setColorLookupTable(clt, true);
         }
         else {
-            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                    ((JSkyFitsImageDescription)desc).setColorLookupTable(clt, true);
+            // doing it on the background ZUIST scene
+            // do it on the thumbnail previews only,
+            // the new CLT will be applied to the tiles only when the change is confirmed
+            previewedCLT = clt;
+            if (fitsThumbs != null){
+                for (JSkyFitsImage timg:fitsThumbs){
+                    timg.setColorLookupTable(clt, true);
                 }
             }
         }
     }
 
-    String getCurrentCLT(JSkyFitsImage img){
+    public void applyCLTToZuistTiles(){
+        new SwingWorker(){
+            @Override public Object construct(){
+                for (ObjectDescription desc:sm.getObjectDescriptions()){
+                    if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+                        ((JSkyFitsImageDescription)desc).setColorLookupTable(previewedCLT, true);
+                    }
+                }
+                return null;
+            }
+        }.start();
+    }
+
+    public String getCurrentCLT(JSkyFitsImage img){
         String currentCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
         if (img != null){
             currentCLT = img.getColorLookupTable();
         }
         else {
-            for (ObjectDescription desc:app.sm.getObjectDescriptions()){
-                if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                    currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
-                    break;
-                }
-            }
+            // for (ObjectDescription desc:sm.getObjectDescriptions()){
+            //     if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+            //         currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+            //         break;
+            //     }
+            // }
+            currentCLT = previewedCLT;
         }
         return currentCLT;
     }
@@ -189,6 +322,12 @@ public class FITSScene implements Java2DPainter {
             wcsStr = EMPTY_STRING;
         }
     }
+
+    /* ----------------------- Zuist scene picker --------------------- */
+
+    public void enterGlyph(Glyph g){}
+
+    public void exitGlyph(Glyph g){}
 
     /* ----------------------- Status bar --------------------- */
 

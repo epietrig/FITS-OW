@@ -78,12 +78,17 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
-        lge = app.dSpacePicker.lastGlyphEntered();
         if (querying){
             sq = new SimbadQuery(app);
-            sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera));
+            if (ciFITSImage != null){
+                sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera));
+            }
+            else {
+                sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera));
+            }
         }
         else {
+            lge = app.dSpacePicker.lastGlyphEntered();
             if (lge != null){
                 // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
                 draggingFITS = true;
@@ -105,7 +110,12 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         if (querying){
             exitQueryMode();
             if (sq != null){
-                sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+                if (ciFITSImage != null){
+                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+                }
+                else {
+                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera), (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+                }
                 sq = null;
             }
         }
@@ -132,8 +142,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void mouseMoved(ViewPanel v, int jpx, int jpy, MouseEvent e){
         currentJPX = jpx;
         currentJPY = jpy;
+        updateZUISTSpacePicker(jpx, jpy);
         updateDataSpacePicker(jpx, jpy);
-        app.scene.updateWCSCoordinates(vsCoords.x, vsCoords.y, ciFITSImage);
+        if (ciFITSImage != null){
+            app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y, ciFITSImage);
+        }
+        else {
+            app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+        }
     }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
@@ -145,9 +161,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             lastJPY = jpy;
         }
         else if (querying && sq != null){
-            sq.setRadius(v.getVCursor().getVSCoordinates(app.dCamera));
+            sq.setRadius(v.getVCursor().getVSCoordinates((ciFITSImage != null) ? app.dCamera : app.zfCamera));
         }
         else {
+            updateZUISTSpacePicker(jpx, jpy);
             updateDataSpacePicker(jpx, jpy);
         }
     }
@@ -228,11 +245,18 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     public void cameraMoved(Camera cam, Point2D.Double coord, double a){}
 
-    Point2D.Double vsCoords = new Point2D.Double();
+    Point2D.Double zvsCoords = new Point2D.Double();
+    Point2D.Double dvsCoords = new Point2D.Double();
+
+    void updateZUISTSpacePicker(int jpx, int jpy){
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.zfCamera, zvsCoords);
+        app.zfSpacePicker.setVSCoordinates(zvsCoords.x, zvsCoords.y);
+        app.zfSpacePicker.computePickedGlyphList(app.zfCamera);
+    }
 
     void updateDataSpacePicker(int jpx, int jpy){
-        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, vsCoords);
-        app.dSpacePicker.setVSCoordinates(vsCoords.x, vsCoords.y);
+        app.mView.fromPanelToVSCoordinates(jpx, jpy, app.dCamera, dvsCoords);
+        app.dSpacePicker.setVSCoordinates(dvsCoords.x, dvsCoords.y);
         app.dSpacePicker.computePickedGlyphList(app.dCamera);
     }
 

@@ -87,8 +87,7 @@ public class FITSOW {
     Camera zfCamera, dCamera, mnCamera, crCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
 
-    PickerVS dSpacePicker;
-    PickerVS mnSpacePicker;
+    PickerVS zfSpacePicker, dSpacePicker, mnSpacePicker;
 
     View mView;
     MVEventListener eh;
@@ -117,6 +116,7 @@ public class FITSOW {
                               new JSkyFitsResourceHandler());
         scene = new FITSScene(this, options.path_to_fits_dir, options.httpdIP, options.httpdPort);
         mView.setJava2DPainter(scene, Java2DPainter.FOREGROUND);
+        zfSpacePicker.setListener(scene);
         if (options.path_to_zuist_fits != null){
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);
@@ -207,6 +207,8 @@ public class FITSOW {
         mView.setListener(eh, DATA_LAYER);
         mView.setListener(meh, MENU_LAYER);
         // mView.getCursor().getPicker().setListener(eh);
+        zfSpacePicker = new PickerVS();
+        zfSpace.registerPicker(zfSpacePicker);
         dSpacePicker = new PickerVS();
         dSpace.registerPicker(dSpacePicker);
         dSpacePicker.setListener(eh);
