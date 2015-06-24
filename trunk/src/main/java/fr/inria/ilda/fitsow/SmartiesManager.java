@@ -299,6 +299,7 @@ class SmartiesManager implements Observer {
             System.out.println("SMARTIE_EVENTS_TYPE_END_MFPINCH");
             break;
         }
+        
         default:{
              //System.out.println("OTHER: " + se.type);
              break;

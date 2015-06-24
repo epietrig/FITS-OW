@@ -219,17 +219,19 @@ public class CursorManager {
 		}
 	}
 
-	public void tap(Object obj, int id, double x, double y, e.contacts) {
+	public void tap(Object obj, int id, double x, double y, int contacts) {
 		ZcsCursor cursor = getCursor(obj, id);
 		if(cursor == null) { return; }
 		double xx = x*app.getDisplayWidth() - app.getDisplayWidth()/2;
-		double yy = -y*app.getDisplayHeight() + app.getDisplayHeight()/2);
+		double yy = -y*app.getDisplayHeight() + app.getDisplayHeight()/2;
 		if(app.getMenuEventHandler().mainPieMenu == null) {
-			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy);
+			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy));
 		}
 		else{
 			// now we pick
-			pickerVS.setVSCoordinates(vsCoords.x, vsCoords.y);
+			PickerVS pickerVS = new PickerVS();
+			app.mnSpace.registerPicker(pickerVS);
+			pickerVS.setVSCoordinates(xx, yy);
 			if(app.getMenuEventHandler().subPieMenu != null) {
 				pickerVS.computePickedGlyphList(app.mnCamera, false);
 			} else if(app.getMenuEventHandler().mainPieMenu != null) {
@@ -238,7 +240,44 @@ public class CursorManager {
 				pickerVS.computePickedGlyphList(app.mnCamera, false);
 			}
 			Glyph g = pickerVS.lastGlyphEntered();
-			if ()
+			if (g != null){
+				if (g.getType() != null){
+					if (g.getType().equals(Config.T_MPMI)){
+						g.highlight(true, null);
+					}
+					else if (g.getType().startsWith(Config.T_SPMI)){
+						g.highlight(true, null);
+						if (g.getType() == Config.T_SPMISc){
+							cursor.subPieMenuEvent(g);
+						}
+					}
+					else if (g.getType().equals(Config.T_CLT_BTN)){
+						app.getMenuEventHandler().selectCLT((String)g.getOwner());
+					}
+				}
+				else {
+					if (app.getMenuEventHandler().mainPieMenu != null && g == app.getMenuEventHandler().mainPieMenu.getBoundary()){
+						app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
+					}
+				}
+			} else{
+				if (app.getMenuEventHandler().mainPieMenu != null &&
+					g == app.getMenuEventHandler().mainPieMenu.getBoundary()){
+					// crossing the main pie menu's trigger
+					Glyph lge = pickerVS.lastGlyphEntered();
+					if (lge != null && lge.getType() == Config.T_MPMI){
+						if (app.getMenuEventHandler().displaySubPieMenu(lge, new Point2D.Double(xx, yy))){
+							app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
+						}
+					}
+				}
+				else if (app.getMenuEventHandler().subPieMenu != null && g == app.getMenuEventHandler().subPieMenu.getBoundary()){
+					// crossing a sub pie menu's trigger
+					// (takes back to main pie menu)
+					cursor.hideSubPieMenu();
+					app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
+				}
+			}
 		}
 	}
 
@@ -313,11 +352,11 @@ public class CursorManager {
 					crSpace,
 					(!(app.runningOnWall())) ? 2 : 8, (!(app.runningOnWall())) ? 16 : 100,
 							this.color);
-			moveTo(x, y);
 
 			pickerVS = new PickerVS();
 			app.mnSpace.registerPicker(pickerVS);
 			pickerVS.setListener(this);
+			moveTo(x, y);
 		}
 
 		public void down() {
@@ -415,7 +454,6 @@ public class CursorManager {
 				vsCoords.y = h/2.0 - y*h;
 				pickerVS.setVSCoordinates(vsCoords.x, vsCoords.y);
 			}
-			System.out.println("hop: "+x+" "+y+" "+vsCoords.x+" "+vsCoords.y+ " " + w+" "+h);
 
 			if(app.getMenuEventHandler().subPieMenu != null) {
 				pickerVS.computePickedGlyphList(app.mnCamera, false);
