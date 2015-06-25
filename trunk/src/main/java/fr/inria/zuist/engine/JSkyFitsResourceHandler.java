@@ -16,7 +16,7 @@ public class JSkyFitsResourceHandler implements ResourceHandler {
 
     public static final String RESOURCE_TYPE_FITS = "skyfits";
 
-    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.LINEAR;
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.HIST_EQ;
     public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
 
     private static final String SC_ID = "sc="; //scale factor in params

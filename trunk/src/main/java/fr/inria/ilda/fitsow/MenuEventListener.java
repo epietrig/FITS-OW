@@ -113,22 +113,12 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (g.getType() != null){
             if (g.getType().equals(Config.T_MPMI)){
                 g.highlight(true, null);
-                // app.mnSpace.onTop(g);
-                // int i = mainPieMenu.getItemIndex(g);
-                // if (i != -1){
-                //     app.mnSpace.onTop(mainPieMenu.getLabels()[i]);
-                // }
             }
             else if (g.getType().startsWith(Config.T_SPMI)){
                 g.highlight(true, null);
                 if (g.getType() == Config.T_SPMISc){
                     subPieMenuEvent(g);
                 }
-                // app.mnSpace.onTop(g);
-                // int i = subPieMenu.getItemIndex(g);
-                // if (i != -1){
-                //     app.mnSpace.onTop(subPieMenu.getLabels()[i]);
-                // }
             }
             else if (g.getType().equals(Config.T_CLT_BTN)){
                 selectCLT((String)g.getOwner());
@@ -353,14 +343,13 @@ public class MenuEventListener implements ViewListener, PickerListener {
     }
 
     public void displayColorSubMenu(){
-        currentCLT = (selectedFITSImage != null) ? selectedFITSImage.getColorLookupTable() : app.scene.zuistCLT;
+        currentCLT = app.scene.getCurrentCLT(selectedFITSImage);
+        System.out.println(currentCLT);
         Vector<Glyph> cltMenuGs = new Vector(2*Config.COLOR_MAPPING_LIST.length+1);
         double gridH = Config.LARGEST_COLOR_MAPPING_CAT;
         double gridW = Config.COLOR_MAPPINGS.length;
         double cellW = (Config.CLT_BTN_W + 2*Config.CLT_BTN_PADDING);
         double cellH = (Config.CLT_BTN_H + 2*Config.CLT_BTN_PADDING);
-        // double bkgW = gridW * cellW;
-        // double bkgH = gridH * cellH;
         VRectangle bkg = new VRectangle(0, 0, Config.Z_CLT_BKG,
                                         Config.CLT_MENU_W, 1.05*Config.CLT_MENU_H,
                                         Color.BLACK, Color.BLACK, .8f);
@@ -429,7 +418,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
         if (selectedFITSImage == null){
             ClosedShape menuBoundary = (ClosedShape)subPieMenu.getBoundary();
-            app.scene.showThumbnails(menuBoundary.vx, subPieMenu.getBoundary().vy+.6f*menuBoundary.getSize());
+            app.scene.showThumbnails(menuBoundary.vx, subPieMenu.getBoundary().vy+1.2f*menuBoundary.getSize());
         }
     }
 

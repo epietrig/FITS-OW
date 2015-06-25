@@ -220,21 +220,22 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }.start();
     }
 
-    // public String getCurrentScale(JSkyFitsImage img){
-    //     int currentScale = Config.DEFAULT_SCALE;
-    //     if (img != null){
-    //         currentScale = img.getScale();
-    //     }
-    //     else {
-    //         for (ObjectDescription desc:sm.getObjectDescriptions()){
-    //             if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-    //                 currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     return currentCLT;
-    // }
+    public JSkyFitsImage.ScaleAlgorithm getCurrentScale(JSkyFitsImage img){
+        JSkyFitsImage.ScaleAlgorithm currentSA = Config.DEFAULT_SCALE;
+        if (img != null){
+            currentSA = img.getScaleAlgorithm();
+        }
+        else {
+            // for (ObjectDescription desc:sm.getObjectDescriptions()){
+            //     if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
+            //         currentCLT = ((JSkyFitsImageDescription)desc).getColorLookupTable();
+            //         break;
+            //     }
+            // }
+            currentSA = previewedScale;
+        }
+        return currentSA;
+    }
 
     /* ---------------- Color mapping ---------------------- */
 
