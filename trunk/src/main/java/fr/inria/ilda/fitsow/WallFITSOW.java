@@ -101,7 +101,7 @@ public class WallFITSOW extends FITSOW {
         if (sceneBounds == null) {return;}
         Location l = cv.centerOnRegion(zfCamera, sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
         System.out.println("getGlobalView "+ l.toString());
-         dCamera.setLocation(l);
+         zfCamera.setLocation(l);
         if (ea != null) {
             ea.execute(null,null);
         }
