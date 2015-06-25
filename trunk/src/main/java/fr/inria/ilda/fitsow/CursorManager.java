@@ -35,12 +35,18 @@ public class CursorManager {
 
 	private HashMap<Object, ZcsDevice> _devices;
 
+	// for wall touch
+	private boolean nextDragIsCircularSelection;
+	private boolean dragIsListen;
+
 	CursorManager(FITSOW app){
 		this.app = app;
 		this.nav = app.nav;
 		this.crSpace = app.crSpace;
 
 		_devices = new HashMap<Object, ZcsDevice>();
+		nextDragIsCircularSelection = false;
+		dragIsListen = false;
 	}
 
 	// --------------------------
@@ -189,6 +195,11 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur == null){ return; }
 		// do something maybe...
+		if (nextDragIsCircularSelection){
+			cur.inCircularSelection = true;
+			nextDragIsCircularSelection = false;
+		 	startCircularSelection(obj, id);
+		}
 	}
 
 	public void drag(Object obj, int id, double dx, double dy){
@@ -197,13 +208,15 @@ public class CursorManager {
 	public void drag(Object obj, int id, double dx, double dy, double speedFac){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
-		//ZcsCursor cur = dev.cursors.get(id);
-		//if (cur == null){ return; }
+		ZcsCursor cur = dev.cursors.get(id);
+		if (cur != null){
+		 	if (dragIsListen) { return; }
+		 	if (cur.inCircularSelection){
+		 		resizeCircularSelection(obj, id);
+		 		return;
+		 	}
+		}
 		nav.directTranslate(speedFac*dx*app.getDisplayWidth(),speedFac*dy*app.getDisplayHeight());
-		// CHECK
-		//nav.pan(
-		//	dx*app.getDisplayWidth(), dy*app.getDisplayHeight(), speedFac);
-
 	}
 
 	public void endDrag(Object obj, int id){
@@ -212,14 +225,10 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur == null){ return; }
 		// do something maybe...
-	}
-
-	public void startZoom(Object obj, int id){
-		ZcsDevice dev = getDevice(obj);
-		if (dev == null){ return; }
-		ZcsCursor cur = dev.cursors.get(id);
-		if (cur == null){ return; }
-		// do something maybe...
+		if (cur.inCircularSelection){
+		 	endCircularSelection(obj, id);
+		 	cur.inCircularSelection = false;
+		}
 	}
 
 	// MENU MANAGEMENT
@@ -264,6 +273,12 @@ public class CursorManager {
             				if (label == MenuEventListener.MPM_SCALE){
             					 app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(xx, yy));
             				}
+            				else if (label == MenuEventListener.MPM_QUERY){
+            					nextDragIsCircularSelection = true;
+            				}
+            				else if (label == MenuEventListener.MPM_COLOR){
+            					dragIsListen = true;
+            				}
             			}
 						app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
 						cursor.hideMainPieMenu();
@@ -284,11 +299,19 @@ public class CursorManager {
 				cursor.hideMainPieMenu();
 				app.getMenuEventHandler().hideColorSubMenu();
 				app.getMenuEventHandler().closeColorSubMenu();
+				dragIsListen = false;
 			}
 		}
 	}
 
-	// ZOOM MANAGEMENT
+	// ZOOM MANAGEMENT	
+	public void startZoom(Object obj, int id){
+		ZcsDevice dev = getDevice(obj);
+		if (dev == null){ return; }
+		ZcsCursor cur = dev.cursors.get(id);
+		if (cur == null){ return; }
+		// do something maybe...
+	}
 
 	public void zoom(Object obj, int id, double f){
 		ZcsDevice dev = getDevice(obj);
@@ -297,6 +320,7 @@ public class CursorManager {
 		ZcsCursor cur = dev.cursors.get(id);
 		if (cur != null){
 			cx = cur.x; cy = cur.y;
+		 	if (dragIsListen) { return; }
 		}
 		//System.out.println("zoom "+ cx+" "+cy+ " "+ f);
 		zoom(f, cx, cy);
@@ -327,13 +351,9 @@ public class CursorManager {
 		public double x, y;
 		public Color color;
 		public OlivierCursor wc;
-		public boolean lockPanZoom;
-		//public DragMag currentDragMag = null;
-		//public DragMag currentVisDragMag = null;
-		//public DragMag attachedDragMag = null;
-		//public DragMag attachedVisDragMag = null;
-		//public DragMag linkedDragMag = null;
-		//public double deltax,deltay;
+
+		// for wall touch
+		public boolean inCircularSelection;
 
 		protected int dwellDuration = 1000; // in ms
 		protected CursorDwellListener cursorDwellListener = null;
@@ -352,16 +372,17 @@ public class CursorManager {
 
 		protected SimbadQuery sq;
 
-		public ZcsCursor(double x, double y, Color c) {
+		public ZcsCursor(double x, double y, Color c,  boolean iswalltouch) {
 			this.x = x;
 			this.y = y;
 			this.color = c;
 			this.dwellTimer.setRepeats(false);
+			this.inCircularSelection = false;
 
 			wc = new OlivierCursor(
 					crSpace,
 					(!(app.runningOnWall())) ? 2 : 8, (!(app.runningOnWall())) ? 16 : 100,
-							this.color);
+							this.color, Color.BLACK, 2f);
 
 			zfSpacePicker = new PickerVS();
 			app.zfSpace.registerPicker(zfSpacePicker);
@@ -376,6 +397,10 @@ public class CursorManager {
 			mnSpacePicker.setListener(this);
 
 			moveTo(x, y);
+		}
+
+		public ZcsCursor(double x, double y, Color c){
+			this(x, y, c, false);
 		}
 
 		public void down() {

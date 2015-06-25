@@ -79,7 +79,7 @@ public void update(Observable obj, Object arg)
 			//if (ee.contacts >= contacts_lim) { mm = InputManager.IM_DRAG_DM_MODE_MOVE_DM; }
 			//cursorManager.moveCursor(this, 0, dx, dy);
 			cursorManager.moveCursorTo(this, 0, ee.x, ee.y);
-			cursorManager.drag(this, 0, dx, dy, ee.contacts); //, mm);
+			cursorManager.drag(this, 0, -dx, dy, ee.contacts); //, mm);
 			prevMoveX = ee.x; prevMoveY = ee.y;
 			break;
 		}

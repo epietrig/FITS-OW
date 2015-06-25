@@ -154,8 +154,6 @@ JARS=$JARS":target/fits-ow-0.1.jar"
 #java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr="192.168.0.56" -Djava.library.path=".:lib" -cp "target/*" $CLASS $REST
 java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr="192.168.2.$LIP" -Djava.library.path=".:lib:/usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/lib/amd64" -cp $JARS $CLASS -r 5 -c 15 -bw 960 -bh 960 $REST
 
-#wildo killall java
-#WALL=WILDER 
 WALL=WILDER  walldo -l $LOGIN killall java
-#walldo -l wild killall java
-walldo killall java
+#WALL=WILDER walldo -l wild killall java
+#walldo  killall java
