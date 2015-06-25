@@ -243,7 +243,7 @@ public class Config {
     public static final double CLT_MENU_W = COLOR_MAPPINGS.length * (CLT_BTN_W + 2*CLT_BTN_PADDING);
     public static final double CLT_MENU_H = LARGEST_COLOR_MAPPING_CAT * (CLT_BTN_H + 2*CLT_BTN_PADDING);
 
-    public static final double FITS_THUMB_MARGIN = 20;
+    public static final double FITS_THUMB_MARGIN = 60;
 
     /* ------------ Simbad queries ---------- */
 

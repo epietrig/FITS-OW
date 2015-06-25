@@ -129,7 +129,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
         double vx = -cumulatedWidth /2d + Config.FITS_THUMB_MARGIN/2d;
         for (int i=0;i<fitsThumbs.length;i++){
             fitsThumbs[i].moveTo(vx+fitsThumbs[i].getWidth()/2d,
-                                 .6f*Config.CLT_MENU_H+maxHeight/2d);
+                                 .8f*Config.CLT_MENU_H+maxHeight/2d);
             vx += fitsThumbs[i].getWidth() + Config.FITS_THUMB_MARGIN;
         }
     }
