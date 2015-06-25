@@ -100,7 +100,10 @@ public class CursorManager {
 		createCursor(obj, id, x, y, c, false);
 	}
 
-	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide)
+	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide){
+		createCursor(obj, id, x, y, c, hide, false);
+	}
+	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide, boolean iswalltouch)
 	{
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
@@ -109,7 +112,7 @@ public class CursorManager {
 			System.out.println("CursorManager[createCursor]: cursor already exists "+ obj+ " "+ id);
 			return;
 		}
-		dev.createCursor(id, x, y, c, hide);
+		dev.createCursor(id, x, y, c, hide, iswalltouch);
 	}
 
 	public void removeCursor(Object obj, int id){
@@ -258,14 +261,14 @@ public class CursorManager {
 		if(app.getMenuEventHandler().mainPieMenu == null && app.getMenuEventHandler().subPieMenu == null &&
 			!app.getMenuEventHandler().showingCLTmenu) {
 			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy));
-			app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
+			app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
 		}
 		else{
 			Glyph g = cursor.mnSpacePicker.lastGlyphEntered();
 			if (g != null){
 				if (g.getType() != null){
 					if (g.getType().equals(Config.T_MPMI)){
-						app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
+						//app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
 						app.getMenuEventHandler().mainPieMenuEvent(g);
 						int index =  app.getMenuEventHandler().mainPieMenu.getItemIndex(g);
         				if (index != -1){
@@ -280,7 +283,7 @@ public class CursorManager {
             					dragIsListen = true;
             				}
             			}
-						app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
+						//app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
 						cursor.hideMainPieMenu();
 					}
 					else if (g.getType().startsWith(Config.T_SPMI)){
@@ -381,7 +384,7 @@ public class CursorManager {
 
 			wc = new OlivierCursor(
 					crSpace,
-					(!(app.runningOnWall())) ? 2 : 8, (!(app.runningOnWall())) ? 16 : 100,
+					(!(app.runningOnWall())) ? 2 : 16, (!(app.runningOnWall())) ? 8 : 100,
 							this.color, Color.BLACK, 2f);
 
 			zfSpacePicker = new PickerVS();
@@ -394,9 +397,10 @@ public class CursorManager {
 
 			mnSpacePicker = new PickerVS();
 			app.mnSpace.registerPicker(mnSpacePicker);
-			mnSpacePicker.setListener(this);
-
-			moveTo(x, y) ;
+			if (!iswalltouch){
+				mnSpacePicker.setListener(this);
+			}
+			moveTo(x, y);
 		}
 
 		public ZcsCursor(double x, double y, Color c){
@@ -576,7 +580,7 @@ public class CursorManager {
 					g.highlight(true, null);
 				}
 				else if (g.getType().startsWith(Config.T_SPMI)){
-					g.highlight(true, null);
+					//g.highlight(true, null);
 					if (g.getType() == Config.T_SPMISc){
 						subPieMenuEvent(g);
 					}
@@ -625,18 +629,23 @@ public class CursorManager {
 		void subPieMenuEvent(Glyph menuItem){
 			int index = app.getMenuEventHandler().subPieMenu.getItemIndex(menuItem);
 			if (index != -1){
+				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 				String label = app.getMenuEventHandler().subPieMenu.getLabels()[index].getText();
 				if (label == app.getMenuEventHandler().SCALEPM_LOG){
-					//	                app.scene.setScale(app.getMenuEventHandler().selectedFITSImage, Config.SCALE_LOG);
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LOG).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LOG);
+
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_LINEAR){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LINEAR).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LINEAR);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_SQRT){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.SQRT).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.SQRT);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_HISTEQ){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.HIST_EQ).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
 				}
 			}
@@ -662,23 +671,26 @@ public class CursorManager {
 			cursors = new HashMap();
 		}
 
-		public void createCursor(int id, double x, double y, Color c, boolean hide)
-		{
+		public void createCursor(int id, double x, double y, Color c, boolean hide, boolean iswalltouch){
 			if (c == null) c = Color.RED;
 
-			ZcsCursor cur = new ZcsCursor(x,y,c);
+			ZcsCursor cur = new ZcsCursor(x,y,c, iswalltouch);
 			cursors.put(id, cur);
 			if (hide) { cur.hide(); }
+		}
+		
+		public void createCursor(int id, double x, double y, Color c, boolean hide){
+			createCursor(id, x, y, c, false, false);
 		}
 
 		public void createCursor(int id, double x, double y, Color c)
 		{
-			createCursor(id, x, y, c, false);
+			createCursor(id, x, y, c, false, false);
 		}
 
 		public void createCursor(int id, double x, double y)
 		{
-			createCursor(id, x, y, null, false);
+			createCursor(id, x, y, null, false, false);
 		}
 
 		public void deleteCursor(int id)

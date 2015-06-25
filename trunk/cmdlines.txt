@@ -8,3 +8,6 @@ cmdlines.txt
 ./local_run.sh -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
 
 ./run.sh -zfits /media/ssd/Demos/zvtm/cosmos/scene.xml  -smarties
+
+
+ scp -r target wild@192.168.2.2:/home2/wild/workspace/zvtm_demos/FITS-OW/trunk/
