@@ -100,7 +100,11 @@ public class CursorManager {
 		createCursor(obj, id, x, y, c, false);
 	}
 
-	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide)
+	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide){
+		createCursor(obj, id, x, y, c, false, false);
+	}
+
+	public void createCursor(Object obj, int id, double x, double y, Color c, boolean hide, boolean iswalltouch)
 	{
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
@@ -109,7 +113,7 @@ public class CursorManager {
 			System.out.println("CursorManager[createCursor]: cursor already exists "+ obj+ " "+ id);
 			return;
 		}
-		dev.createCursor(id, x, y, c, hide);
+		dev.createCursor(id, x, y, c, hide, iswalltouch);
 	}
 
 	public void removeCursor(Object obj, int id){
@@ -247,10 +251,11 @@ public class CursorManager {
 		}
 	}
 
+	// wall tap !
 	public void tap(Object obj, int id, double x, double y, int contacts) {
 		ZcsCursor cursor = getCursor(obj, id);
 		if(cursor == null) { return; }
-		cursor.mnSpacePicker.setListener(null); // pbs with CLT ...
+		cursor.mnSpacePicker.setListener(null);
 		double w = app.getDisplayWidth();
 		double h = app.getDisplayHeight();
 		double xx = x*w - w/2;
@@ -265,7 +270,7 @@ public class CursorManager {
 			if (g != null){
 				if (g.getType() != null){
 					if (g.getType().equals(Config.T_MPMI)){
-						app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
+						//app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
 						app.getMenuEventHandler().mainPieMenuEvent(g);
 						int index =  app.getMenuEventHandler().mainPieMenu.getItemIndex(g);
         				if (index != -1){
@@ -394,7 +399,9 @@ public class CursorManager {
 
 			mnSpacePicker = new PickerVS();
 			app.mnSpace.registerPicker(mnSpacePicker);
-			mnSpacePicker.setListener(this);
+			if (!iswalltouch){
+				mnSpacePicker.setListener(this);
+			}
 
 			moveTo(x, y);
 		}
@@ -577,7 +584,7 @@ public class CursorManager {
 					g.highlight(true, null);
 				}
 				else if (g.getType().startsWith(Config.T_SPMI)){
-					g.highlight(true, null);
+					//g.highlight(true, null);
 					if (g.getType() == Config.T_SPMISc){
 						subPieMenuEvent(g);
 					}
@@ -626,18 +633,23 @@ public class CursorManager {
 		void subPieMenuEvent(Glyph menuItem){
 			int index = app.getMenuEventHandler().subPieMenu.getItemIndex(menuItem);
 			if (index != -1){
+				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 				String label = app.getMenuEventHandler().subPieMenu.getLabels()[index].getText();
 				if (label == app.getMenuEventHandler().SCALEPM_LOG){
 					//	                app.scene.setScale(app.getMenuEventHandler().selectedFITSImage, Config.SCALE_LOG);
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LOG).highlight(true, null);
 					app.scene.setScale(null, Config.SCALE_LOG);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_LINEAR){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LINEAR).highlight(true, null);
 					app.scene.setScale(null, Config.SCALE_LINEAR);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_SQRT){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_SQRT).highlight(true, null);
 					app.scene.setScale(null, Config.SCALE_SQRT);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_HISTEQ){
+					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_HISTEQ).highlight(true, null);
 					app.scene.setScale(null, Config.SCALE_HISTEQ);
 				}
 			}
@@ -663,23 +675,25 @@ public class CursorManager {
 			cursors = new HashMap();
 		}
 
-		public void createCursor(int id, double x, double y, Color c, boolean hide)
+		public void createCursor(int id, double x, double y, Color c, boolean hide, boolean iswalltouch)
 		{
 			if (c == null) c = Color.RED;
 
-			ZcsCursor cur = new ZcsCursor(x,y,c);
+			ZcsCursor cur = new ZcsCursor(x,y,c,iswalltouch);
 			cursors.put(id, cur);
 			if (hide) { cur.hide(); }
 		}
-
+		public void createCursor(int id, double x, double y, Color c, boolean hide){
+			createCursor(id, x, y, c, false, false);
+		}
 		public void createCursor(int id, double x, double y, Color c)
 		{
-			createCursor(id, x, y, c, false);
+			createCursor(id, x, y, c, false, false);
 		}
 
 		public void createCursor(int id, double x, double y)
 		{
-			createCursor(id, x, y, null, false);
+			createCursor(id, x, y, null, false, false);
 		}
 
 		public void deleteCursor(int id)
