@@ -403,7 +403,7 @@ public class CursorManager {
 				mnSpacePicker.setListener(this);
 			}
 
-			moveTo(x, y);
+			moveTo(x, y) ;
 		}
 
 		public ZcsCursor(double x, double y, Color c){
