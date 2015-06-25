@@ -429,7 +429,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
         if (selectedFITSImage == null){
             ClosedShape menuBoundary = (ClosedShape)subPieMenu.getBoundary();
-            app.scene.showThumbnails(menuBoundary.vx, subPieMenu.getBoundary().vy+.6f*menuBoundary.getSize());
+            app.scene.showThumbnails(menuBoundary.vx, subPieMenu.getBoundary().vy+1.2f*menuBoundary.getSize());
         }
     }
 
