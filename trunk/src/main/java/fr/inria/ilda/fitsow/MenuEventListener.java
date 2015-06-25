@@ -420,6 +420,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
     /*------------------ Scale -------------------------*/
 
     public void displayScaleSubMenu(Point2D.Double coords){
+        PieMenuFactory.setRadius(app.getDisplayHeight()/8);
         subPieMenu = PieMenuFactory.createPieMenu(SCALEPM_COMMANDS, SCALEPM_OFFSETS,
                                                   0, app.mnSpace, coords);
         Glyph[] items = subPieMenu.getItems();

@@ -524,46 +524,45 @@ public class CursorManager {
 		}
 		public void dispose() { wc.dispose(); }
 
-		public double[] getCoordsInZfSpace() {
+		public Point2D.Double getCoordsInZfSpace() {
 			double jpx = x * app.getDisplayWidth();
 			double jpy = y * app.getDisplayHeight();
 			double[] vxy = app.nav.windowToViewCoordinates(jpx, jpy, app.zfCamera);
-			return vxy;
+			Point2D.Double pt = new Point2D.Double(vxy[0], vxy[1]);
+			return pt;
 		}
 
 		public void startCircularSelection() {
 			sq = new SimbadQuery(app);
-			double[] vxy = getCoordsInZfSpace();
+			Point2D.Double pt = getCoordsInZfSpace();
 			sq = new SimbadQuery(app);
-			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			zfSpacePicker.setVSCoordinates(pt.getX(), pt.getY());
 			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
 			// if (ciFITSImage != null){
 			// 	sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
 			// }
 			// else {
-
-				sq.setCenter(new Point2D.Double(vxy[0], vxy[1]),
-							(JSkyFitsImage)(zfSpacePicker.lastGlyphEntered()));
+				sq.setCenter(pt, (JSkyFitsImage)(zfSpacePicker.lastGlyphEntered()));
 			// }
 		}
 
 		public void resizeCircularSelection() {
-			double[] vxy = getCoordsInZfSpace();
-			sq.setRadius(new Point2D.Double(vxy[0], vxy[1]));
-			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			Point2D.Double pt = getCoordsInZfSpace();
+			zfSpacePicker.setVSCoordinates(pt.getX(), pt.getY());
 			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
+			sq.setRadius(pt);
 		}
 
 		public void endCircularSelection() {
-			double[] vxy = getCoordsInZfSpace();
-			zfSpacePicker.setVSCoordinates(vxy[0], vxy[1]);
+			Point2D.Double pt = getCoordsInZfSpace();
+			zfSpacePicker.setVSCoordinates(pt.getX(), pt.getY());
 			zfSpacePicker.computePickedGlyphList(app.zfCamera, false);
 			if (sq != null){
                 // if (ciFITSImage != null){
                 //     sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
                 // }
                 // else {
-                    sq.querySimbad(new Point2D.Double(vxy[0], vxy[1]),
+                    sq.querySimbad(pt,
                                    (JSkyFitsImage)(zfSpacePicker.lastGlyphEntered()));
                 // }
                 sq = null;
