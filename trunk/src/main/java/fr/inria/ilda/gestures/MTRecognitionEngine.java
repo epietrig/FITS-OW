@@ -54,6 +54,11 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		String gestureName = recentEvents.get(0).toString();
 		for (int i = 1; i < recentEvents.size(); i++) {
 			MTGestureEvent tt = recentEvents.get(i);
+			if(tt == null) {
+				System.out.println("tt "+null);
+			} else if(tt.toString() == null) {
+				System.out.println("tt.toString() "+null);
+			}
 			if(tt.toString().compareTo(gestureName) != 0) {
 				MTGestureEvent event = new MTGestureEvent(inputSource, fingers);
 				event.setRecognizerSource(MTRecognitionEngine.this);
@@ -84,7 +89,9 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		case START:
 			fingerDown(event2D.source.getID(), pt);
 		case UPDATE:
-			fingerMove(event2D.source.getID(), pt);
+			if(event2D.source != null) { // !timer
+				fingerMove(event2D.source.getID(), pt);
+			}
 			MTGestureEvent recognized = recognize(event.source);
 			recognized.setRecognizerSource(MTRecognitionEngine.this);
 			addGestureEvent(recognized);
@@ -97,8 +104,6 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 			fingerUp(event.source.getID());
 			break;
 		}    
-
-
 	}
 
 	@Override
@@ -130,7 +135,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		}
 		recentEvents.clear();
 	}
-	
+
 	public void fingerDown(String id, Point position){
 		//    	System.out.println("fingerDown "+id+" x "+position.x+" y "+position.y);
 		for (Entry<String, Finger> entry : fingers.entrySet()) {
@@ -337,7 +342,11 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		int freeFingersCount = freeFingers.size();
 
 		if(anchoredFingersCount == fingersCount) { // DWELL
+			System.out.println("DWELL");
 			return new MTGestureEvent(source, true, fingersCount);
+		}
+		if(source == null) {
+			return new MTGestureEvent(source, fingersCount);
 		}
 		if(freeFingersCount == 0) {
 			return new MTGestureEvent(source, fingersCount);
@@ -484,4 +493,5 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		}
 		return sum >= 0;
 	}
+
 }

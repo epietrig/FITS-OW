@@ -143,6 +143,17 @@ public class Finger {
 				timeStamps.add(System.currentTimeMillis());
 				traceLength += lastPosition.distance(newPosition);
 			}
+			
+//			Point lastPosition = positions.get(positions.size()-1);
+//			long lastTimeStamp = timeStamps.get(timeStamps.size()-1);
+//			long timeStamp = System.currentTimeMillis();
+//			if(lastTimeStamp != timeStamp){
+//				positions.add(newPosition);
+//				timeStamps.add(System.currentTimeMillis());
+//				traceLength += lastPosition.distance(newPosition);
+//			}
+			
+			
 		} else {
 			positions.add(newPosition);
 			timeStamps.add(System.currentTimeMillis());
