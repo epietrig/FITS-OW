@@ -39,8 +39,8 @@ public class FITSScene implements Java2DPainter, PickerListener {
     FITSOW app;
     SceneManager sm;
 
-    String zuistColorMapping = Config.DEFAULT_COLOR_LOOKUP_TABLE;
-    JSkyFitsImage.ScaleAlgorithm zuistScale = Config.DEFAULT_SCALE;
+    String zuistColorMapping = Config.COLOR_MAPPING_LIST[0];
+    String zuistScale = Config.SCALE_LINEAR;
     double[] globalMinMax = {0,0};
 
     FITSServer server;
@@ -52,7 +52,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
     // used to show previews of what a change in scale algo or color lookup table will be like
     // on representative images from the ZUIST scene
     JSkyFitsImage[] fitsThumbs;
-    JSkyFitsImage.ScaleAlgorithm previewedScale = Config.DEFAULT_SCALE;
+    String previewedScale = Config.SCALE_LINEAR;
     String previewedCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
 
     double thCumulatedWidth = 0;
@@ -117,7 +117,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
             fitsThumbs[i].setCutLevels(globalMinMax[0], globalMinMax[1], false);
             fitsThumbs[i].setVisible(false);
             fitsThumbs[i].setColorLookupTable(zuistColorMapping, false);
-            fitsThumbs[i].setScaleAlgorithm(zuistScale, false);
+            fitsThumbs[i].setScaleAlgorithm(Config.SCALES.get(zuistScale), false);
             fitsThumbs[i].updateDisplayedImage();
             fitsThumbs[i].setDrawBorder(true);
             fitsThumbs[i].setBorderColor(Config.FITS_IMG_BORDER_COLOR);
@@ -189,17 +189,18 @@ public class FITSScene implements Java2DPainter, PickerListener {
 
     /* ---------------- Scale ---------------------- */
 
-    public void setScale(JSkyFitsImage img, JSkyFitsImage.ScaleAlgorithm sa){
+    public void setScale(JSkyFitsImage img, String scale){
         if (img != null){
             // doing it on a specific FITS image
-            img.setScaleAlgorithm(sa, true);
+            img.setScaleAlgorithm(Config.SCALES.get(scale), true);
         }
         else {
             // doing it on the background ZUIST scene
             // do it on the thumbnail previews only,
             // the new scale will be applied to the tiles only when the change is confirmed
-            previewedScale = sa;
+            previewedScale = scale;
             if (fitsThumbs != null){
+                JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(scale);
                 for (JSkyFitsImage timg:fitsThumbs){
                     timg.setScaleAlgorithm(sa, true);
                 }
@@ -208,11 +209,12 @@ public class FITSScene implements Java2DPainter, PickerListener {
     }
 
     public void applyScaleToZuistTiles(){
+        final JSkyFitsImage.ScaleAlgorithm sa = Config.SCALES.get(previewedScale);
         new SwingWorker(){
             @Override public Object construct(){
                 for (ObjectDescription desc:sm.getObjectDescriptions()){
                     if (desc.getType() == JSkyFitsResourceHandler.RESOURCE_TYPE_FITS){
-                        ((JSkyFitsImageDescription)desc).setScaleAlgorithm(previewedScale, true);
+                        ((JSkyFitsImageDescription)desc).setScaleAlgorithm(sa, true);
                     }
                 }
                 return null;

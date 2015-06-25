@@ -296,16 +296,16 @@ public class MenuEventListener implements ViewListener, PickerListener {
         if (index != -1){
             String label = subPieMenu.getLabels()[index].getText();
             if (label == SCALEPM_LOG){
-                app.scene.setScale(selectedFITSImage, JSkyFitsImage.ScaleAlgorithm.LOG);
+                app.scene.setScale(selectedFITSImage, Config.SCALE_LOG);
             }
             else if (label == SCALEPM_LINEAR){
-                app.scene.setScale(selectedFITSImage, JSkyFitsImage.ScaleAlgorithm.LINEAR);
+                app.scene.setScale(selectedFITSImage, Config.SCALE_LINEAR);
             }
             else if (label == SCALEPM_SQRT){
-                app.scene.setScale(selectedFITSImage, JSkyFitsImage.ScaleAlgorithm.SQRT);
+                app.scene.setScale(selectedFITSImage, Config.SCALE_SQRT);
             }
             else if (label == SCALEPM_HISTEQ){
-                app.scene.setScale(selectedFITSImage, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
+                app.scene.setScale(selectedFITSImage, Config.SCALE_HISTEQ);
             }
         }
     }
@@ -317,15 +317,15 @@ public class MenuEventListener implements ViewListener, PickerListener {
 		}
     }
 
-    public Glyph getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm sa) {
+    public Glyph getScalePieMenuGlyphByScaleType(String scaleType) {
     	String label = "";
-    	if(sa == JSkyFitsImage.ScaleAlgorithm.LOG) {
+    	if(scaleType.equals(Config.SCALE_LOG)) {
     		label = SCALEPM_LOG;
-    	} else if(sa == JSkyFitsImage.ScaleAlgorithm.LINEAR) {
+    	} else if(scaleType.equals(Config.SCALE_LINEAR)) {
     		label = SCALEPM_LINEAR;
-    	} else if(sa == JSkyFitsImage.ScaleAlgorithm.SQRT) {
+    	} else if(scaleType.equals(Config.SCALE_SQRT)) {
     		label = SCALEPM_SQRT;
-    	} else if(sa == JSkyFitsImage.ScaleAlgorithm.HIST_EQ) {
+    	} else if(scaleType.equals(Config.SCALE_HISTEQ)) {
     		label = SCALEPM_HISTEQ;
     	}
     	VText[] labels = subPieMenu.getLabels();
