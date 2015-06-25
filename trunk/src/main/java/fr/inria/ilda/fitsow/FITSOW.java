@@ -22,11 +22,12 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+
 import javax.swing.ImageIcon;
 
 import java.io.File;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Locale;
 
@@ -37,6 +38,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import fr.inria.ilda.TUIO.TUIOInputDevice;
+import fr.inria.ilda.gesture.AbstractInputEvent;
 import fr.inria.ilda.gesture.GestureManager;
 import fr.inria.ilda.gesture.SegmenterTouch;
 import fr.inria.ilda.gestures.GestureLayer;

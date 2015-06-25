@@ -66,9 +66,13 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 		if(!(event instanceof MTGestureEvent)) {
 			return;
 		}
+
+		MTGestureEvent mtEvent = (MTGestureEvent)event;
+		if(mtEvent.isDwell()){
+			return;
+		}
 		dwellTimer5Fingers.stop();
 		dwellTimer3Fingers.stop();
-		MTGestureEvent mtEvent = (MTGestureEvent)event;
 		if(mtEvent.getFingers() == 5) {
 			dwellTimer5Fingers.restart();
 		} else if(mtEvent.getFingers() == 3) {
@@ -140,28 +144,30 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 					}
 				}
 				InputSource inputSource = mtEvent.getInputSource();
-				String inputSourceID = inputSource.getID();
-				int cursorID = Integer.parseInt(inputSourceID.split("_")[0]);
-				AbstractInputDevice device = inputSource.getDevice();
-				if(gestureControl == GestureControl.ZOOM_IN) {
-					// for Olivier
-					// adapt the method call below
-					//app.getNavigation().czoomIn(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
-					app.getCursorManager().zoom(device, cursorID, 1/1.005);
-				} else if(gestureControl == GestureControl.ZOOM_OUT) {
-					//app.getNavigation().czoomOut(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
-					app.getCursorManager().zoom(device, cursorID, 1.005);
-				} else if(gestureControl == GestureControl.NEXT_COLOR_MAPPING) {
-					if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
-						String newCLT = app.getScene().selectNextColorMapping(null);
-						app.getMenuEventHandler().updateHighlightedCLT(newCLT);
-						traceLengthLastCMSetting = traceLength;
-					}
-				} else if(gestureControl == GestureControl.PREV_COLOR_MAPPING) {
-					if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
-						String newCLT = app.getScene().selectPrevColorMapping(null);
-						app.getMenuEventHandler().updateHighlightedCLT(newCLT);
-						traceLengthLastCMSetting = traceLength;
+				if(inputSource != null) {
+					String inputSourceID = inputSource.getID();
+					int cursorID = Integer.parseInt(inputSourceID.split("_")[0]);
+					AbstractInputDevice device = inputSource.getDevice();
+					if(gestureControl == GestureControl.ZOOM_IN) {
+						// for Olivier
+						// adapt the method call below
+						//app.getNavigation().czoomIn(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
+						app.getCursorManager().zoom(device, cursorID, 1/1.005);
+					} else if(gestureControl == GestureControl.ZOOM_OUT) {
+						//app.getNavigation().czoomOut(app.getZFCamera(), 1f, app.getZFCamera().vx, app.getZFCamera().vy);
+						app.getCursorManager().zoom(device, cursorID, 1.005);
+					} else if(gestureControl == GestureControl.NEXT_COLOR_MAPPING) {
+						if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
+							String newCLT = app.getScene().selectNextColorMapping(null);
+							app.getMenuEventHandler().updateHighlightedCLT(newCLT);
+							traceLengthLastCMSetting = traceLength;
+						}
+					} else if(gestureControl == GestureControl.PREV_COLOR_MAPPING) {
+						if((traceLength - traceLengthLastCMSetting) > CM_STEP) {
+							String newCLT = app.getScene().selectPrevColorMapping(null);
+							app.getMenuEventHandler().updateHighlightedCLT(newCLT);
+							traceLengthLastCMSetting = traceLength;
+						}
 					}
 				}
 				else {
