@@ -28,6 +28,7 @@ import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.PRectangle;
 import fr.inria.zvtm.glyphs.VRectangle;
+import fr.inria.zvtm.glyphs.ClosedShape;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.widgets.PieMenu;
@@ -391,7 +392,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
         app.mnSpace.addGlyphs(cltMenuGs.toArray(new Glyph[cltMenuGs.size()]));
         if (selectedFITSImage == null){
-            app.scene.showThumbnails();
+            app.scene.showThumbnails(0, .8f*Config.CLT_MENU_H);
         }
         showingCLTmenu = true;
         clt2button.get(currentCLT).select();
@@ -428,7 +429,8 @@ public class MenuEventListener implements ViewListener, PickerListener {
             items[i].setType(Config.T_SPMISc);
         }
         if (selectedFITSImage == null){
-            app.scene.showThumbnails();
+            ClosedShape menuBoundary = (ClosedShape)subPieMenu.getBoundary();
+            app.scene.showThumbnails(menuBoundary.vx, .6f*menuBoundary.getSize());
         }
     }
 
