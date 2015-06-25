@@ -16,6 +16,8 @@ import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.Camera;
+import fr.inria.zvtm.engine.Location;
+import fr.inria.zvtm.animation.EndAction;
 import fr.inria.zvtm.glyphs.VImage;
 
 import fr.inria.zvtm.cluster.ClusterGeometry;
@@ -92,6 +94,17 @@ public class WallFITSOW extends FITSOW {
     @Override
     int getRowCount(){
         return cg.getRows();
+    }
+
+    @Override
+    void getGlobalView(EndAction ea){
+        if (sceneBounds == null) {return;}
+        Location l = cv.centerOnRegion(zfCamera, sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        System.out.println("getGlobalView "+ l.toString());
+         zfCamera.setLocation(l);
+        if (ea != null) {
+            ea.execute(null,null);
+        }
     }
 
     public static void main(String[] args){

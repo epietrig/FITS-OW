@@ -53,6 +53,7 @@ import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zvtm.engine.Location;
 
 /**
  * @author Emmanuel Pietriga
@@ -76,6 +77,9 @@ public class FITSOW {
     static final short CURSOR_LAYER = 3;
 
     FITSScene scene;
+
+    double[] sceneBounds = null;
+    double sceneWidth = 0, sceneHeight= 0;
 
     /* ZVTM objects */
     VirtualSpaceManager vsm;
@@ -232,7 +236,8 @@ public class FITSOW {
                 sm.enableRegionUpdater(true);
             }
         };
-        nav.getGlobalView(ea);
+        setupSceneBounds();
+        getGlobalView(ea);
         // eh.cameraMoved(mCamera, null, 0);
     }
 
@@ -241,6 +246,47 @@ public class FITSOW {
         // nav.getGlobalView(null);
     }
 
+    void setupSceneBounds()
+    {
+        int l = 0;
+        while (sm.getRegionsAtLevel(l) == null){
+            l++;
+            if (l > sm.getLevelCount()){
+                l = -1;
+                break;
+            }
+        }
+        if (l > -1){
+            sceneBounds = sm.getLevel(l).getBounds();
+            System.out.println(
+                "Bounds ("+ l+ ") WNES: " 
+                + sceneBounds[0] +" "+ sceneBounds[1] +" "+  sceneBounds[2] +" "+ sceneBounds[3]);
+            sceneWidth = - sceneBounds[0] +  sceneBounds[2];
+            sceneHeight = sceneBounds[1]  - sceneBounds[3];
+        }
+    }
+    
+    void getGlobalView(EndAction ea){
+        if (sceneBounds == null) {return;}
+
+        zfCamera.moveTo(
+            (sceneBounds[0] +  sceneBounds[2])/2, (sceneBounds[1] + sceneBounds[3])/2);
+        double fw = sceneWidth /  getDisplayWidth();
+        double fh = sceneHeight / getDisplayHeight();
+        double f = fw;
+        //System.out.println("fw: " + fw + ", fh: " + fh);
+        if (fh > fw) f = fh;
+        double a = (zfCamera.focal + zfCamera.altitude) / zfCamera.focal;
+        double newz = zfCamera.focal * a * f - zfCamera.focal;
+        zfCamera.setAltitude(newz);
+
+        //Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        //dCamera.setLocation(l);
+
+        if (ea != null) {
+            ea.execute(null,null);
+        }
+    }
 
     void gc(){
         System.gc();
