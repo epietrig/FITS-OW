@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
-import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 import fr.inria.zvtm.fits.filters.Aips0Filter;
 import fr.inria.zvtm.fits.filters.BackgrFilter;
@@ -217,7 +216,7 @@ public class Config {
         COLOR_MAPPING_GRADIENTS.put("Stairs9", new Stairs9Filter());
     }
 
-    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImageDescription.DEFAULT_SCALE;
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsResourceHandler.DEFAULT_SCALE;
     public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
     static {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
