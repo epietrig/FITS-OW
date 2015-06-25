@@ -192,6 +192,12 @@ public class CursorManager {
 		cur.endCircularSelection();
 	}
 
+	public void longPress(Object obj, int id, double x, double y){
+		ZcsCursor cur = getCursor(obj, id);
+		if (cur == null){ return; }
+		cur.longPress(x, y);
+	}
+	
 	public void startDrag(Object obj, int id){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
@@ -401,6 +407,10 @@ public class CursorManager {
 				mnSpacePicker.setListener(this);
 			}
 			moveTo(x, y);
+		}
+
+		public void longPress(double x2, double y2) {
+			displayMainPieMenu();
 		}
 
 		public ZcsCursor(double x, double y, Color c){
@@ -653,7 +663,7 @@ public class CursorManager {
 
 		public void cursorDwelled(CursorDwellEvent event) {
 			System.out.println("DWELL");
-			displayMainPieMenu();
+//			displayMainPieMenu();
 			setCursorDwellListener(null);
 		}
 

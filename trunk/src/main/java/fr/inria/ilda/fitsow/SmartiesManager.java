@@ -323,6 +323,14 @@ class SmartiesManager implements Observer {
             break;
         }
         
+        case SmartiesEvent.SMARTIES_EVENTS_TYPE_LONGPRESS:{
+            System.out.println("SMARTIES_EVENTS_TYPE_LONGPRESS");
+            if (se.p != null){
+				inputManager.longPress(this, se.id, se.p.x, se.p.y);
+			}
+            break;
+        }
+        
         default:{
              //System.out.println("OTHER: " + se.type);
              break;

@@ -342,7 +342,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 		int freeFingersCount = freeFingers.size();
 
 		if(anchoredFingersCount == fingersCount) { // DWELL
-			System.out.println("DWELL");
+//			System.out.println("DWELL");
 			return new MTGestureEvent(source, true, fingersCount);
 		}
 		if(source == null) {
