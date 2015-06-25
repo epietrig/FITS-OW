@@ -53,6 +53,7 @@ import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zvtm.engine.Location;
 
 /**
  * @author Emmanuel Pietriga
@@ -257,9 +258,9 @@ public class FITSOW {
         }
         if (l > -1){
             sceneBounds = sm.getLevel(l).getBounds();
-            //System.out.println(
-            //    "Bounds ("+ l+ ") WNES: " 
-            //    + sceneBounds[0] +" "+ sceneBounds[1] +" "+  sceneBounds[2] +" "+ sceneBounds[3]);
+            System.out.println(
+                "Bounds ("+ l+ ") WNES: " 
+                + sceneBounds[0] +" "+ sceneBounds[1] +" "+  sceneBounds[2] +" "+ sceneBounds[3]);
             sceneWidth = - sceneBounds[0] +  sceneBounds[2];
             sceneHeight = sceneBounds[1]  - sceneBounds[3];
         }
@@ -267,8 +268,8 @@ public class FITSOW {
     
     void getGlobalView(EndAction ea){
         if (sceneBounds == null) {return;}
-        //Location l = 
-        mView.centerOnRegion(dCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        dCamera.setLocation(l);
         if (ea != null) {
             ea.execute(null,null);
         }
