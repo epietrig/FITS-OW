@@ -94,9 +94,10 @@ public class FITSScene implements Java2DPainter, PickerListener {
         // tile at deepest level, close to the center of the full image
         Level deepestLevel = sm.getLevel(sm.getLevelCount()-1);
         double[] wnes = deepestLevel.getBounds();
+        // XXX 512 is a hack to prevent selecting root region when it spans all levels
         od = deepestLevel.getClosestRegion(
-                            new Point2D.Double((wnes[0]+wnes[2])/2d,
-                                               (wnes[1]+wnes[3])/2d)).getObjectsInRegion()[0];
+                            new Point2D.Double((wnes[0]+wnes[2])/2d+512,
+                                               (wnes[1]+wnes[3])/2d+512)).getObjectsInRegion()[0];
         URL detailTileURL = null;
         if (od.getType().equals(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS)){
             detailTileURL = ((JSkyFitsImageDescription)od).getSrc();
@@ -342,6 +343,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
         g2d.fillRect(0, 0, viewWidth, Config.INFO_BAR_HEIGHT);
         g2d.setColor(Config.INFO_BAR_FOREGROUND);
         g2d.setComposite(Translucent.acO);
+        g2d.setFont(Config.DEFAULT_FONT);
         g2d.drawString(wcsStr, 4, 10);
         if (sbMsg != null){
             g2d.drawString(sbMsg, viewWidth/2, 10);
