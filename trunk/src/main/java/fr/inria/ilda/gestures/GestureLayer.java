@@ -25,6 +25,7 @@ import fr.inria.ilda.gestures.events.MTGestureEvent;
 import fr.inria.ilda.gestures.events.MTStartGestureEvent;
 import fr.inria.ilda.gestures.events.MTStopGestureEvent;
 import fr.inria.zvtm.engine.Java2DPainter;
+import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 public class GestureLayer implements IGestureEventListener, Java2DPainter, ActionListener {
 
@@ -174,33 +175,33 @@ public class GestureLayer implements IGestureEventListener, Java2DPainter, Actio
 		switch(direction) {
 		case NORTH :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_NORTH)) {
-				app.getScene().setScale(null, Config.SCALE_HISTEQ);
+				app.getScene().setScale(null, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
-				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_HISTEQ).highlight(true, null);
+				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.HIST_EQ).highlight(true, null);
 				gestureControl = GestureControl.SCALE_SELECTION_NORTH;
 			}
 			break;
 		case SOUTH :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_SOUTH)) {
-				app.getScene().setScale(null, Config.SCALE_SQRT);
+				app.getScene().setScale(null, JSkyFitsImage.ScaleAlgorithm.SQRT);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
-				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_SQRT).highlight(true, null);
+				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.SQRT).highlight(true, null);
 				gestureControl = GestureControl.SCALE_SELECTION_SOUTH;
 			}
 			break;
 		case WEST :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_WEST)) {
-				app.getScene().setScale(null, Config.SCALE_LINEAR);
+				app.getScene().setScale(null, JSkyFitsImage.ScaleAlgorithm.LINEAR);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
-				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LINEAR).highlight(true, null);
+				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LINEAR).highlight(true, null);
 				gestureControl = GestureControl.SCALE_SELECTION_WEST;
 			}
 			break;
 		case EAST :
 			if(!(gestureControl == GestureControl.SCALE_SELECTION_EAST)) {
-				app.getScene().setScale(null, Config.SCALE_LOG);
+				app.getScene().setScale(null, JSkyFitsImage.ScaleAlgorithm.LOG);
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
-				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(Config.SCALE_LOG).highlight(true, null);
+				app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LOG).highlight(true, null);
 				gestureControl = GestureControl.SCALE_SELECTION_EAST;
 			}
 			break;
