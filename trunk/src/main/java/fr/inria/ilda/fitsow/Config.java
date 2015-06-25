@@ -231,11 +231,11 @@ public class Config {
 
     /* ------------ Widget geometry and color ---------- */
     // color lookup table buttons
-    public static final int CLT_BTN_PADDING = 12;
-    public static final int CLT_BTN_W = 200;
-    public static final int CLT_BTN_H = 20;
-    public static final int CLT_BTN_HOFFSET = 6;
-    public static final int CLT_BTN_VOFFSET = 4;
+    public static final int CLT_BTN_PADDING = 18;
+    public static final int CLT_BTN_W = 300;
+    public static final int CLT_BTN_H = 30;
+    public static final int CLT_BTN_HOFFSET = 9;
+    public static final int CLT_BTN_VOFFSET = 6;
     public static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
     public static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
     public static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
