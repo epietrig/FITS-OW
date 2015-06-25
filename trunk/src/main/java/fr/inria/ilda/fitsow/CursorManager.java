@@ -396,7 +396,7 @@ public class CursorManager {
 			app.mnSpace.registerPicker(mnSpacePicker);
 			mnSpacePicker.setListener(this);
 
-			moveTo(x, y);
+			moveTo(x, y) ;
 		}
 
 		public ZcsCursor(double x, double y, Color c){
