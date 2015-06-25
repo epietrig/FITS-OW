@@ -12,3 +12,14 @@ cmdlines.txt
 
 
  scp -r target wild@192.168.2.2:/home2/wild/workspace/zvtm_demos/FITS-OW/trunk/
+
+
+ ##
+ssh wild@192.168.2.2
+cd /home2/wild/workspace/zvtm_demos/FITS-OW/trunk/
+rm -rf target
+cd /home2/wild/workspace/zvtm_demos/FITS-OW/trunk/
+rm -rf target
+##
+scp -r target  wild@frontal-2://home2/wild/workspace/zvtm_demos/FITS-OW/trunk/
+scp -r target  wild@frontal-2://home/wild/workspace/zvtm_demos/FITS-OW/trunk/

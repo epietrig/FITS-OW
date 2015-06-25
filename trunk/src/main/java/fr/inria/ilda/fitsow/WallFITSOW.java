@@ -96,16 +96,16 @@ public class WallFITSOW extends FITSOW {
         return cg.getRows();
     }
 
-    @Override
-    void getGlobalView(EndAction ea){
-        if (sceneBounds == null) {return;}
+    // @Override
+    // void getGlobalView(EndAction ea){
+    //     if (sceneBounds == null) {return;}
 
-        Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
-        zfCamera.setLocation(l);
-        if (ea != null) {
-             ea.execute(null,null);
-        }
-    }
+    //     Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+    //     zfCamera.setLocation(l);
+    //     if (ea != null) {
+    //          ea.execute(null,null);
+    //     }
+    // }
 
     public static void main(String[] args){
         Locale.setDefault(new Locale("en", "US"));

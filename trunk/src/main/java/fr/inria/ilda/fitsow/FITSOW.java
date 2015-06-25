@@ -271,19 +271,19 @@ public class FITSOW {
     void getGlobalView(EndAction ea){
         if (sceneBounds == null) {return;}
         
-        // zfCamera.moveTo(
-        //     (sceneBounds[0] +  sceneBounds[2])/2, (sceneBounds[1] + sceneBounds[3])/2);
-        // double fw = sceneWidth /  getDisplayWidth();
-        // double fh = sceneHeight / getDisplayHeight();
-        // double f = fw;
-        // //System.out.println("fw: " + fw + ", fh: " + fh);
-        // if (fh > fw) f = fh;
-        // double a = (zfCamera.focal + zfCamera.altitude) / zfCamera.focal;
-        // double newz = zfCamera.focal * a * f - zfCamera.focal;
-        // zfCamera.setAltitude(newz);
+        zfCamera.moveTo(
+            (sceneBounds[0] +  sceneBounds[2])/2, (sceneBounds[1] + sceneBounds[3])/2);
+        double fw = sceneWidth /  getDisplayWidth();
+        double fh = sceneHeight / getDisplayHeight();
+        double f = fw;
+        //System.out.println("fw: " + fw + ", fh: " + fh);
+        if (fh > fw) f = fh;
+        double a = (zfCamera.focal + zfCamera.altitude) / zfCamera.focal;
+        double newz = zfCamera.focal * a * f - zfCamera.focal;
+        zfCamera.setAltitude(newz);
 
-        Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
-        zfCamera.setLocation(l);
+        //Location l =  mView.centerOnRegion(zfCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        //zfCamera.setLocation(l);
         if (ea != null) {
             ea.execute(null,null);
         }

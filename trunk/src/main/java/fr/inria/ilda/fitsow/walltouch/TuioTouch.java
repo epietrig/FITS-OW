@@ -208,7 +208,7 @@ public void update(Observable obj, Object arg)
 			}
 			else if (_mode == MODE_READY) {
 				long dt = System.currentTimeMillis() - down_time;
-				if (dt < 500 && max_dist < 50){
+				if (dt < 5000 && max_dist < 50){
 					IldaEvent.SimpleTap ie = ildaEvent.new SimpleTap((cx1+cx2)/2, (cy1+cy2)/2, _numDown+1);
 					setChanged(); notifyObservers(ie);
 				}

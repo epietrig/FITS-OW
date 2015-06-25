@@ -267,7 +267,7 @@ public class CursorManager {
 		if(app.getMenuEventHandler().mainPieMenu == null && app.getMenuEventHandler().subPieMenu == null &&
 			!app.getMenuEventHandler().showingCLTmenu) {
 			app.getMenuEventHandler().displayMainPieMenu(new Point2D.Double(xx, yy));
-			app.getMenuEventHandler().mainPieMenu.setSensitivity(false);
+			app.getMenuEventHandler().mainPieMenu.setSensitivity(true);
 		}
 		else{
 			Glyph g = cursor.mnSpacePicker.lastGlyphEntered();

@@ -325,7 +325,7 @@ class SmartiesManager implements Observer {
         
         case SmartiesEvent.SMARTIES_EVENTS_TYPE_LONGPRESS:{
             System.out.println("SMARTIES_EVENTS_TYPE_LONGPRESS");
-            if (se.p != null){
+            if (se.p != null && se.num_fingers == 1){
 				inputManager.longPress(this, se.id, se.p.x, se.p.y);
 			}
             break;
