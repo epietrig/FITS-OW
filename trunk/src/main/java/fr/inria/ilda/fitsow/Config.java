@@ -80,6 +80,7 @@ public class Config {
     public static boolean CLUSTER_ANTIALIASING = true;
 
     public static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
+    public static final Font WALL_MENU_FONT = new Font("Dialog", Font.PLAIN, 32);
     public static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
 
     public static final Color INFO_BAR_BACKGROUND = Color.BLACK;
@@ -88,7 +89,7 @@ public class Config {
 
     /* PIEMENU */
 
-    public static final Font PIEMENU_FONT = DEFAULT_FONT;
+    public static final Font PIEMENU_FONT = WALL_MENU_FONT;
 
     public static Color PIEMENU_FILL_COLOR = Color.BLACK;
     public static Color PIEMENU_BORDER_COLOR = Color.WHITE;

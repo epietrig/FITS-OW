@@ -342,6 +342,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
         g2d.fillRect(0, 0, viewWidth, Config.INFO_BAR_HEIGHT);
         g2d.setColor(Config.INFO_BAR_FOREGROUND);
         g2d.setComposite(Translucent.acO);
+        g2d.setFont(Config.DEFAULT_FONT);
         g2d.drawString(wcsStr, 4, 10);
         if (sbMsg != null){
             g2d.drawString(sbMsg, viewWidth/2, 10);
