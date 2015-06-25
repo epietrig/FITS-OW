@@ -280,7 +280,12 @@ public class CursorManager {
         				if (index != -1){
             				String label =  app.getMenuEventHandler().mainPieMenu.getLabels()[index].getText();
             				if (label == MenuEventListener.MPM_SCALE){
-            					 app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(xx, yy));
+            					app.getMenuEventHandler().displayScaleSubMenu(new Point2D.Double(xx, yy));
+            					//JSkyFitsImage.ScaleAlgorithm sa = app.scene.getCurrentScale(null);
+								//Glyph hg = app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LOG);
+								//if (hg != null){
+				 				//	hg.highlight(true, null);
+				 				//}
             				}
             				else if (label == MenuEventListener.MPM_QUERY){
             					nextDragIsCircularSelection = true;
@@ -642,19 +647,23 @@ public class CursorManager {
 				app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 				String label = app.getMenuEventHandler().subPieMenu.getLabels()[index].getText();
 				if (label == app.getMenuEventHandler().SCALEPM_LOG){
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LOG).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LOG);
 
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_LINEAR){
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.LINEAR).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LINEAR);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_SQRT){
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.SQRT).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.SQRT);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_HISTEQ){
+					app.getMenuEventHandler().unhighlightAllScalePieMenuItems();
 					app.getMenuEventHandler().getScalePieMenuGlyphByScaleType(JSkyFitsImage.ScaleAlgorithm.HIST_EQ).highlight(true, null);
 					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
 				}
