@@ -304,7 +304,7 @@ public class CursorManager {
 		}
 	}
 
-	// ZOOM MANAGEMENT
+	// ZOOM MANAGEMENT	
 	public void startZoom(Object obj, int id){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
@@ -628,16 +628,16 @@ public class CursorManager {
 				String label = app.getMenuEventHandler().subPieMenu.getLabels()[index].getText();
 				if (label == app.getMenuEventHandler().SCALEPM_LOG){
 					//	                app.scene.setScale(app.getMenuEventHandler().selectedFITSImage, Config.SCALE_LOG);
-					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LOG);
+					app.scene.setScale(null, Config.SCALE_LOG);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_LINEAR){
-					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.LINEAR);
+					app.scene.setScale(null, Config.SCALE_LINEAR);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_SQRT){
-					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.SQRT);
+					app.scene.setScale(null, Config.SCALE_SQRT);
 				}
 				else if (label == app.getMenuEventHandler().SCALEPM_HISTEQ){
-					app.scene.setScale(null, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
+					app.scene.setScale(null, Config.SCALE_HISTEQ);
 				}
 			}
 		}
