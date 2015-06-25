@@ -4,6 +4,7 @@ cmdlines.txt
 ## change 144 to your ip
 
 ./wilder_all_run.sh -ip=144 --  -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
+./wilder_all_run.sh -ip=144 --  -zfits /media/ssd/Demos/zvtm/cosmos/scene.xml  -smarties
 
 ./local_run.sh -zfits /media/ssd/Demos/zvtm/coadd_AIT_shrink/scene.xml  -smarties
 
