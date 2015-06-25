@@ -77,6 +77,9 @@ public class FITSOW {
 
     FITSScene scene;
 
+    double[] sceneBounds = null;
+    double sceneWidth = 0, sceneHeight= 0;
+
     /* ZVTM objects */
     VirtualSpaceManager vsm;
     static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
@@ -232,7 +235,8 @@ public class FITSOW {
                 sm.enableRegionUpdater(true);
             }
         };
-        nav.getGlobalView(ea);
+        setupSceneBounds();
+        getGlobalView(ea);
         // eh.cameraMoved(mCamera, null, 0);
     }
 
@@ -241,6 +245,34 @@ public class FITSOW {
         // nav.getGlobalView(null);
     }
 
+    void setupSceneBounds()
+    {
+        int l = 0;
+        while (sm.getRegionsAtLevel(l) == null){
+            l++;
+            if (l > sm.getLevelCount()){
+                l = -1;
+                break;
+            }
+        }
+        if (l > -1){
+            sceneBounds = sm.getLevel(l).getBounds();
+            //System.out.println(
+            //    "Bounds ("+ l+ ") WNES: " 
+            //    + sceneBounds[0] +" "+ sceneBounds[1] +" "+  sceneBounds[2] +" "+ sceneBounds[3]);
+            sceneWidth = - sceneBounds[0] +  sceneBounds[2];
+            sceneHeight = sceneBounds[1]  - sceneBounds[3];
+        }
+    }
+    
+    void getGlobalView(EndAction ea){
+        if (sceneBounds == null) {return;}
+        //Location l = 
+        mView.centerOnRegion(dCamera,0,sceneBounds[0], sceneBounds[1],sceneBounds[2], sceneBounds[3]);
+        if (ea != null) {
+            ea.execute(null,null);
+        }
+    }
 
     void gc(){
         System.gc();
