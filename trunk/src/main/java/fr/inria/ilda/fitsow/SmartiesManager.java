@@ -19,7 +19,6 @@ import fr.lri.smarties.libserver.SmartiesPuck;
 import fr.lri.smarties.libserver.SmartiesWidget;
 import fr.lri.smarties.libserver.SmartiesWidgetHandler;
 
-
 class SmartiesManager implements Observer {
 
 	FITSOW application;
@@ -52,18 +51,22 @@ class SmartiesManager implements Observer {
 
 		System.out.println("new Smarties "+app_width+" "+app_height+" "+col+" "+row);
 
-	    smarties.initWidgets(12,2);
+	    smarties.initWidgets(16,2);
 
-		smarties.initWidgets(12,6);
-		SmartiesWidget sw1 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 3, 4, 2, 3);
+		SmartiesWidget sw1 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Global View", 1, 1, 4, 1);
 		sw1.handler = new EventGlobalView();
-		SmartiesWidget sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Reset Recognizer", 5, 4, 2, 3);
+		SmartiesWidget sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Reset Recognizer", 5, 1, 4, 1);
 		sw2.handler = new EventResetRecognizer();
 
-        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 5, 1, 4, 1);
+        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Color Menu", 9, 1, 4, 1);
         sw2.handler = new ColorMenuHandler();
 
-        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
+        sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_TOGGLE_BUTTON, "Wall Touch: On", 13, 1, 4, 1);
+        sw2.labelOn = "Wall Touch: On";
+        sw2.on = true;
+        sw2.handler = new WallTouchHandler();
+
+        //sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
         //sw.handler = new ColorMenuHandler();
 
 	    smarties.addObserver(this);
@@ -327,6 +330,13 @@ class SmartiesManager implements Observer {
         }
     }
 
+    class WallTouchHandler implements SmartiesWidgetHandler{
+        public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+            System.out.println("Wall Touch "+sw.on);
+            application.wtm.setActive(sw.on);
+            return true;
+        }
+    }
 
     class ColorMenuHandler implements SmartiesWidgetHandler{
         public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){

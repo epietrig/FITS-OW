@@ -17,11 +17,12 @@ import fr.inria.ilda.fitsow.walltouch.IldaEvent;
 class WallTouchManager implements Observer
 {
 
-double _displayWidth, _displayHeight;
-TuioTouch _tuioTouch;
+private double _displayWidth, _displayHeight;
+private TuioTouch _tuioTouch;
+private boolean _active;
 
-FITSOW application;
-CursorManager cursorManager;
+private FITSOW application;
+private CursorManager cursorManager;
 
 WallTouchManager(FITSOW app, CursorManager cm)
 {
@@ -37,9 +38,11 @@ WallTouchManager(FITSOW app, CursorManager cm)
 		0.0   // clusterT
 		);
 	_tuioTouch.addObserver(this);
-
+	_active = true;
 	cursorManager.registerDevice(this,"WallTouch");
 }
+
+public void setActive(boolean a) { _active = a; }
 
 double prevMoveX = 0, prevMoveY = 0;
 double prevPinchD = 0;
@@ -49,7 +52,7 @@ int contacts_lim = 4;
 public void update(Observable obj, Object arg)
 {
 	//System.out.println("TuioTouchManager");
-    if (!(arg instanceof IldaEvent.Base)) return;
+    if (!(arg instanceof IldaEvent.Base) || !_active) return;
 
 	IldaEvent.Base e = (IldaEvent.Base)arg;
  

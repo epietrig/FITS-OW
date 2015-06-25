@@ -97,6 +97,8 @@ public class FITSOW {
     Navigation nav;
     CursorManager cm;
 
+    WallTouchManager wtm;
+
     WEGlassPane gp;
     // PieMenu mainPieMenu;
 
@@ -127,7 +129,7 @@ public class FITSOW {
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
 
-        new WallTouchManager(this, cm);
+        wtm = new WallTouchManager(this, cm);
         
         if(options.smarties) {
     		GestureManager gestureManager = GestureManager.getInstance();
