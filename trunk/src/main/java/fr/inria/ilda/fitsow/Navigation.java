@@ -36,8 +36,7 @@ public class Navigation {
     /* -------------- pan-zoom ------------------- */
 
     public void getGlobalView(EndAction ea){
-        //app.sm.getGlobalView(app.zfCamera, Navigation.ANIM_MOVE_DURATION, ea);
-        app.getGlobalView(ea);
+        app.sm.getGlobalView(app.zfCamera, Navigation.ANIM_MOVE_DURATION, ea);
     }
 
     /* Higher view */
