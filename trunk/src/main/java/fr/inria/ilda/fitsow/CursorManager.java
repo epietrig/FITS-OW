@@ -253,7 +253,7 @@ public class CursorManager {
 	public void tap(Object obj, int id, double x, double y, int contacts) {
 		ZcsCursor cursor = getCursor(obj, id);
 		if(cursor == null) { return; }
-		cursor.mnSpacePicker.setListener(null); // pbs with CLT ...
+		cursor.mnSpacePicker.setListener(null);
 		double w = app.getDisplayWidth();
 		double h = app.getDisplayHeight();
 		double xx = x*w - w/2;
