@@ -353,7 +353,8 @@ public class MenuEventListener implements ViewListener, PickerListener {
     }
 
     public void displayColorSubMenu(){
-        currentCLT = (selectedFITSImage != null) ? selectedFITSImage.getColorLookupTable() : app.scene.zuistCLT;
+        currentCLT = app.scene.getCurrentCLT(selectedFITSImage);
+        System.out.println(currentCLT);
         Vector<Glyph> cltMenuGs = new Vector(2*Config.COLOR_MAPPING_LIST.length+1);
         double gridH = Config.LARGEST_COLOR_MAPPING_CAT;
         double gridW = Config.COLOR_MAPPINGS.length;
