@@ -231,11 +231,11 @@ public class Config {
 
     /* ------------ Widget geometry and color ---------- */
     // color lookup table buttons
-    public static final int CLT_BTN_PADDING = 12;
-    public static final int CLT_BTN_W = 200;
-    public static final int CLT_BTN_H = 20;
-    public static final int CLT_BTN_HOFFSET = 6;
-    public static final int CLT_BTN_VOFFSET = 4;
+    public static final int CLT_BTN_PADDING = 18;
+    public static final int CLT_BTN_W = 300;
+    public static final int CLT_BTN_H = 30;
+    public static final int CLT_BTN_HOFFSET = 9;
+    public static final int CLT_BTN_VOFFSET = 6;
     public static final BasicStroke CLT_BTN_SEL_STROKE = new BasicStroke(3f);
     public static final Color CLT_BTN_SEL_COLOR = Color.WHITE;
     public static final Color CLT_BTN_BORDER_COLOR = Color.GRAY;
@@ -243,7 +243,7 @@ public class Config {
     public static final double CLT_MENU_W = COLOR_MAPPINGS.length * (CLT_BTN_W + 2*CLT_BTN_PADDING);
     public static final double CLT_MENU_H = LARGEST_COLOR_MAPPING_CAT * (CLT_BTN_H + 2*CLT_BTN_PADDING);
 
-    public static final double FITS_THUMB_MARGIN = 20;
+    public static final double FITS_THUMB_MARGIN = 60;
 
     /* ------------ Simbad queries ---------- */
 

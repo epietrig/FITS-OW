@@ -55,6 +55,9 @@ public class FITSScene implements Java2DPainter, PickerListener {
     String previewedScale = Config.SCALE_LINEAR;
     String previewedCLT = Config.DEFAULT_COLOR_LOOKUP_TABLE;
 
+    double thCumulatedWidth = 0;
+    double thMaxHeight = 0;
+
     FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
         this.sm = app.sm;
@@ -107,8 +110,6 @@ public class FITSScene implements Java2DPainter, PickerListener {
 
     void loadThumbnails(URL[] thumbURLs){
         fitsThumbs = new JSkyFitsImage[thumbURLs.length];
-        double cumulatedWidth = 0;
-        double maxHeight = 0;
         for (int i=0;i<thumbURLs.length;i++){
             fitsThumbs[i] = new JSkyFitsImage(0, 0, Config.Z_FITS_IMG, thumbURLs[i]);
             fitsThumbs[i].setType(Config.T_FITS);
@@ -120,22 +121,26 @@ public class FITSScene implements Java2DPainter, PickerListener {
             fitsThumbs[i].updateDisplayedImage();
             fitsThumbs[i].setDrawBorder(true);
             fitsThumbs[i].setBorderColor(Config.FITS_IMG_BORDER_COLOR);
-            cumulatedWidth += fitsThumbs[i].getWidth()+Config.FITS_THUMB_MARGIN;
-            if (fitsThumbs[i].getHeight() > maxHeight){
-                maxHeight = fitsThumbs[i].getHeight();
+            thCumulatedWidth += fitsThumbs[i].getWidth()+Config.FITS_THUMB_MARGIN;
+            if (fitsThumbs[i].getHeight() > thMaxHeight){
+                thMaxHeight = fitsThumbs[i].getHeight();
             }
         }
+    }
+
+    void moveThumbnails(double ox, double oy){
         // adjust layout of thumbnails on top of color menu
-        double vx = -cumulatedWidth /2d + Config.FITS_THUMB_MARGIN/2d;
+        double vx = ox -thCumulatedWidth /2d + Config.FITS_THUMB_MARGIN/2d;
         for (int i=0;i<fitsThumbs.length;i++){
             fitsThumbs[i].moveTo(vx+fitsThumbs[i].getWidth()/2d,
-                                 .6f*Config.CLT_MENU_H+maxHeight/2d);
+                                 oy + thMaxHeight/2d);
             vx += fitsThumbs[i].getWidth() + Config.FITS_THUMB_MARGIN;
         }
     }
 
-    void showThumbnails(){
+    void showThumbnails(double ox, double oy){
         if (fitsThumbs != null){
+            moveThumbnails(ox, oy);
             for (JSkyFitsImage img:fitsThumbs){
                 img.setVisible(true);
             }
