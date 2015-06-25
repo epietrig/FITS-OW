@@ -13,3 +13,5 @@ trunk/.classpath
 trunk/.project
 
 trunk/bin
+
+trunk/single_master_run.sh
