@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 import fr.inria.zvtm.fits.filters.Aips0Filter;
 import fr.inria.zvtm.fits.filters.BackgrFilter;
@@ -82,6 +83,7 @@ public class Config {
     public static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
     public static final Font WALL_MENU_FONT = new Font("Dialog", Font.PLAIN, 32);
     public static final Font GLASSPANE_FONT = new Font("Arial", Font.PLAIN, 12);
+    public static final Font SIMBAD_FONT = new Font("Arial", Font.PLAIN, 14);
 
     public static final Color INFO_BAR_BACKGROUND = Color.BLACK;
     public static final Color INFO_BAR_FOREGROUND = Color.LIGHT_GRAY;
@@ -131,19 +133,6 @@ public class Config {
     public static final String T_ASTRO_OBJ_LB = T_ASTRO_OBJ_PREFIX + "Lb";
 
     /* ------------ Scales and color mappings ---------- */
-
-    // public static final String SCALE_LINEAR = "LIN";
-    // public static final String SCALE_LOG = "LOG";
-    // public static final String SCALE_SQRT = "SQRT";
-    // public static final String SCALE_HISTEQ = "HIST";
-    //
-    // public static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
-    // static {
-    //     SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
-    //     SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
-    //     SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
-    //     SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
-    // };
 
     public static final JSkyFitsImage.ScaleAlgorithm[] SCALE_LIST = {
         JSkyFitsImage.ScaleAlgorithm.LINEAR,
@@ -228,7 +217,7 @@ public class Config {
         COLOR_MAPPING_GRADIENTS.put("Stairs9", new Stairs9Filter());
     }
 
-    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.HIST_EQ;
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImageDescription.DEFAULT_SCALE;
     public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
     static {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
@@ -260,8 +249,9 @@ public class Config {
 
     public static final BasicStroke SIMBAD_AO_STROKE = new BasicStroke(2f);
     public static final Color SIMBAD_AO_COLOR = Color.RED;
+    public static final Color SIMBAD_AO_LBCOLOR = Color.WHITE;
     public static final Color SIMBAD_AO_BACKGROUND = Color.BLACK;
-    public static final float SIMBAD_AO_ALPHA = .6f;
+    public static final float SIMBAD_AO_ALPHA = .7f;
 
     public static final DecimalFormat ARCMIN_FORMATTER = new DecimalFormat("#0.0000");
 

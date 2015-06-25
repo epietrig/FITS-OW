@@ -117,11 +117,12 @@ public class SimbadQuery {
             VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
                                    Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
             VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
-                                 Config.SIMBAD_AO_COLOR, obj.getIdentifier(),
+                                 Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
                                  VText.TEXT_ANCHOR_START);
             app.dSpace.addGlyph(cr);
             app.dSpace.addGlyph(lb);
             cr.setStroke(Config.SIMBAD_AO_STROKE);
+            lb.setFont(Config.SIMBAD_FONT);
             lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
             lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
             lb.setScaleIndependent(true);
