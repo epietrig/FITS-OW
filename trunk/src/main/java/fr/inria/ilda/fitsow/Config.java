@@ -132,19 +132,25 @@ public class Config {
 
     /* ------------ Scales and color mappings ---------- */
 
-    public static final String SCALE_LINEAR = "LIN";
-    public static final String SCALE_LOG = "LOG";
-    public static final String SCALE_SQRT = "SQRT";
-    public static final String SCALE_HISTEQ = "HIST";
+    // public static final String SCALE_LINEAR = "LIN";
+    // public static final String SCALE_LOG = "LOG";
+    // public static final String SCALE_SQRT = "SQRT";
+    // public static final String SCALE_HISTEQ = "HIST";
+    //
+    // public static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
+    // static {
+    //     SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
+    //     SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
+    //     SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
+    //     SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
+    // };
 
-    public static LinkedHashMap<String,JSkyFitsImage.ScaleAlgorithm> SCALES = new LinkedHashMap(4,1);
-    static {
-        SCALES.put(SCALE_LINEAR, JSkyFitsImage.ScaleAlgorithm.LINEAR);
-        SCALES.put(SCALE_LOG, JSkyFitsImage.ScaleAlgorithm.LOG);
-        SCALES.put(SCALE_HISTEQ, JSkyFitsImage.ScaleAlgorithm.HIST_EQ);
-        SCALES.put(SCALE_SQRT, JSkyFitsImage.ScaleAlgorithm.SQRT);
+    public static final JSkyFitsImage.ScaleAlgorithm[] SCALE_LIST = {
+        JSkyFitsImage.ScaleAlgorithm.LINEAR,
+        JSkyFitsImage.ScaleAlgorithm.LOG,
+        JSkyFitsImage.ScaleAlgorithm.HIST_EQ,
+        JSkyFitsImage.ScaleAlgorithm.SQRT
     };
-    public static final String[] SCALE_LIST = SCALES.keySet().toArray(new String[SCALES.size()]);
 
     public static final String[][] COLOR_MAPPINGS = {
             {"Standard", "Aips0", "Background", "Color"},
@@ -222,7 +228,7 @@ public class Config {
         COLOR_MAPPING_GRADIENTS.put("Stairs9", new Stairs9Filter());
     }
 
-    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = SCALES.get(SCALE_HISTEQ);
+    public static JSkyFitsImage.ScaleAlgorithm DEFAULT_SCALE = JSkyFitsImage.ScaleAlgorithm.HIST_EQ;
     public static String DEFAULT_COLOR_LOOKUP_TABLE = "Ramp";
     static {
         JSkyFitsResourceHandler.DEFAULT_SCALE = DEFAULT_SCALE;
