@@ -69,6 +69,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 	}
 
 	public void startRecognition(AbstractInputEvent event) {
+		System.out.println("startRecognition");
 		state = GestureStateEnum.RUNNING; 
 		InputEvent2D event2D = (InputEvent2D)event;  
 		Point pt = new Point((int)event2D.x,(int)event2D.y);
@@ -108,7 +109,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 
 	@Override
 	public void stopRecognition(AbstractInputEvent event) {
-		state = GestureStateEnum.IDLE; 	
+		state = GestureStateEnum.IDLE;
 		InputEvent2D event2D = (InputEvent2D)event;  
 		fingerUp(event2D.source.getID());
 
@@ -134,6 +135,7 @@ public class MTRecognitionEngine extends AbstractGestureRecognizer {
 			listener.gestureOccured(stopEvent);
 		}
 		recentEvents.clear();
+		System.out.println("forceReset");
 	}
 
 	public void fingerDown(String id, Point position){

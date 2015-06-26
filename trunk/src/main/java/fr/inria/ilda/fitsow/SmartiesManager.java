@@ -165,7 +165,7 @@ class SmartiesManager implements Observer {
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_CREATE:{
 			//System.out.println("Create Puck: " + se.id);
 			inputManager.createCursor(
-					this, se.id, se.p.x, se.p.y, SmartiesColors.getPuckColorById(se.id));
+					this, se.p.id, se.p.x, se.p.y, SmartiesColors.getPuckColorById(se.p.id));
 			se.p.app_data = new myCursor();
 			break;
 		}
@@ -366,6 +366,7 @@ class SmartiesManager implements Observer {
 			System.out.println("ResetRecognizer");
 			if(mtRecognizer != null) {
 				mtRecognizer.forceReset();
+
 			}
 			return true;
 		}
