@@ -158,6 +158,7 @@ public class FITSOW {
     		segmenter.registerListener(mtRecognizer);
     		GestureLayer recognitionLayer = new GestureLayer(this);
     		mtRecognizer.registerListener(recognitionLayer);
+            msmarties.setGestureRecognizer(mtRecognizer);
     		gestureManager.start();
     		mView.setJava2DPainter(recognitionLayer, Java2DPainter.AFTER_PORTALS);
         }
