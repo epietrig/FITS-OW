@@ -356,7 +356,7 @@ class SmartiesManager implements Observer {
 	class EventGlobalView implements SmartiesWidgetHandler{
 		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
 			System.out.println("GlobalView");
-			nav.getGlobalView(null);
+			application.getGlobalView(null);
 			return true;
 		}
 	}
