@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# usage example: 
+# usage example:
 #		./wilder-all-run.sh -ip=144 -n=Sample -c=ilda.zcsample.Sample -l=chapuis -- other option
 # will run slaves for each cluster screen, joining the application named 'Sample'
-# and then run the master application 
+# and then run the master application
 
 #echo "$@"
 
@@ -27,21 +27,21 @@ for i in "$@"
 do
 case $i in
     -n=*)
-      if [ $accum_rest == 1 ]; 
+      if [ $accum_rest == 1 ];
         then REST="$REST $i";
       else
     	 NAME="${i#*=}"
       fi
     ;;
     -c=*)
-      if [ $accum_rest == 1 ]; 
+      if [ $accum_rest == 1 ];
         then REST="$REST $i";
       else
     	   CLASS="${i#*=}"
       fi
     ;;
     -ip=*)
-      if [ $accum_rest == 1 ]; 
+      if [ $accum_rest == 1 ];
         then REST="$REST $i";
       else
     	   #LIP="192.168.0.${i#*=}"
@@ -49,7 +49,7 @@ case $i in
       fi
     ;;
     -l=*)
-      if [ $accum_rest == 1 ]; 
+      if [ $accum_rest == 1 ];
         then REST="$REST $i";
       else
         LOGIN="${i#*=}"
@@ -59,7 +59,7 @@ case $i in
   		accum_rest=1
     ;;
     *)
-		if [ $accum_rest == 1 ]; 
+		if [ $accum_rest == 1 ];
 			then REST="$REST $i";
 		fi
     ;;
@@ -77,7 +77,7 @@ echo "LIP: " $LIP
 
 JARS="target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
-JARS=$JARS":target/aspectjrt-1.6.5.jar"
+JARS=$JARS":target/aspectjrt-1.8.6.jar"
 JARS=$JARS":target/jgroups-2.7.0.GA.jar"
 JARS=$JARS":target/log4j-1.2.17.jar"
 JARS=$JARS":target/slf4j-api-1.7.10.jar"
@@ -100,7 +100,7 @@ function colIP {
 }
 
 function startId {
-  case "$1" in 
+  case "$1" in
       "a" ) return 0;;
       "b" ) return 40;;
   esac
@@ -108,7 +108,7 @@ function startId {
 
 
 function blockNum {
-  case "$1" in 
+  case "$1" in
       "a" ) return 8;;
       "b" ) return 7;;
   esac
@@ -124,7 +124,7 @@ do
         colIP $col
         startIp=`expr $? + 1`
         startIp=`expr $startIp \* 10`
-        startIp=`expr $startIp + $row` 
+        startIp=`expr $startIp + $row`
         blockNum $col
         BLOCKNB=$?
         echo "$LOGIN@$col$row"
@@ -136,7 +136,7 @@ done
 
 
 sleep 3
-JARS="target/aspectjrt-1.6.5.jar"
+JARS="target/aspectjrt-1.8.6.jar"
 JARS=$JARS":target/jgroups-2.7.0.GA.jar"
 JARS=$JARS":target/log4j-1.2.17.jar"
 JARS=$JARS":target/slf4j-api-1.7.10.jar"
