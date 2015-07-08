@@ -9,6 +9,7 @@ package fr.inria.zuist.cluster;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 // import fr.inria.zuist.engine.FitsResourceHandler;
 import fr.inria.zuist.engine.SceneManager;
+import fr.inria.zuist.engine.SceneObserver;
 import fr.inria.zvtm.engine.Camera;
 import fr.inria.zvtm.engine.VirtualSpace;
 
@@ -18,16 +19,15 @@ import java.util.HashMap;
 //instantiated
 aspect EnableZuistSupport {
     pointcut sceneManagerCreation(SceneManager sceneManager,
-            VirtualSpace[] spaces, Camera[] cameras , HashMap<String,String> properties) :
-        execution(public SceneManager.new(VirtualSpace[], Camera[], HashMap<String,String>)) &&
+            SceneObserver[] observers, HashMap<String,String> properties) :
+        execution(public SceneManager.new(SceneObserver[], HashMap<String,String>)) &&
         this(sceneManager) &&
-        args(spaces, cameras, properties);
+        args(observers, properties);
 
     after(SceneManager sceneManager,
-            VirtualSpace[] spaces,
-            Camera[] cameras, HashMap<String,String> properties) returning():
+            SceneObserver[] observers, HashMap<String,String> properties) returning():
         sceneManagerCreation(sceneManager,
-                spaces, cameras, properties){
+                observers, properties){
         sceneManager.setResourceHandler(
                 JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                 new JSkyFitsResourceHandler()
