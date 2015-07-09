@@ -64,8 +64,6 @@ public class JSkyFitsImageDescription extends ResourceDescription {
 
     private double angle = 0;
 
-    private int layerIndex;
-
     private boolean createdWithGlobalData = false;
 
     private Region parentRegion;
@@ -87,8 +85,6 @@ public class JSkyFitsImageDescription extends ResourceDescription {
         this.colorLookupTable = colorLookupTable;
 
         isVisible = true;
-
-        layerIndex = parentRegion.getLayerIndex()-1;
 
         this.parentRegion = parentRegion;
 
@@ -141,8 +137,6 @@ public class JSkyFitsImageDescription extends ResourceDescription {
 
         isVisible = true;
 
-        layerIndex = parentRegion.getLayerIndex()-1;
-
         this.parentRegion = parentRegion;
 
         /*
@@ -186,10 +180,6 @@ public class JSkyFitsImageDescription extends ResourceDescription {
 
     public String getID(){
         return id;
-    }
-
-    public int getLayerIndex(){
-        return layerIndex;
     }
 
     public boolean isCreatedWithGlobalData(){

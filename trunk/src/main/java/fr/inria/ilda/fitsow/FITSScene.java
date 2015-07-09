@@ -25,6 +25,7 @@ import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.glyphs.Translucent;
 import fr.inria.zvtm.widgets.TranslucentWidget;
 import fr.inria.zuist.engine.SceneManager;
+import fr.inria.zuist.engine.SceneBuilder;
 import fr.inria.zuist.engine.ObjectDescription;
 import fr.inria.zuist.engine.JSkyFitsImageDescription;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
@@ -75,11 +76,11 @@ public class FITSScene implements Java2DPainter, PickerListener {
     void loadScene(File xmlSceneFile, ProgressListener pl){
         SCENE_FILE = xmlSceneFile;
         SCENE_FILE_DIR = SCENE_FILE.getParentFile();
-        sm.loadScene(SceneManager.parseXML(SCENE_FILE), SCENE_FILE_DIR, true, pl);
+        sm.loadScene(SceneBuilder.parseXML(SCENE_FILE), SCENE_FILE_DIR, true, pl);
         HashMap sceneAttributes = sm.getSceneAttributes();
-        if (sceneAttributes.containsKey(SceneManager._background)){
-            app.mView.setBackgroundColor((Color)sceneAttributes.get(SceneManager._background));
-            // clusteredView.setBackgroundColor((Color)sceneAttributes.get(SceneManager._background));
+        if (sceneAttributes.containsKey(SceneBuilder._background)){
+            app.mView.setBackgroundColor((Color)sceneAttributes.get(SceneBuilder._background));
+            // clusteredView.setBackgroundColor((Color)sceneAttributes.get(SceneBuilder._background));
         }
         // mCamera.setAltitude(0.0f);
         setupThumbnails();
