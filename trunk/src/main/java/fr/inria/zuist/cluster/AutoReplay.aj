@@ -15,7 +15,7 @@ import fr.inria.zvtm.cluster.Identifiable;
 import fr.inria.zuist.engine.Region;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
-import fr.inria.zuist.engine.JSkyFitsImageDescription;
+import fr.inria.zuist.od.JSkyFitsImageDescription;
 
 import java.net.URL;
 

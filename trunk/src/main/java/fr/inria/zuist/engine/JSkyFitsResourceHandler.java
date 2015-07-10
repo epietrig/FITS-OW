@@ -12,6 +12,8 @@ import java.net.URL;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.engine.SceneBuilder;
+import fr.inria.zuist.od.ResourceDescription;
+import fr.inria.zuist.od.JSkyFitsImageDescription;
 
 public class JSkyFitsResourceHandler implements ResourceHandler {
 

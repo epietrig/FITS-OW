@@ -4,16 +4,19 @@
  * $Id: FitsImageDescription.java 5249 2014-12-11 19:33:30Z fdelcampo $
  */
 
-package fr.inria.zuist.engine;
+package fr.inria.zuist.od;
 
 import java.io.IOException;
 import java.net.URL;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zuist.engine.SceneManager;
+import fr.inria.zuist.engine.Region;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.glyphs.Glyph;
 
 import java.awt.image.ImageFilter;
+
+import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
 //import jsky.coords.WCSTransform;
 import fr.inria.zvtm.fits.NomWcsKeywordProvider;

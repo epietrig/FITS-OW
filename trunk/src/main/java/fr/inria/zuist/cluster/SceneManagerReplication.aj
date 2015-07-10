@@ -26,19 +26,19 @@ import fr.inria.zvtm.cluster.SlaveUpdater;
 import fr.inria.zvtm.glyphs.ClosedShape;
 import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VText;
-import fr.inria.zuist.engine.ClosedShapeDescription;
-import fr.inria.zuist.engine.GlyphDescription;
-import fr.inria.zuist.engine.ImageDescription;
-import fr.inria.zuist.engine.ObjectDescription;
-import fr.inria.zuist.engine.SceneFragmentDescription;
-import fr.inria.zuist.engine.TextDescription;
+import fr.inria.zuist.od.ClosedShapeDescription;
+import fr.inria.zuist.od.GlyphDescription;
+import fr.inria.zuist.od.ImageDescription;
+import fr.inria.zuist.od.ObjectDescription;
+import fr.inria.zuist.od.SceneFragmentDescription;
+import fr.inria.zuist.od.TextDescription;
+import fr.inria.zuist.od.ResourceDescription;
 import fr.inria.zuist.engine.Level;
 import fr.inria.zuist.engine.Region;
 import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zuist.engine.SceneBuilder;
 import fr.inria.zuist.engine.SceneObserver;
 
-import fr.inria.zuist.engine.ResourceDescription;
 // import fr.inria.zuist.engine.FitsResourceHandler;
 import fr.inria.zuist.engine.JSkyFitsResourceHandler;
 
