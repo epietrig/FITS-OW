@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IP="172.20.10.2"
+IP="172.18.34.25"
 
 JARS="target/aspectjrt-1.8.6.jar"
 JARS=$JARS":target/jgroups-2.7.0.GA.jar"

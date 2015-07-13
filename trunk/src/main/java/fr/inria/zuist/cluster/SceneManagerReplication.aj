@@ -156,32 +156,27 @@ aspect SceneManagerReplication {
     pointcut createRegion(SceneBuilder sceneBuilder,
             double x, double y, double w, double h,
             int highestLevel, int lowestLevel,
-            String id, String title, String layer, short[] transitions,
-            short requestOrdering, boolean sensitivity, Color fill,
-            Color stroke) :
+            String id, String title, String[] tags, short[] transitions,
+            short requestOrdering) :
         execution(public Region SceneBuilder.createRegion(double, double, double, double,
-                    int, int, String, String, String, short[], short, boolean,
-                    Color, Color)) &&
+                    int, int, String, String, String[], short[], short)) &&
         if(VirtualSpaceManager.INSTANCE.isMaster()) &&
         this(sceneBuilder) &&
         args(x, y, w, h,
             highestLevel, lowestLevel,
-            id, title, layer, transitions,
-            requestOrdering, sensitivity, fill,
-            stroke);
+            id, title, tags, transitions,
+            requestOrdering);
 
     after(SceneBuilder sceneBuilder, double x, double y, double w, double h,
             int highestLevel, int lowestLevel,
-            String id, String title, String layer, short[] transitions,
-            short requestOrdering, boolean sensitivity, Color fill,
-            Color stroke) returning(Region region):
+            String id, String title, String[] tags, short[] transitions,
+            short requestOrdering) returning(Region region):
         createRegion(sceneBuilder, x, y, w, h, highestLevel, lowestLevel,
-                id, title, layer, transitions,
-                requestOrdering, sensitivity, fill,
-                stroke) &&
+                id, title, tags, transitions,
+                requestOrdering) &&
         if(VirtualSpaceManager.INSTANCE.isMaster()) &&
         !cflowbelow(createRegion(SceneBuilder, double, double, double, double, int, int,
-                String, String, String, short[], short, boolean, Color, Color)){
+                String, String, String[], short[], short)){
             region.setReplicated(true);
 
             RegionCreateDelta delta = new RegionCreateDelta(
@@ -189,9 +184,8 @@ aspect SceneManagerReplication {
                     region.getObjId(),
                     x, y, w, h,
                     highestLevel, lowestLevel,
-                    id, title, layer, transitions,
-                    requestOrdering, sensitivity, fill,
-                    stroke);
+                    id, title, tags, transitions,
+                    requestOrdering);
             VirtualSpaceManager.INSTANCE.sendDelta(delta);
         }
 
@@ -206,19 +200,15 @@ aspect SceneManagerReplication {
         private final int lowestLevel;
         private final String id;
         private final String title;
-        private final String layer;
+        private final String[] tags;
         private final short[] transitions;
         private final short requestOrdering;
-        private final boolean sensitivity;
-        private final Color fill;
-        private final Color stroke;
 
         RegionCreateDelta(ObjId<SceneBuilder> smId, ObjId<Region> regionId,
                 double x, double y, double w, double h,
                 int highestLevel, int lowestLevel,
-                String id, String title, String layer, short[] transitions,
-                short requestOrdering, boolean sensitivity, Color fill,
-                Color stroke){
+                String id, String title, String[] tags, short[] transitions,
+                short requestOrdering){
             this.smId = smId;
             this.regionId = regionId;
             this.x = x;
@@ -229,21 +219,17 @@ aspect SceneManagerReplication {
             this.lowestLevel = lowestLevel;
             this.id = id;
             this.title = title;
-            this.layer = layer;
+            this.tags = tags;
             this.transitions = transitions;
             this.requestOrdering = requestOrdering;
-            this.sensitivity = sensitivity;
-            this.fill = fill;
-            this.stroke = stroke;
         }
 
         public void apply(SlaveUpdater su){
             SceneBuilder sm = su.getSlaveObject(smId);
             Region region = sm.createRegion(x, y, w, h,
                     highestLevel, lowestLevel,
-                    id, title, layer, transitions,
-                    requestOrdering, sensitivity, fill,
-                    stroke);
+                    id, title, tags, transitions,
+                    requestOrdering);
             su.putSlaveObject(regionId, region);
         }
     }
