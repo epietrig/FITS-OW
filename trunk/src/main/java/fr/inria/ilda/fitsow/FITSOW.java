@@ -56,6 +56,8 @@ import fr.inria.zvtm.engine.Utils;
 import fr.inria.zvtm.engine.View;
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.VirtualSpaceManager;
+import fr.inria.zuist.engine.SceneObserver;
+import fr.inria.zuist.engine.ViewSceneObserver;
 
 /**
  * @author Emmanuel Pietriga
@@ -79,10 +81,10 @@ public class FITSOW {
     static final short CURSOR_LAYER = 3;
 
     FITSScene scene;
-    
+
     double[] sceneBounds = null;
     double sceneWidth = 0, sceneHeight= 0;
-    
+
     /* ZVTM objects */
     VirtualSpaceManager vsm;
     static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
@@ -117,9 +119,9 @@ public class FITSOW {
         ((JFrame)mView.getFrame()).setGlassPane(gp);
         gp.setValue(0);
         gp.setVisible(true);
-        VirtualSpace[] sceneSpaces = {zfSpace};
-        Camera[] sceneCameras = {zfCamera};
-        sm = new SceneManager(sceneSpaces, sceneCameras, new HashMap<String,String>(1,1));
+        SceneObserver[] observers = new SceneObserver[]{new ViewSceneObserver(
+            zfCamera.getOwningView(), zfCamera, zfSpace)};
+        sm = new SceneManager(observers, new HashMap<String,String>(1,1));
         sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                               new JSkyFitsResourceHandler());
         scene = new FITSScene(this, options.path_to_fits_dir, options.httpdIP, options.httpdPort);
@@ -136,7 +138,7 @@ public class FITSOW {
         gp.setLabel(WEGlassPane.EMPTY_STRING);
 
         wtm = new WallTouchManager(this, cm);
-        
+
         if(options.smarties) {
     		GestureManager gestureManager = GestureManager.getInstance();
     		SmartiesManager msmarties = new SmartiesManager(
@@ -262,7 +264,7 @@ public class FITSOW {
         if (l > -1){
             sceneBounds = sm.getLevel(l).getBounds();
             System.out.println(
-                "Bounds ("+ l+ ") WNES: " 
+                "Bounds ("+ l+ ") WNES: "
                 + sceneBounds[0] +" "+ sceneBounds[1] +" "+  sceneBounds[2] +" "+ sceneBounds[3]);
             sceneWidth = - sceneBounds[0] +  sceneBounds[2];
             sceneHeight = sceneBounds[1]  - sceneBounds[3];
@@ -271,7 +273,7 @@ public class FITSOW {
 
     void getGlobalView(EndAction ea){
         if (sceneBounds == null) {return;}
-        
+
         zfCamera.moveTo(
             (sceneBounds[0] +  sceneBounds[2])/2, (sceneBounds[1] + sceneBounds[3])/2);
         double fw = sceneWidth /  getDisplayWidth();
