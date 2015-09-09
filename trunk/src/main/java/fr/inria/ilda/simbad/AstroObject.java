@@ -7,11 +7,13 @@
 package fr.inria.ilda.simbad;
 
 import jsky.science.Coordinates;
+import java.util.HashMap;
 
 public class AstroObject {
 
     private String identifier;
     private Coordinates coords;
+    private HashMap<String, String> basicData;
 
     public AstroObject(){}
 
@@ -20,7 +22,9 @@ public class AstroObject {
      * format.
      */
     static AstroObject fromSimbadRow(String simRowStr){
+        String[] keys = {"ID", "COORDA", "COORDD", "PM", "RV", "SP", "PLX", "MT", "DIM", "FLUXES"};
         AstroObject retval = new AstroObject();
+        retval.basicData = new HashMap<String, String>();
 
         String[] elems = simRowStr.split("\\|");
         if(elems.length < 3){
@@ -30,6 +34,13 @@ public class AstroObject {
         retval.identifier = elems[0];
         retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
+
+        for(int i = 3; i < elems.length-1; i++){
+          String elementFirstComponent = elems[i].split(",")[0].trim();
+          if (!elementFirstComponent.equals("~")) //element is not empty
+            retval.basicData.put(keys[i], elems[i]);
+
+        }
         return retval;
     }
 
@@ -55,7 +66,13 @@ public class AstroObject {
         return identifier;
     }
 
+    public HashMap<String,String> getBasicData(){
+      return basicData;
+    }
+
     public String toString(){
-        return identifier + " | " + coords.getRa() + " | " + coords.getDec();
+        return identifier + " | " + coords.getRa() + " | " + coords.getDec() +
+        "|" + basicData.get("PM") + basicData.get("RV") + basicData.get("SP") +
+        basicData.get("PLX") + basicData.get("MT") + basicData.get("DIM");
     }
 }

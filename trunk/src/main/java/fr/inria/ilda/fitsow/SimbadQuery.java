@@ -112,27 +112,32 @@ public class SimbadQuery {
     }
 
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
-        for(AstroObject obj: objs){
-            Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
-            VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
-                                   Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
-            VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
-                                 Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
-                                 VText.TEXT_ANCHOR_START);
-            app.dSpace.addGlyph(cr);
-            app.dSpace.addGlyph(lb);
-            cr.setStroke(Config.SIMBAD_AO_STROKE);
-            lb.setFont(Config.SIMBAD_FONT);
-            lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
-            lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
-            lb.setScaleIndependent(true);
-            cr.setOwner(obj);
-            lb.setOwner(obj);
-            img.stick(cr);
-            img.stick(lb);
-            cr.setType(Config.T_ASTRO_OBJ_CR);
-            lb.setType(Config.T_ASTRO_OBJ_LB);
+      try{
+          for(AstroObject obj: objs){
+              Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
+              VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
+                                     Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
+              VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
+                                   Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
+                                   VText.TEXT_ANCHOR_START);
+              app.dSpace.addGlyph(cr);
+              app.dSpace.addGlyph(lb);
+              cr.setStroke(Config.SIMBAD_AO_STROKE);
+              lb.setFont(Config.SIMBAD_FONT);
+              lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
+              lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
+              lb.setScaleIndependent(true);
+              cr.setOwner(obj);
+              lb.setOwner(obj);
+              img.stick(cr);
+              img.stick(lb);
+              cr.setType(Config.T_ASTRO_OBJ_CR);
+              lb.setType(Config.T_ASTRO_OBJ_LB);
+          }
+        }catch(NullPointerException e){
+          e.printStackTrace();
         }
+
     }
 
     void fadeOutQueryRegion(){
