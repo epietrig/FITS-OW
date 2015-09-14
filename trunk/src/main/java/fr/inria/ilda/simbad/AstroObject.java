@@ -35,12 +35,22 @@ public class AstroObject {
         retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
 
+        //saving basic data
         for(int i = 3; i < elems.length-1; i++){
-          String elementFirstComponent = elems[i].split(",")[0].trim();
-          if (!elementFirstComponent.equals("~")) //element is not empty
+          String elementFirstComponent = elems[i].split(",")[0];
+          if (!elementFirstComponent.trim().contains("~")){
             retval.basicData.put(keys[i], elems[i]);
-
+          } //element is not empty
         }
+        // saving fluxes in basic data
+        retval.basicData.put(keys[elems.length-1],elems[elems.length-1]);
+        // String[] fluxes = elems[elems.length-1].split("\n");
+        // HashMap fluxlist = new HashMap<String, String>();
+        // for(int i = 0; i < fluxes.length; i++){
+        //   String[] flux = fluxes[i].split(" ");
+        //   fluxlist.put(flux[0], flux[1]);
+        // }
+        // retval.basicData.put("FLUXES", fluxlist);
         return retval;
     }
 
