@@ -22,7 +22,7 @@ public class AstroObject {
      * format.
      */
     static AstroObject fromSimbadRow(String simRowStr){
-        String[] keys = {"ID", "COORDA", "COORDD", "PM", "RV", "SP", "PLX", "MT", "DIM", "FLUXES"};
+        String[] keys = {"ID", "COORDA", "COORDD", "PM", "RV", "SP", "PLX", "MT", "DIM", "OTYPE", "FLUXES"};
         AstroObject retval = new AstroObject();
         retval.basicData = new HashMap<String, String>();
 
@@ -34,8 +34,8 @@ public class AstroObject {
         retval.identifier = elems[0];
         retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
-
         //saving basic data
+        System.out.println(elems[elems.length-2]);
         for(int i = 3; i < elems.length-1; i++){
           String elementFirstComponent = elems[i].split(",")[0];
           if (!elementFirstComponent.trim().contains("~")){
@@ -44,13 +44,6 @@ public class AstroObject {
         }
         // saving fluxes in basic data
         retval.basicData.put(keys[elems.length-1],elems[elems.length-1]);
-        // String[] fluxes = elems[elems.length-1].split("\n");
-        // HashMap fluxlist = new HashMap<String, String>();
-        // for(int i = 0; i < fluxes.length; i++){
-        //   String[] flux = fluxes[i].split(" ");
-        //   fluxlist.put(flux[0], flux[1]);
-        // }
-        // retval.basicData.put("FLUXES", fluxlist);
         return retval;
     }
 

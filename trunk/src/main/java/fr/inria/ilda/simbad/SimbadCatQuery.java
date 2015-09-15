@@ -55,7 +55,7 @@ public class SimbadCatQuery {
             // for more information about possible parameters
             String script = String.format(
                     "output console=off script=off\n" +
-                    "format object \"%%IDLIST|%%COO(d;A)|%%COO(d;D)|%%PM(A,D,Q,E)|%%RV(V,Z,W,Q,E)|%%SP(S,Q)|%%PLX(V,Q,E)|%%MT(M,Q)|%%DIM(X,Y,A,I,W,Q)|%%FLUXLIST \"\n" +
+                    "format object \"%%IDLIST(1)|%%COO(d;A)|%%COO(d;D)|%%PM(A,D,Q,E)|%%RV(V,Z,W,Q,E)|%%SP(S,Q)|%%PLX(V,Q,E)|%%MT(M,Q)|%%DIM(X,Y,A,I,W,Q)|%%OTYPE|%%FLUXLIST \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
