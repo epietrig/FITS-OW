@@ -35,7 +35,6 @@ public class AstroObject {
         retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
         //saving basic data
-        System.out.println(elems[elems.length-2]);
         for(int i = 3; i < elems.length-1; i++){
           String elementFirstComponent = elems[i].split(",")[0];
           if (!elementFirstComponent.trim().contains("~")){

@@ -5,6 +5,7 @@
  */
 
 package fr.inria.ilda.fitsow;
+import fr.inria.zvtm.glyphs.VRectangle;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -28,6 +29,7 @@ import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 import fr.inria.ilda.simbad.AstroObject;
 import fr.inria.ilda.simbad.SimbadCatQuery;
+import fr.inria.ilda.simbad.SimbadResults;
 
 import jsky.coords.WorldCoords;
 
@@ -134,6 +136,13 @@ public class SimbadQuery {
               cr.setType(Config.T_ASTRO_OBJ_CR);
               lb.setType(Config.T_ASTRO_OBJ_LB);
           }
+          double[] bounds = img.getBounds();
+          System.out.println("n = "+bounds[1]+" e = "+ bounds[2]);
+          System.out.println("Location x = "+img.getLocation().x+" y = "+ img.getLocation().y);
+          System.out.println("size = "+img.getSize());
+          SimbadResults results = new SimbadResults(objs, 200, 200);
+          app.mnSpace.addGlyph(results);
+          // img.stick(rectangle);
         }catch(NullPointerException e){
           e.printStackTrace();
         }
