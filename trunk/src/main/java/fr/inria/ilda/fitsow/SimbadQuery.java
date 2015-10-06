@@ -13,6 +13,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Vector;
 
 import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zvtm.engine.SwingWorker;
@@ -26,6 +27,7 @@ import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.VCross;
 import fr.inria.zvtm.glyphs.VCircle;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
+import fr.inria.zvtm.glyphs.Glyph;
 
 import fr.inria.ilda.simbad.AstroObject;
 import fr.inria.ilda.simbad.SimbadCatQuery;
@@ -38,7 +40,6 @@ public class SimbadQuery {
     FITSOW app;
 
     AnimationManager am = VirtualSpaceManager.INSTANCE.getAnimationManager();
-
     JSkyFitsImage centerImg, onCircleImg;
 
     Point2D.Double queryRegionCenter;
@@ -66,6 +67,7 @@ public class SimbadQuery {
         // queryRegionLb.moveTo(queryRegionCenter.x, queryRegionCenter.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
         queryRegionG.setVisible(true);
         // queryRegionLb.setVisible(true);
+
     }
 
     void setRadius(Point2D.Double onCircle){
@@ -115,38 +117,68 @@ public class SimbadQuery {
 
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
       try{
-          for(AstroObject obj: objs){
-              Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
-              VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
-                                     Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
-              VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
-                                   Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
-                                   VText.TEXT_ANCHOR_START);
-              app.dSpace.addGlyph(cr);
-              app.dSpace.addGlyph(lb);
-              cr.setStroke(Config.SIMBAD_AO_STROKE);
-              lb.setFont(Config.SIMBAD_FONT);
-              lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
-              lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
-              lb.setScaleIndependent(true);
-              cr.setOwner(obj);
-              lb.setOwner(obj);
-              img.stick(cr);
-              img.stick(lb);
-              cr.setType(Config.T_ASTRO_OBJ_CR);
-              lb.setType(Config.T_ASTRO_OBJ_LB);
-          }
-          double[] bounds = img.getBounds();
-          System.out.println("n = "+bounds[1]+" e = "+ bounds[2]);
-          System.out.println("Location x = "+img.getLocation().x+" y = "+ img.getLocation().y);
-          System.out.println("size = "+img.getSize());
-          SimbadResults results = new SimbadResults(objs, 200, 200);
-          app.mnSpace.addGlyph(results);
-          // img.stick(rectangle);
-        }catch(NullPointerException e){
-          e.printStackTrace();
-        }
+        System.out.println("gonna call fx to clean"); clearQueryResults();
+        for(AstroObject obj: objs){
+          Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
+          VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
+                                 Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
+          VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
+                               Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
+                               VText.TEXT_ANCHOR_START);
+          app.dSpace.addGlyph(cr);
+          app.dSpace.addGlyph(lb);
+          cr.setStroke(Config.SIMBAD_AO_STROKE);
+          lb.setFont(Config.SIMBAD_FONT);
+          lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
+          lb.setTranslucencyValue(Config.SIMBAD_AO_ALPHA);
+          lb.setScaleIndependent(true);
+          cr.setOwner(obj);
+          lb.setOwner(obj);
+          img.stick(cr);
+          img.stick(lb);
+          cr.setType(Config.T_ASTRO_OBJ_CR);
+          lb.setType(Config.T_ASTRO_OBJ_LB);
+      }
+      double[] bounds = img.getBounds();
+      SimbadResults results = new SimbadResults(objs, 200, 200);
+      app.mnSpace.addGlyph(results);
+      }catch(NullPointerException e){
+        e.printStackTrace();
+      }
+    }
 
+    void clearQueryResults(){
+      System.out.println("trying to clear");
+      Vector<Glyph> glyphs = app.dSpace.getAllGlyphs();
+      Vector<Glyph> toBeRemoved = new Vector<Glyph>();
+      for (Glyph gl : glyphs){
+        try{
+          if(gl.getType().equals("aoCr") || gl.getType().equals("aoLb")){
+            toBeRemoved.add(gl);
+          }
+        }catch(NullPointerException e){
+          System.out.println("found glyph with null type");
+        }
+      }
+      app.dSpace.removeGlyphs(toBeRemoved.toArray(new Glyph[toBeRemoved.size()]));
+      /*Initially, I thought of iterating over every obj on the getAllGlyphs Vector,
+      removing all glyphs needed, but this wasn't possible (you can't destroy the Object
+      you're iterating over). I then thought of iterating over naturals from 0 to the size
+      of the vector, as shown below, but this wasn't possible either. For some reason,
+      when itarating like this, labels wouldn't be found to be on the vector, so only crosses
+      would be removed. I have no idea why. I also though it would be possible to remove all
+      glyphs in the vector but the first (the fits image) and last (null), but since
+      I'm not sure what other type of glyphs could be added to that vs, I decided to check.*/
+      // for(int i = 0; i < glyphs.size(); i++){
+      //   System.out.println("type: "+ glyphs.get(i).getType());
+      //   try{
+      //     String type = glyphs.get(i).getType();
+      //     if(type.equals("aoCr") || type.equals("aoLb")){
+      //         // System.out.println("cleaning :"+type);
+      //        	app.dSpace.removeGlyph(glyphs.get(i));}
+      //   }catch(NullPointerException e){
+      //     System.out.println("found glyph with null type");}
+      // }
     }
 
     void fadeOutQueryRegion(){

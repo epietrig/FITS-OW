@@ -32,4 +32,6 @@ public class SimbadResults extends Composite{
     }
     this.setVisible(true);
   }
+
+
 }
