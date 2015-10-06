@@ -117,7 +117,7 @@ public class SimbadQuery {
 
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
       try{
-        System.out.println("gonna call fx to clean"); clearQueryResults();
+        clearQueryResults();
         for(AstroObject obj: objs){
           Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
           VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
@@ -148,12 +148,11 @@ public class SimbadQuery {
     }
 
     void clearQueryResults(){
-      System.out.println("trying to clear");
       Vector<Glyph> glyphs = app.dSpace.getAllGlyphs();
       Vector<Glyph> toBeRemoved = new Vector<Glyph>();
       for (Glyph gl : glyphs){
         try{
-          if(gl.getType().equals("aoCr") || gl.getType().equals("aoLb")){
+          if(gl.getType().equals("aoCr") || gl.getType().equals("aoLb")){//shouldn't be hardcoded
             toBeRemoved.add(gl);
           }
         }catch(NullPointerException e){
@@ -161,6 +160,20 @@ public class SimbadQuery {
         }
       }
       app.dSpace.removeGlyphs(toBeRemoved.toArray(new Glyph[toBeRemoved.size()]));
+      /*Removing list box now. I could just delete the glyph instead of getting the
+      vector and checking, but I did it this way so I can later add more glyphs of type
+      'SimbadResults' to this layer and they'd be all whiped out when performing a new query.*/
+      Vector<Glyph> glyphs2 = app.mnSpace.getAllGlyphs();
+      Vector<Glyph> toBeRemoved2 = new Vector<Glyph>();
+      for(Glyph gl : glyphs2){
+        try{
+          if(gl.getType().equals("SimbadResults"))//shouldn't be hardcoded
+            toBeRemoved2.add(gl);
+        }catch(NullPointerException e){
+          System.out.println("found glyph with null type");
+        }
+      }
+      app.mnSpace.removeGlyphs(toBeRemoved2.toArray(new Glyph[toBeRemoved2.size()]));
       /*Initially, I thought of iterating over every obj on the getAllGlyphs Vector,
       removing all glyphs needed, but this wasn't possible (you can't destroy the Object
       you're iterating over). I then thought of iterating over naturals from 0 to the size

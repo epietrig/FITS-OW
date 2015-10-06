@@ -12,8 +12,10 @@ public class SimbadResults extends Composite{
   private int size, w, h;
   private VRectangle background;
   private VText[] ids;
+  private String glyphType = "SimbadResults";
 
   public SimbadResults(List<AstroObject> results, double x, double y){
+    this.setType(glyphType);
     size = results.size();
     h = size*20+5;
     w = 200;
@@ -32,6 +34,4 @@ public class SimbadResults extends Composite{
     }
     this.setVisible(true);
   }
-
-
 }
