@@ -41,6 +41,8 @@ import fr.inria.zvtm.event.PickerListener;
 import fr.inria.zuist.engine.Region;
 import fr.inria.zuist.od.ObjectDescription;
 import fr.inria.zuist.od.TextDescription;
+import java.awt.geom.Point2D.Double;
+import fr.inria.ilda.simbad.SimbadResults;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -123,7 +125,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
     }
 
-    public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){}
+    public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
+    }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
 
@@ -144,6 +147,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void mouseMoved(ViewPanel v, int jpx, int jpy, MouseEvent e){
         currentJPX = jpx;
         currentJPY = jpy;
+        lastVX = v.getVCursor().getVSXCoordinate();
+        lastVY = v.getVCursor().getVSYCoordinate();
         updateZUISTSpacePicker(jpx, jpy);
         updateDataSpacePicker(jpx, jpy);
         if (ciFITSImage != null){
@@ -157,6 +162,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
                 // be silent about it, only happens at init time when getting
                 // mouse moved events before pickers have been created.
             }
+        }
+        if(simbadResultActive()){
+          app.mView.setActiveLayer(FITSOW.MENU_LAYER);
+          //System.out.println("this lonshot actually worked! go figure");
         }
     }
 
@@ -282,5 +291,36 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         app.scene.setStatusBarMessage(null);
         querying = false;
     }
+
+    boolean simbadResultActive(){
+      Vector<Glyph> mnGlyphs = app.mnSpace.getAllGlyphs();
+      for(Glyph g : mnGlyphs){
+        if(g.getType().equals("SimbadResults")) return true;
+      }
+      return false;
+    }
+
+  /*  boolean inSimbadResults(int jpx, int jpy){
+      Vector<Glyph> mnGlyphs = app.mnSpace.getAllGlyphs();
+      Glyph sr = null;
+      System.out.println("in your fx");
+      try{
+        for(Glyph g : mnGlyphs){
+          if(g.getType().equals("SimbadResults")){
+          sr = g; break;
+          }
+        }
+        double[] bounds = sr.getBounds();
+        Point2D.Double res = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates((int)bounds[0],(int)bounds[1],app.mnCamera,res);
+        System.out.println("jpx: "+jpx+" jpy: "+jpy);
+        System.out.println("x: "+res.getX()+" y: "+res.getY());
+        if(sr.coordInsideP(jpx, jpy, app.mnCamera))System.out.println("true");
+        return false;
+      }catch(NullPointerException e){
+        return false;
+      }
+
+    }*/
 
 }

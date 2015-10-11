@@ -14,8 +14,8 @@ import fr.inria.zvtm.glyphs.VSwingComponent;
 public class SimbadResults extends Composite{
 
   private int size, w, h;
+  private double x, y;
   private VRectangle background;
-  // private VText[] ids;
   private String glyphType = "SimbadResults";
 
   private VSwingComponent resultlist;
@@ -32,6 +32,8 @@ public class SimbadResults extends Composite{
     size = results.size();
     h = size*20+5;
     w = 200;
+    this.x = x ;
+    this.y = y;
 
     JPanel panel= new JPanel();
     panel.setSize(w,h);
@@ -61,5 +63,12 @@ public class SimbadResults extends Composite{
     //   this.addChild(splits[i]);
     // }
     // this.setVisible(true);
+  }
+
+  public double getX(){
+    return x;
+  }
+  public double getY(){
+    return y;
   }
 }
