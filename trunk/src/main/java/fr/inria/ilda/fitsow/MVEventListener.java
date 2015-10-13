@@ -126,6 +126,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
+      Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
+      if(!gs.isEmpty()){
+        app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
+        SimbadResults list = (SimbadResults) gs.get(0);
+        VCursor cursor = app.mView.getCursor();
+        double x = cursor.getVSXCoordinate();
+        double y = cursor.getVSYCoordinate();
+        if(list.insideList(x,y)) list.highlight(list.insideWhichObject(x,y));
+      }
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -162,10 +171,6 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
                 // be silent about it, only happens at init time when getting
                 // mouse moved events before pickers have been created.
             }
-        }
-        if(simbadResultActive()){
-          app.mView.setActiveLayer(FITSOW.MENU_LAYER);
-          //System.out.println("this lonshot actually worked! go figure");
         }
     }
 

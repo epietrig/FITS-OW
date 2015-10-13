@@ -197,7 +197,7 @@ public class CursorManager {
 		if (cur == null){ return; }
 		cur.longPress(x, y);
 	}
-	
+
 	public void startDrag(Object obj, int id){
 		ZcsDevice dev = getDevice(obj);
 		if (dev == null){ return; }
@@ -381,7 +381,7 @@ public class CursorManager {
 		protected boolean down = false;
 		protected long downTime = -1;
 
-		protected PickerVS mnSpacePicker, zfSpacePicker, dSpacePicker;
+		protected PickerVS mnSpacePicker, zfSpacePicker, dSpacePicker, sqSpacePicker;
 		protected Point2D.Double vsCoords = new Point2D.Double();
 
 		protected SimbadQuery sq;
@@ -405,6 +405,10 @@ public class CursorManager {
 			dSpacePicker = new PickerVS();
 			app.dSpace.registerPicker(dSpacePicker);
 			dSpacePicker.setListener(this);
+
+			sqSpacePicker = new PickerVS();
+			app.sqSpace.registerPicker(sqSpacePicker);
+			sqSpacePicker.setListener(this);
 
 			mnSpacePicker = new PickerVS();
 			app.mnSpace.registerPicker(mnSpacePicker);
@@ -697,7 +701,7 @@ public class CursorManager {
 			cursors.put(id, cur);
 			if (hide) { cur.hide(); }
 		}
-		
+
 		public void createCursor(int id, double x, double y, Color c, boolean hide){
 			createCursor(id, x, y, c, false, false);
 		}

@@ -139,9 +139,10 @@ public class SimbadQuery {
           cr.setType(Config.T_ASTRO_OBJ_CR);
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
-      double[] bounds = img.getBounds();
-      SimbadResults results = new SimbadResults(objs, 200, 200);
-      app.mnSpace.addGlyph(results);
+      if(!objs.isEmpty()){
+        SimbadResults results = new SimbadResults(objs, 200, 200);
+        app.sqSpace.addGlyph(results);
+      }
       }catch(NullPointerException e){
         e.printStackTrace();
       }

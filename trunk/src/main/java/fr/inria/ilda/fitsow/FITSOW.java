@@ -78,6 +78,7 @@ public class FITSOW {
     static final short ZUIST_FITS_LAYER = 0;
     static final short DATA_LAYER = 1;
     static final short MENU_LAYER = 2;
+    static final short SIMBAD_LAYER = 4;
     static final short CURSOR_LAYER = 3;
 
     FITSScene scene;
@@ -90,12 +91,13 @@ public class FITSOW {
     static final String ZUIST_FITS_SPACE_STR = "ZUIST FITS Layer";
     static final String DATA_SPACE_STR = "Data Layer";
     static final String MENU_SPACE_STR = "Command/Menu Layer";
+    static final String SIMBAD_SPACE_STR = "Simbad queries Layer";
     static final String CURSOR_SPACE_STR = "Cursor Layer";
-    VirtualSpace zfSpace, dSpace, mnSpace, crSpace;
-    Camera zfCamera, dCamera, mnCamera, crCamera;
+    VirtualSpace zfSpace, dSpace, mnSpace, sqSpace, crSpace;
+    Camera zfCamera, dCamera, mnCamera, sqCamera, crCamera;
     static final String MAIN_VIEW_TITLE = "FITS on a Wall";
 
-    PickerVS zfSpacePicker, dSpacePicker, mnSpacePicker;
+    PickerVS zfSpacePicker, dSpacePicker, sqSpacePicker, mnSpacePicker;
 
     View mView;
     MVEventListener eh;
@@ -173,15 +175,18 @@ public class FITSOW {
         zfSpace = vsm.addVirtualSpace(ZUIST_FITS_SPACE_STR);
         dSpace = vsm.addVirtualSpace(DATA_SPACE_STR);
         mnSpace = vsm.addVirtualSpace(MENU_SPACE_STR);
+        sqSpace = vsm.addVirtualSpace(SIMBAD_SPACE_STR);
         crSpace = vsm.addVirtualSpace(CURSOR_SPACE_STR);
         zfCamera = zfSpace.addCamera();
         dCamera = dSpace.addCamera();
         mnCamera = mnSpace.addCamera();
+        sqCamera = sqSpace.addCamera();
         crCamera = crSpace.addCamera();
-        Vector cameras = new Vector(4);
+        Vector cameras = new Vector(5);
         cameras.add(zfCamera);
         cameras.add(dCamera);
         cameras.add(mnCamera);
+        cameras.add(sqCamera);
         cameras.add(crCamera);
         zfCamera.stick(dCamera, true);
 //        zfCamera.stick(crCamera, true);
@@ -199,6 +204,7 @@ public class FITSOW {
         zfCamera.addListener(eh);
         mView.setListener(eh, ZUIST_FITS_LAYER);
         mView.setListener(eh, DATA_LAYER);
+        mView.setListener(eh, SIMBAD_LAYER);
         mView.setListener(meh, MENU_LAYER);
         // mView.getCursor().getPicker().setListener(eh);
         zfSpacePicker = new PickerVS();
@@ -206,6 +212,9 @@ public class FITSOW {
         dSpacePicker = new PickerVS();
         dSpace.registerPicker(dSpacePicker);
         dSpacePicker.setListener(eh);
+        sqSpacePicker = new PickerVS();
+        sqSpace.registerPicker(sqSpacePicker);
+        sqSpacePicker.setListener(eh);
         mnSpacePicker = new PickerVS();
         mnSpace.registerPicker(mnSpacePicker);
         mnSpacePicker.setListener(meh);

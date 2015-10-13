@@ -72,8 +72,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      VeGlyph g = v.lastGlyphEntered();
-      System.out.println(g.getType());
+
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -424,8 +423,6 @@ public class MenuEventListener implements ViewListener, PickerListener {
             app.scene.showThumbnails(menuBoundary.vx, subPieMenu.getBoundary().vy+1.2f*menuBoundary.getSize());
         }
     }
-
-    /*--------------Simbad results--------------------*/
 
 
 }
