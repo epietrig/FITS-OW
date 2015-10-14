@@ -125,8 +125,8 @@ public class SimbadQuery {
           VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,
                                Config.SIMBAD_AO_LBCOLOR, obj.getIdentifier(),
                                VText.TEXT_ANCHOR_START);
-          app.dSpace.addGlyph(cr);
           app.dSpace.addGlyph(lb);
+          app.dSpace.addGlyph(cr);
           cr.setStroke(Config.SIMBAD_AO_STROKE);
           lb.setFont(Config.SIMBAD_FONT);
           lb.setBorderColor(Config.SIMBAD_AO_BACKGROUND);
@@ -139,6 +139,8 @@ public class SimbadQuery {
           cr.setType(Config.T_ASTRO_OBJ_CR);
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
+      Vector<Glyph> gs = app.dSpace.getAllGlyphs();
+      for(Glyph g: gs)System.out.println(g.getType());
       if(!objs.isEmpty()){
         SimbadResults results = new SimbadResults(objs, 200, 200);
         app.sqSpace.addGlyph(results);
@@ -164,7 +166,7 @@ public class SimbadQuery {
       /*Removing list box now. I could just delete the glyph instead of getting the
       vector and checking, but I did it this way so I can later add more glyphs of type
       'SimbadResults' to this layer and they'd be all whiped out when performing a new query.*/
-      Vector<Glyph> glyphs2 = app.mnSpace.getAllGlyphs();
+      Vector<Glyph> glyphs2 = app.sqSpace.getAllGlyphs();
       Vector<Glyph> toBeRemoved2 = new Vector<Glyph>();
       for(Glyph gl : glyphs2){
         try{

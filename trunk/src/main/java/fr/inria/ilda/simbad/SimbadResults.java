@@ -1,15 +1,19 @@
 package fr.inria.ilda.simbad;
 
 import java.util.List;
+import java.util.Vector;
+
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
+import fr.inria.zvtm.glyphs.VCross;
 import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
-import java.awt.Color;
-import javax.swing.*;
-import fr.inria.zvtm.glyphs.VSwingComponent;
+import fr.inria.zvtm.glyphs.Glyph;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
+
+import fr.inria.ilda.fitsow.Config;
 
 
 
@@ -84,6 +88,22 @@ public class SimbadResults extends Composite{
     else if(selected == i){
       ids[i].setColor(UNSELECTED_COLOR);
       selected = -1;
+    }
+  }
+
+  public void highlightCorrespondingGlyph(Vector<Glyph> gs){
+    for(int i = 0; i < gs.size(); i++){
+      Glyph g = gs.get(i);
+      if(g.getType().equals(Config.T_ASTRO_OBJ_LB)){
+        VText label = (VText) g;
+        String selectedLabel = ids[selected].getText();
+        if(label.getText().equals(selectedLabel)){
+          label.setColor(Color.red);
+          VCross cross = (VCross) gs.get(i+1);
+          cross.setColor(Color.yellow);
+          break;
+        }
+      }
     }
   }
 

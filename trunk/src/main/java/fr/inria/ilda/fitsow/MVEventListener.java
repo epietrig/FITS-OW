@@ -133,7 +133,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         VCursor cursor = app.mView.getCursor();
         double x = cursor.getVSXCoordinate();
         double y = cursor.getVSYCoordinate();
-        if(list.insideList(x,y)) list.highlight(list.insideWhichObject(x,y));
+        if(list.insideList(x,y)){
+          list.highlight(list.insideWhichObject(x,y));
+          list.highlightCorrespondingGlyph(app.dSpace.getAllGlyphs());
+        }
       }
     }
 
