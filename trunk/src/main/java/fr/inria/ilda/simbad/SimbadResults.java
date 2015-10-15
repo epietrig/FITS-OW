@@ -10,6 +10,8 @@ import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
 
+import fr.inria.ilda.fitsow.FITSOW;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
@@ -18,19 +20,19 @@ import fr.inria.ilda.fitsow.Config;
 
 
 public class SimbadResults extends Composite{
-
   private int size, w, h;
   private double x, y;
   private VRectangle background;
-  private String glyphType = "SimbadResults";
   private VText[] ids;
   private VSegment[] splits;
   private Color SELECTED_COLOR = Color.black;
   private Color UNSELECTED_COLOR = Color.white;
   private int selected, glyphSelected;
+  private List<AstroObject> results;
 
   public SimbadResults(List<AstroObject> results, double x, double y){
-    this.setType(glyphType);
+    this.results = results;
+    this.setType(Config.T_ASTRO_OBJ_SR);
     size = results.size();
     h = size*20+5;
     w = 200;
@@ -118,11 +120,18 @@ public class SimbadResults extends Composite{
       glyphSelected = i;
     }
     else{
-      System.out.println("unselect");
       gs.get(i).setColor(Color.white);
       gs.get(i+1).setColor(Color.red);
       glyphSelected = -1;
     }
   }
+
+  public SimbadInfo getBasicInfo(int i){
+    VText id = ids[i];
+    AstroObject obj = results.get(i);
+    Point2D.Double location = id.getLocation();
+    return new SimbadInfo(obj, location.getX()+300, location.getY());
+  }
+
 
 }

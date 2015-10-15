@@ -73,8 +73,10 @@ public class AstroObject {
     }
 
     public String toString(){
-        return identifier + " | " + coords.getRa() + " | " + coords.getDec() +
-        "|" + basicData.get("PM") + basicData.get("RV") + basicData.get("SP") +
-        basicData.get("PLX") + basicData.get("MT") + basicData.get("DIM");
+        return "Proper motion (mas/yr): " + basicData.get("PM") + "\n"+
+               "Radial velocity (km/s): " + basicData.get("RV") + "\n"+
+               "Spectral type :         " + basicData.get("SP") + "\n"+
+               "Parallaxes (mas) :      " + basicData.get("PLX") +"\n"+
+               "Fluxes :                \n"+ basicData.get("FLUXES"); 
     }
 }
