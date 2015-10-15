@@ -81,7 +81,6 @@ public class SimbadQuery {
         if (centerImg == null || onCircleImg == null){return;}
         Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
-        System.out.println(centerWCS+" "+onCircleWCS);
         if (centerWCS == null || onCircleWCS == null){
             String queryInfo = "Invalid query";
             app.scene.setStatusBarMessage(queryInfo);
@@ -140,7 +139,6 @@ public class SimbadQuery {
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
-      for(Glyph g: gs)System.out.println(g.getType());
       if(!objs.isEmpty()){
         SimbadResults results = new SimbadResults(objs, 200, 200);
         app.sqSpace.addGlyph(results);
@@ -151,50 +149,12 @@ public class SimbadQuery {
     }
 
     void clearQueryResults(){
-      Vector<Glyph> glyphs = app.dSpace.getAllGlyphs();
-      Vector<Glyph> toBeRemoved = new Vector<Glyph>();
-      for (Glyph gl : glyphs){
-        try{
-          if(gl.getType().equals("aoCr") || gl.getType().equals("aoLb")){//shouldn't be hardcoded
-            toBeRemoved.add(gl);
-          }
-        }catch(NullPointerException e){
-          System.out.println("found glyph with null type");
-        }
-      }
+      Vector<Glyph> toBeRemoved = app.dSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_CR);
+      Vector<Glyph> toBeRemoved2 = app.dSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_LB);
       app.dSpace.removeGlyphs(toBeRemoved.toArray(new Glyph[toBeRemoved.size()]));
-      /*Removing list box now. I could just delete the glyph instead of getting the
-      vector and checking, but I did it this way so I can later add more glyphs of type
-      'SimbadResults' to this layer and they'd be all whiped out when performing a new query.*/
-      Vector<Glyph> glyphs2 = app.sqSpace.getAllGlyphs();
-      Vector<Glyph> toBeRemoved2 = new Vector<Glyph>();
-      for(Glyph gl : glyphs2){
-        try{
-          if(gl.getType().equals("SimbadResults"))//shouldn't be hardcoded
-            toBeRemoved2.add(gl);
-        }catch(NullPointerException e){
-          System.out.println("found glyph with null type");
-        }
-      }
-      app.mnSpace.removeGlyphs(toBeRemoved2.toArray(new Glyph[toBeRemoved2.size()]));
-      /*Initially, I thought of iterating over every obj on the getAllGlyphs Vector,
-      removing all glyphs needed, but this wasn't possible (you can't destroy the Object
-      you're iterating over). I then thought of iterating over naturals from 0 to the size
-      of the vector, as shown below, but this wasn't possible either. For some reason,
-      when itarating like this, labels wouldn't be found to be on the vector, so only crosses
-      would be removed. I have no idea why. I also though it would be possible to remove all
-      glyphs in the vector but the first (the fits image) and last (null), but since
-      I'm not sure what other type of glyphs could be added to that vs, I decided to check.*/
-      // for(int i = 0; i < glyphs.size(); i++){
-      //   System.out.println("type: "+ glyphs.get(i).getType());
-      //   try{
-      //     String type = glyphs.get(i).getType();
-      //     if(type.equals("aoCr") || type.equals("aoLb")){
-      //         // System.out.println("cleaning :"+type);
-      //        	app.dSpace.removeGlyph(glyphs.get(i));}
-      //   }catch(NullPointerException e){
-      //     System.out.println("found glyph with null type");}
-      // }
+      app.dSpace.removeGlyphs(toBeRemoved2.toArray(new Glyph[toBeRemoved2.size()]));
+      Vector<Glyph> toBeRemoved3 = app.sqSpace.getGlyphsOfType("SimbadResults");
+      app.sqSpace.removeGlyphs(toBeRemoved3.toArray(new Glyph[toBeRemoved3.size()]));
     }
 
     void fadeOutQueryRegion(){

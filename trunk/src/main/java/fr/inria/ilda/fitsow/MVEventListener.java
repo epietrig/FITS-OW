@@ -134,8 +134,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         double x = cursor.getVSXCoordinate();
         double y = cursor.getVSYCoordinate();
         if(list.insideList(x,y)){
+          Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
           list.highlight(list.insideWhichObject(x,y));
-          list.highlightCorrespondingGlyph(app.dSpace.getAllGlyphs());
+          list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
         }
       }
     }

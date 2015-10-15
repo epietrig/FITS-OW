@@ -27,7 +27,7 @@ public class SimbadResults extends Composite{
   private VSegment[] splits;
   private Color SELECTED_COLOR = Color.black;
   private Color UNSELECTED_COLOR = Color.white;
-  private int selected;
+  private int selected, glyphSelected;
 
   public SimbadResults(List<AstroObject> results, double x, double y){
     this.setType(glyphType);
@@ -37,6 +37,7 @@ public class SimbadResults extends Composite{
     this.x = x ;
     this.y = y;
     selected = -1;
+    glyphSelected = -1;
     background = new VRectangle (x, y, 0, w, h, Color.gray);
     background.setVisible(true);
     this.addChild(background);
@@ -91,19 +92,36 @@ public class SimbadResults extends Composite{
     }
   }
 
-  public void highlightCorrespondingGlyph(Vector<Glyph> gs){
-    for(int i = 0; i < gs.size(); i++){
-      Glyph g = gs.get(i);
-      if(g.getType().equals(Config.T_ASTRO_OBJ_LB)){
-        VText label = (VText) g;
-        String selectedLabel = ids[selected].getText();
-        if(label.getText().equals(selectedLabel)){
-          label.setColor(Color.red);
-          VCross cross = (VCross) gs.get(i+1);
-          cross.setColor(Color.yellow);
-          break;
+  public int getCorrespondingGlyph(Vector<Glyph> gs){
+    try{
+      String selectedLabel = ids[selected].getText();
+      for(int i = 0; i < gs.size(); i++){
+        Glyph g = gs.get(i);
+        if(g.getType().equals(Config.T_ASTRO_OBJ_LB)){
+          VText label = (VText) g;
+          if(label.getText().equals(selectedLabel)) return i;
         }
+      } return -1;
+    }catch(ArrayIndexOutOfBoundsException e){
+      return glyphSelected;
+    }
+  }
+
+  public void highlightCorrespondingGlyph(Vector<Glyph> gs, int i){
+    if(i != glyphSelected){
+      if(glyphSelected >= 0){
+        gs.get(glyphSelected).setColor(Color.white);
+        gs.get(glyphSelected+1).setColor(Color.red);
       }
+      gs.get(i).setColor(Color.green);
+      gs.get(i+1).setColor(Color.green);
+      glyphSelected = i;
+    }
+    else{
+      System.out.println("unselect");
+      gs.get(i).setColor(Color.white);
+      gs.get(i+1).setColor(Color.red);
+      glyphSelected = -1;
     }
   }
 
