@@ -131,6 +131,7 @@ public class Config {
     public static final String T_ASTRO_OBJ_CR = T_ASTRO_OBJ_PREFIX + "Cr";
     public static final String T_ASTRO_OBJ_LB = T_ASTRO_OBJ_PREFIX + "Lb";
     public static final String T_ASTRO_OBJ_SR = "SimbadResults";
+    public static final String T_ASTRO_OBJ_BINFO = "SimbadInfo";
 
 
     /* ------------ Scales and color mappings ---------- */

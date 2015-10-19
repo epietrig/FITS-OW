@@ -71,10 +71,8 @@ public class SimbadResults extends Composite{
     double start = background.getBounds()[1];
     double locationY = start;
     Point2D.Double location = new Point2D.Double();
-    System.out.println("y: "+y);
     for(int i = 0; i < ids.length; i++){
       locationY = splits[i].getLocation().getY();
-      System.out.println("yi: "+locationY);
       if(y < start && y > locationY){
         start = locationY;
         return i;
@@ -82,18 +80,19 @@ public class SimbadResults extends Composite{
     }
     return -1;
   }
-  public void highlight(int i){
+  public boolean highlight(int i){
     if(selected !=  i){
       if(selected >= 0)ids[selected].setColor(UNSELECTED_COLOR);
       ids[i].setColor(SELECTED_COLOR);
       selected = i;
+      return true;
     }
-    else if(selected == i){
+    else{
       ids[i].setColor(UNSELECTED_COLOR);
       selected = -1;
+      return false;
     }
   }
-
   public int getCorrespondingGlyph(Vector<Glyph> gs){
     try{
       String selectedLabel = ids[selected].getText();
@@ -127,10 +126,11 @@ public class SimbadResults extends Composite{
   }
 
   public SimbadInfo getBasicInfo(int i){
-    VText id = ids[i];
     AstroObject obj = results.get(i);
-    Point2D.Double location = id.getLocation();
-    return new SimbadInfo(obj, location.getX()+300, location.getY());
+    Point2D.Double location = ids[i].getLocation();
+    SimbadInfo info = new SimbadInfo(obj, location.getX()+300, location.getY());
+    this.stick(info);
+    return info;
   }
 
 

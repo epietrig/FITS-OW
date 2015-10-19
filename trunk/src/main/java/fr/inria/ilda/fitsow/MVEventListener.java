@@ -126,22 +126,27 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
-      if(!gs.isEmpty()){
-        app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
-        SimbadResults list = (SimbadResults) gs.get(0);
-        VCursor cursor = app.mView.getCursor();
-        double x = cursor.getVSXCoordinate();
-        double y = cursor.getVSYCoordinate();
-        if(list.insideList(x,y)){
-          Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-          int index = list.insideWhichObject(x,y);
-          list.highlight(index);
-          list.highlightCorrespondingGlyph(gsd, index);
-          app.sqSpace.addGlyph(list.getBasicInfo(index));
-          app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-        }
-      }
+      // Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
+      // if(!gs.isEmpty()){
+      //   app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
+      //   SimbadResults list = (SimbadResults) gs.get(0);
+      //   VCursor cursor = app.mView.getCursor();
+      //   double x = cursor.getVSXCoordinate();
+      //   double y = cursor.getVSYCoordinate();
+      //   if(list.insideList(x,y)){
+      //     Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
+      //     int index = list.insideWhichObject(x,y);
+      //     list.highlight(index);
+      //     list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
+      //     Vector<Glyph> simbadInfoG = app.sqSpace.getGlyphsOfType("SimbadInfo");
+      //     if(simbadInfoG.size() > 0){
+      //       app.sqSpace.removeGlyph(simbadInfoG.get(0));
+      //     }
+      //     app.sqSpace.addGlyph(list.getBasicInfo(index));
+      //     app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+      //   }
+      // }
+      updateSimbadResults();
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -302,5 +307,31 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     void exitQueryMode(){
         app.scene.setStatusBarMessage(null);
         querying = false;
+    }
+
+    void updateSimbadResults(){
+      Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
+      app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
+      SimbadResults list = (SimbadResults) gs.get(0);
+      VCursor cursor = app.mView.getCursor();
+      double x = cursor.getVSXCoordinate();
+      double y = cursor.getVSYCoordinate();
+      if(list.insideList(x,y)){
+        Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
+        updateSimbadInfo(x,y, list);
+        list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
+        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+      }
+    }
+
+    void updateSimbadInfo(double x, double y, SimbadResults list){
+      int index = list.insideWhichObject(x,y);
+      boolean selecting = list.highlight(index);
+      Vector<Glyph> simbadInfoG = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
+      if(simbadInfoG.size() > 0){
+        app.sqSpace.removeGlyph(simbadInfoG.get(0));
+      }
+      if(selecting)
+        app.sqSpace.addGlyph(list.getBasicInfo(index));
     }
 }

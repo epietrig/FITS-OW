@@ -14,6 +14,7 @@ public class AstroObject {
     private String identifier;
     private Coordinates coords;
     private HashMap<String, String> basicData;
+    public static int BASIC_DATA_LENGTH = 5;
 
     public AstroObject(){}
 
@@ -77,6 +78,6 @@ public class AstroObject {
                "Radial velocity (km/s): " + basicData.get("RV") + "\n"+
                "Spectral type :         " + basicData.get("SP") + "\n"+
                "Parallaxes (mas) :      " + basicData.get("PLX") +"\n"+
-               "Fluxes :                \n"+ basicData.get("FLUXES"); 
+               "Fluxes :                \n"+ basicData.get("FLUXES");
     }
 }
