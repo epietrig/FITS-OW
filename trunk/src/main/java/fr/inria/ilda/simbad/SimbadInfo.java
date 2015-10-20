@@ -42,7 +42,7 @@ public class SimbadInfo extends Composite{
 
   private Composite basicData(double x, double y, AstroObject obj){
     Composite basicInfo = new Composite();
-    String[] info = obj.toString().split("\n");
+    String[] info = obj.basicDataToString().split("\n");
     double start = background.getBounds()[1];
     VText title = new VText(x-X_OFFSET,start-TEXT_SIZE,Z,TEXT_COLOR,"Basic Data:");
     bold = title.getFont().deriveFont(Font.BOLD);
