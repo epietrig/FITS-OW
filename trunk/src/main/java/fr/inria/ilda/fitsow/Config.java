@@ -259,4 +259,18 @@ public class Config {
 
     public static final float PAN_GESTURE_GAIN = 8f;
 
+    public static final String BD_OT = "Object type :";
+    public static final String BD_COORD_ICRS = "ICRS coord. (ep=J2000) :";
+    public static final String BD_COORD_FK5 = "FK5 coord. (ep=J2000 eq=2000) :";
+    public static final String BD_COORD_FK4 = "FK4 coord. (ep=B1950 eq=1950) :";
+    public static final String BD_COORD_GAL = "Gal coord. (ep=J2000) :";
+    public static final String BD_PM = "Proper motions mas/yr :";
+    public static final String BD_RV = "Radial velocity / Redshift / cz :";
+    public static final String BD_PLX = "Parallaxes mas :";
+    public static final String BD_SP = "Spectral type :";
+    public static final String BD_FLUXES = "Fluxes :";
+    public static final String BD_MT = "Morpholocial type :";
+    public static final String[] BD_KEYS = {BD_OT, BD_COORD_ICRS,BD_COORD_FK5,
+      BD_COORD_FK4, BD_COORD_GAL, BD_PM, BD_RV, BD_PLX, BD_SP, BD_MT, BD_FLUXES};
+
 }

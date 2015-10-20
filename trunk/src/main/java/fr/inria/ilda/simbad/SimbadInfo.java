@@ -24,7 +24,7 @@ public class SimbadInfo extends Composite{
   private double OFFSET = 25;
   private double X_OFFSET = 100;
   private Color BACKGROUND_COLOR = Color.gray;
-  private Color TEXT_COLOR = Color.black;
+  private Color TEXT_COLOR = Color.white;
   private int Z = 0;
   private Font bold;
 

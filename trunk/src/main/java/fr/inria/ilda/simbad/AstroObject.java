@@ -23,7 +23,7 @@ public class AstroObject {
      * format.
      */
     static AstroObject fromSimbadRow(String simRowStr){
-        String[] keys = {"ID", "COORDA", "COORDD", "PM", "RV", "SP", "PLX", "MT", "DIM", "OTYPE", "FLUXES"};
+        String[] keys = {"ID", "COORDA", "COORDD", "OTYPE","C1","C2","C3","C4","PM", "RV", "SP", "PLX", "MT", "DIM", "FLUXES"};
         AstroObject retval = new AstroObject();
         retval.basicData = new HashMap<String, String>();
 
@@ -74,7 +74,13 @@ public class AstroObject {
     }
 
     public String toString(){
-        return "Proper motion (mas/yr): " + basicData.get("PM") + "\n"+
+        return
+        "Object type: "+basicData.get("OTYPE")+"\n"+
+        "C1: "+basicData.get("C1")+"\n"+
+        "C2: "+basicData.get("C2")+"\n"+
+        "C3: "+basicData.get("C3")+"\n"+
+        "C4: "+basicData.get("C4")+"\n"+
+        "Proper motion (mas/yr): " + basicData.get("PM") + "\n"+
                "Radial velocity (km/s): " + basicData.get("RV") + "\n"+
                "Spectral type :         " + basicData.get("SP") + "\n"+
                "Parallaxes (mas) :      " + basicData.get("PLX") +"\n"+
