@@ -19,46 +19,59 @@ public class SimbadInfo extends Composite{
   private Composite basicData;
   private VRectangle background;
   private double h;
-  private double w = 220;
+  private double w;
   private double TEXT_SIZE = 20;
-  private double OFFSET = 25;
-  private double X_OFFSET = 100;
+  private double OFFSET = 5;
   private Color BACKGROUND_COLOR = Color.gray;
-  private Color TEXT_COLOR = Color.white;
+  private Color TEXT_COLOR = Color.black;
   private int Z = 0;
   private Font bold;
 
 
-  public SimbadInfo(AstroObject obj, double x, double y){
+  public SimbadInfo(AstroObject obj, double x, double y, SimbadResults stick){
     this.setType(Config.T_ASTRO_OBJ_BINFO);
-    this.h = AstroObject.BASIC_DATA_LENGTH*TEXT_SIZE+OFFSET;
-    background = new VRectangle(x, y, Z, w, h, BACKGROUND_COLOR);
+    String[] info = obj.basicDataToString().split("\n");
+    this.h = (info.length+2)*TEXT_SIZE+OFFSET;
+    this.w = getWidth(info);
+    stick.stick(this);
+    background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, BACKGROUND_COLOR);
     background.setVisible(true);
-    this.basicData = basicData(x, y, obj);
+    this.basicData = basicData(x, y, obj, info);
     this.addChild(background);
     this.basicData.setVisible(true);
     this.addChild(basicData);
   }
 
-  private Composite basicData(double x, double y, AstroObject obj){
+  private Composite basicData(double x, double y, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
-    String[] info = obj.basicDataToString().split("\n");
-    double start = background.getBounds()[1];
-    VText title = new VText(x-X_OFFSET,start-TEXT_SIZE,Z,TEXT_COLOR,"Basic Data:");
+    double[] bounds = background.getBounds();
+    double top = bounds[1];
+    double left = bounds[0];
+    VText title = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR,"Basic Data:");
     bold = title.getFont().deriveFont(Font.BOLD);
     title.setFont(bold);
     basicInfo.addChild(title);
-    VText identifier = new VText(x-X_OFFSET,start-TEXT_SIZE*2,Z,TEXT_COLOR,obj.getIdentifier());
+    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,TEXT_COLOR,obj.getIdentifier());
     identifier.setFont(bold);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
-      VText text = new VText(x-X_OFFSET,start-TEXT_SIZE*(i+3),Z,TEXT_COLOR,info[i]);
+      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,TEXT_COLOR,info[i]);
       text.setVisible(true);
       basicInfo.addChild(text);
     }
 
     return basicInfo;
+  }
+
+  private double getWidth(String[] info){
+    int retval = 0;
+    int length = 0;
+    for(String str : info){
+      length = str.length();
+      if(length > retval) retval = length;
+    }
+    return retval*5.5;
   }
 
   public boolean insideInfo(double x, double y){

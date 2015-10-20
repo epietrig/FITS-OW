@@ -73,6 +73,9 @@ public class SimbadResults extends Composite{
   public double getY(){
     return y;
   }
+  public double getW(){
+    return w;
+  }
   public boolean insideList(double x, double y){
     double[] bounds = this.getBounds();
     if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3]) return true;
@@ -139,9 +142,7 @@ public class SimbadResults extends Composite{
   public SimbadInfo getBasicInfo(int i){
     AstroObject obj = results.get(i);
     Point2D.Double location = ids[i].getLocation();
-    SimbadInfo info = new SimbadInfo(obj, location.getX()+300, location.getY());
-    this.stick(info);
-    return info;
+    return new SimbadInfo(obj, location.getX(), location.getY(), this);
   }
 
 

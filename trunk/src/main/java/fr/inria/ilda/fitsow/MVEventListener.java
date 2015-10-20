@@ -314,4 +314,12 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       if(selecting)
         app.sqSpace.addGlyph(list.getBasicInfo(index));
     }
+
+    void dragSimbadResults(){
+      app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
+      Vector<Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
+      if(simbadResults.size()>0){
+        SimbadResults list = (SimbadResults) simbadResults.get(0);
+      }
+    }
 }
