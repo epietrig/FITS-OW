@@ -126,26 +126,6 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      // Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
-      // if(!gs.isEmpty()){
-      //   app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
-      //   SimbadResults list = (SimbadResults) gs.get(0);
-      //   VCursor cursor = app.mView.getCursor();
-      //   double x = cursor.getVSXCoordinate();
-      //   double y = cursor.getVSYCoordinate();
-      //   if(list.insideList(x,y)){
-      //     Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-      //     int index = list.insideWhichObject(x,y);
-      //     list.highlight(index);
-      //     list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
-      //     Vector<Glyph> simbadInfoG = app.sqSpace.getGlyphsOfType("SimbadInfo");
-      //     if(simbadInfoG.size() > 0){
-      //       app.sqSpace.removeGlyph(simbadInfoG.get(0));
-      //     }
-      //     app.sqSpace.addGlyph(list.getBasicInfo(index));
-      //     app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-      //   }
-      // }
       updateSimbadResults();
     }
 
