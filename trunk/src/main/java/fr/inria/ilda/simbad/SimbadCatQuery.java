@@ -65,7 +65,7 @@ public class SimbadCatQuery {
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
-                    // coords.decToString().replace(',','.'),
+                    // coords.decToString().replace(',','.')
                     // fixed by forcing the Locale to en/US
                     //|%%PM|%%RV|%%FLUXLIST|%%SP|%%MT|%%DIM
                     coords.raToString(),
