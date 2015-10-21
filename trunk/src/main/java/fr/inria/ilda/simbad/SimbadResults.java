@@ -128,7 +128,7 @@ public class SimbadResults extends Composite{
   public SimbadInfo getBasicInfo(int i){
     AstroObject obj = results.get(i);
     Point2D.Double location = ids[i].getLocation();
-    SimbadInfo info = new SimbadInfo(obj, location.getX()+300, location.getY());
+    SimbadInfo info = new SimbadInfo(obj, location.getX()+450, location.getY());
     this.stick(info);
     return info;
   }

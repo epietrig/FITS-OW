@@ -19,10 +19,10 @@ public class SimbadInfo extends Composite{
   private Composite basicData;
   private VRectangle background;
   private double h;
-  private double w = 220;
+  private double w;
   private double TEXT_SIZE = 20;
   private double OFFSET = 25;
-  private double X_OFFSET = 100;
+  private double X_OFFSET = 220;
   private Color BACKGROUND_COLOR = Color.gray;
   private Color TEXT_COLOR = Color.white;
   private int Z = 0;
@@ -31,13 +31,29 @@ public class SimbadInfo extends Composite{
 
   public SimbadInfo(AstroObject obj, double x, double y){
     this.setType(Config.T_ASTRO_OBJ_BINFO);
-    this.h = AstroObject.BASIC_DATA_LENGTH*TEXT_SIZE+OFFSET;
+    String[] info = obj.basicDataToString().split("\n");
+    this.w = getWidth(info);
+    this.h = getHeight(info)*TEXT_SIZE+OFFSET;
     background = new VRectangle(x, y, Z, w, h, BACKGROUND_COLOR);
     background.setVisible(true);
     this.basicData = basicData(x, y, obj);
     this.addChild(background);
     this.basicData.setVisible(true);
     this.addChild(basicData);
+  }
+  private int getWidth(String[] strs){
+    int retval = 0;
+    int length = 0;
+    for(String str : strs){
+      length = str.length();
+      if(length > retval) retval = length;
+    }
+    return retval*5;
+  }
+  private int getHeight(String[] strs){
+    int length = strs.length;
+    System.out.println(strs[length-1]);
+    return length;
   }
 
   private Composite basicData(double x, double y, AstroObject obj){
