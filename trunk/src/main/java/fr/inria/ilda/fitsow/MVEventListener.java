@@ -81,6 +81,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
+        if(insideSimbadResults(jpx, jpy)){
+          draggingSimbadResults = true;
+        }
         if (querying){
             sq = new SimbadQuery(app);
             if (ciFITSImage != null){
@@ -107,6 +110,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
+        if(draggingSimbadResults){
+          draggingSimbadResults = false;
+        }
         if (draggingFITS){
             app.dSpacePicker.unstickLastGlyph();
             draggingFITS = false;
@@ -128,7 +134,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      updateSimbadResults();
+      updateSimbadResults(jpx, jpy);
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -169,21 +175,16 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
-        Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
-        if(simbadResults.size()>0){
-          SimbadResults list = (SimbadResults) simbadResults.get(0);
-          Point2D.Double res = new Point2D.Double();
-          app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,res);
-          if(list.insideList(res.getX(), res.getY())){
-            System.out.println("jpx : "+jpx+" jpy :"+jpy);
-            list.move(jpx-lastJPX, lastJPY-jpy);
-            lastJPX = jpx;
-            lastJPY = jpy;
-          }
-        }
 
         currentJPX = jpx;
         currentJPY = jpy;
+
+        SimbadResults list = getCurrentSimbadResults();
+          if(list!= null && insideSimbadResults(jpx, jpy)){
+            list.move(jpx-lastJPX, lastJPY-jpy);
+            lastJPX = jpx;
+            lastJPY = jpy;
+        }
 
         if (panning){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
@@ -199,11 +200,10 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
             updateZUISTSpacePicker(jpx, jpy);
             updateDataSpacePicker(jpx, jpy);
         }
-        else {
+        else if(!draggingSimbadResults){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-
-            updateZUISTSpacePicker(jpx, jpy);
-            updateDataSpacePicker(jpx, jpy);
+          updateZUISTSpacePicker(jpx, jpy);
+          updateDataSpacePicker(jpx, jpy);
         }
     }
 
@@ -311,16 +311,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         querying = false;
     }
 
-    void updateSimbadResults(){
-      Vector <Glyph> gs = app.sqSpace.getAllGlyphs();
-      app.mView.setActiveLayer(FITSOW.SIMBAD_LAYER);
-      SimbadResults list = (SimbadResults) gs.get(0);
-      VCursor cursor = app.mView.getCursor();
-      double x = cursor.getVSXCoordinate();
-      double y = cursor.getVSYCoordinate();
-      if(list.insideList(x,y)){
+    void updateSimbadResults(int jpx, int jpy){
+      SimbadResults list = getCurrentSimbadResults();
+      Point2D.Double coords = new Point2D.Double();
+      app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+      if(list.insideList(coords.getX(), coords.getY())){
         Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-        updateSimbadInfo(x,y, list);
+        updateSimbadInfo(coords.getX(),coords.getY(), list);
         list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
       }
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
@@ -337,15 +334,23 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         app.sqSpace.addGlyph(list.getBasicInfo(index));
     }
 
-    // void dragSimbadResults(int jpx, int jpy, Vector<Glyph> simbadResults){
-    //   if(simbadResults.size()>0){
-    //     SimbadResults list = (SimbadResults) simbadResults.get(0);
-    //     VCursor cursor = app.mView.getCursor();
-    //     double x = cursor.getVSXCoordinate();
-    //     double y = cursor.getVSYCoordinate();
-    //     if(list.insideList(x, y)){
-    //       list.move(jpx-lastJPX, lastJPY-jpy);
-    //     }
-    //   }
-    // }
+    boolean insideSimbadResults(int jpx, int jpy){
+      Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
+      if(simbadResults.size()>0){
+        SimbadResults list = (SimbadResults) simbadResults.get(0);
+        Point2D.Double res = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,res);
+        return list.insideList(res.getX(), res.getY());
+      }
+      return false;
+    }
+
+    SimbadResults getCurrentSimbadResults(){
+      Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
+      if(simbadResults.size()>0){
+        SimbadResults list = (SimbadResults) simbadResults.get(0);
+        return list;
+      }
+      return null;
+    }
 }
