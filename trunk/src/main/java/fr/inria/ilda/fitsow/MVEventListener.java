@@ -43,6 +43,7 @@ import fr.inria.zuist.od.ObjectDescription;
 import fr.inria.zuist.od.TextDescription;
 import java.awt.geom.Point2D.Double;
 import fr.inria.ilda.simbad.SimbadResults;
+import fr.inria.ilda.simbad.SimbadInfo;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -68,6 +69,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     boolean querying = false;
     boolean draggingFITS = false;
     boolean draggingSimbadResults = false;
+    boolean draggingSimbadInfo = false;
 
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
@@ -81,10 +83,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
-        if(insideSimbadResults(jpx, jpy)){
-          draggingSimbadResults = true;
-          draggingFITS = false;
-        }
+
+
         if (querying){
             sq = new SimbadQuery(app);
             if (ciFITSImage != null){
@@ -94,6 +94,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
                 sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
                              (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
             }
+        }
+        else if(insideSimbadResults(jpx, jpy)){
+          draggingSimbadResults = true;
+          draggingFITS = false;
+        }
+        else if(insideSimbadInfo(jpx, jpy)){
+          draggingSimbadInfo = true;
+          draggingFITS = false;
+          draggingSimbadResults = false;
         }
         else {
             lge = app.dSpacePicker.lastGlyphEntered();
@@ -113,6 +122,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         panning = false;
         if(draggingSimbadResults){
           draggingSimbadResults = false;
+        }
+        if(draggingSimbadInfo){
+          draggingSimbadInfo = false;
         }
         if (draggingFITS){
             app.dSpacePicker.unstickLastGlyph();
@@ -179,20 +191,24 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
         currentJPX = jpx;
         currentJPY = jpy;
-
-        SimbadResults list = getCurrentSimbadResults();
-          if(draggingSimbadResults){
-            list.move(jpx-lastJPX, lastJPY-jpy);
-            lastJPX = jpx;
-            lastJPY = jpy;
-        }
-
         if (panning){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
 
             app.nav.pan(app.zfCamera, lastJPX-jpx, jpy-lastJPY, 1);
             lastJPX = jpx;
             lastJPY = jpy;
+        }
+        else if(draggingSimbadResults){
+          SimbadResults list = getCurrentSimbadResults();
+          list.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
+        else if(draggingSimbadInfo){
+          SimbadInfo info = getCurrentSimbadInfo();
+          info.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
         }
         else if (querying && sq != null){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
@@ -346,6 +362,17 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       return false;
     }
 
+    boolean insideSimbadInfo(int jpx, int jpy){
+      Vector <Glyph> simbadInfo = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
+      if(simbadInfo.size()>0){
+        SimbadInfo info = (SimbadInfo) simbadInfo.get(0);
+        Point2D.Double res = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,res);
+        return info.insideInfo(res.getX(), res.getY());
+      }
+      return false;
+    }
+
     SimbadResults getCurrentSimbadResults(){
       Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
       if(simbadResults.size()>0){
@@ -354,4 +381,13 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       }
       return null;
     }
+    SimbadInfo getCurrentSimbadInfo(){
+      Vector <Glyph> simbadInfo = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
+      if(simbadInfo.size()>0){
+        SimbadInfo info = (SimbadInfo) simbadInfo.get(0);
+        return info;
+      }
+      return null;
+    }
+
 }

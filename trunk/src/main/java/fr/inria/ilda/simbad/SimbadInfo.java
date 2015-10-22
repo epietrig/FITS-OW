@@ -33,7 +33,6 @@ public class SimbadInfo extends Composite{
     String[] info = obj.basicDataToString().split("\n");
     this.h = (info.length+2)*TEXT_SIZE+OFFSET;
     this.w = getWidth(info);
-    stick.stick(this);
     background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, BACKGROUND_COLOR);
     background.setVisible(true);
     this.basicData = basicData(x, y, obj, info);
