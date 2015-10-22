@@ -83,6 +83,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         lastJPY = jpy;
         if(insideSimbadResults(jpx, jpy)){
           draggingSimbadResults = true;
+          draggingFITS = false;
         }
         if (querying){
             sq = new SimbadQuery(app);
