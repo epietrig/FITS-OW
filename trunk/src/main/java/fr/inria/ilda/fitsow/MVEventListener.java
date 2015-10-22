@@ -181,7 +181,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         currentJPY = jpy;
 
         SimbadResults list = getCurrentSimbadResults();
-          if(list!= null && insideSimbadResults(jpx, jpy)){
+          if(draggingSimbadResults){
             list.move(jpx-lastJPX, lastJPY-jpy);
             lastJPX = jpx;
             lastJPY = jpy;
