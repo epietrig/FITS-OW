@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
+import fr.inria.zvtm.glyphs.VRoundRect;
 import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
@@ -17,12 +18,19 @@ import fr.inria.ilda.fitsow.Config;
 
 public class SimbadInfo extends Composite{
   private Composite basicData;
+  private Composite tabs;
+  private String basicDataStr = "Basic Data";
+  private String measurementsStr = "Measurements";
+  private String selected;
   private VRectangle background;
+  private VRectangle basicDataTab;
+  private VRectangle measurementsTab;
   private double h;
   private double w;
   private double TEXT_SIZE = 20;
   private double OFFSET = 5;
   private Color BACKGROUND_COLOR = Color.gray;
+  private Color SELECTED_BACKGROUND_COLOR = Color.white;
   private Color TEXT_COLOR = Color.black;
   private int Z = 0;
   private Font bold;
@@ -33,12 +41,25 @@ public class SimbadInfo extends Composite{
     String[] info = obj.basicDataToString().split("\n");
     this.h = (info.length+2)*TEXT_SIZE+OFFSET;
     this.w = getWidth(info);
+
     background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, BACKGROUND_COLOR);
     background.setVisible(true);
-    this.basicData = basicData(x, y, obj, info);
     this.addChild(background);
+
+    double[] bounds = background.getBounds();
+    double left = bounds[0];
+    double top = bounds[1];
+    double right = bounds[2];
+
+    this.tabs = tabs(top, left);
+    this.tabs.setVisible(true);
+    this.addChild(tabs);
+
+    this.basicData = basicData(top, left, obj, info);
     this.basicData.setVisible(true);
     this.addChild(basicData);
+
+
   }
 
   private int getHeight(String[] strs){
@@ -46,22 +67,39 @@ public class SimbadInfo extends Composite{
     System.out.println(strs[length-1]);
     return length;
   }
+  private Composite tabs(double top, double left){
+    Composite tabs = new Composite();
 
-  private Composite basicData(double x, double y, AstroObject obj, String[] info){
+    basicDataTab = new VRectangle(left+w/4, top+2*OFFSET, Z, w/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR);
+    VText basicDataTabStr = new VText(left+OFFSET,top+OFFSET,Z,TEXT_COLOR,basicDataStr);
+    basicDataTabStr.setScale(1.3f);
+    selected = basicDataStr;
+    bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
+    basicDataTabStr.setFont(bold);
+
+    measurementsTab = new VRectangle(left+w/4+w/2, top+2*OFFSET, Z, w/2, TEXT_SIZE, BACKGROUND_COLOR);
+    VText measurementsTabStr = new VText(left+w/2+2*OFFSET,top+OFFSET,Z,TEXT_COLOR,measurementsStr);
+    measurementsTabStr.setScale(1.3f);
+
+    basicDataTab.setVisible(true);
+    tabs.addChild(basicDataTab);
+    basicDataTabStr.setVisible(true);
+    tabs.addChild(basicDataTabStr);
+    measurementsTab.setVisible(true);
+    tabs.addChild(measurementsTab);
+    measurementsTabStr.setVisible(true);
+    tabs.addChild(measurementsTabStr);
+    return tabs;
+  }
+  private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
-    double[] bounds = background.getBounds();
-    double top = bounds[1];
-    double left = bounds[0];
-    VText title = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR,"Basic Data:");
-    bold = title.getFont().deriveFont(Font.BOLD);
-    title.setFont(bold);
-    basicInfo.addChild(title);
-    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,TEXT_COLOR,obj.getIdentifier());
+    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR,obj.getIdentifier());
+    bold = identifier.getFont().deriveFont(Font.BOLD);
     identifier.setFont(bold);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
-      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,TEXT_COLOR,info[i]);
+      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+2),Z,TEXT_COLOR,info[i]);
       text.setVisible(true);
       basicInfo.addChild(text);
     }
