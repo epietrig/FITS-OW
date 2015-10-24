@@ -71,15 +71,15 @@ public class SimbadInfo extends Composite{
   private Composite tabs(double top, double left){
     Composite tabs = new Composite();
 
-    basicDataTab = new VRectangle(left+w/4, top+2*OFFSET, Z, w/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR);
-    VText basicDataTabStr = new VText(left+OFFSET,top+OFFSET,Z,SELECTED_TEXT_COLOR,basicDataStr);
+    basicDataTab = new VRectangle(left+w/4, top-2*OFFSET, Z, w/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR);
+    VText basicDataTabStr = new VText(left+OFFSET,top-18,Z,SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     selected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     basicDataTabStr.setFont(bold);
 
-    measurementsTab = new VRectangle(left+w/4+w/2, top+2*OFFSET, Z, w/2, TEXT_SIZE, BACKGROUND_COLOR);
-    VText measurementsTabStr = new VText(left+w/2+2*OFFSET,top+OFFSET,Z,TEXT_COLOR,measurementsStr);
+    measurementsTab = new VRectangle(left+w/4+w/2, top-2*OFFSET, Z, w/2, TEXT_SIZE, BACKGROUND_COLOR);
+    VText measurementsTabStr = new VText(left+w/2+2*OFFSET,top-18,Z,TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
 
     basicDataTab.setVisible(true);
@@ -94,13 +94,13 @@ public class SimbadInfo extends Composite{
   }
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
-    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE,Z,SELECTED_TEXT_COLOR,obj.getIdentifier());
+    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,SELECTED_TEXT_COLOR,obj.getIdentifier());
     bold = identifier.getFont().deriveFont(Font.BOLD);
     identifier.setFont(bold);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
-      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+2),Z,SELECTED_TEXT_COLOR,info[i]);
+      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,SELECTED_TEXT_COLOR,info[i]);
       text.setVisible(true);
       basicInfo.addChild(text);
     }

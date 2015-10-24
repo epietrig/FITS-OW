@@ -147,7 +147,6 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-
       if(insideSimbadResults(jpx, jpy)){
         updateSimbadResults(jpx, jpy);
       }
