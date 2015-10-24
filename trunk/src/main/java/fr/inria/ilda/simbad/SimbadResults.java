@@ -76,11 +76,14 @@ public class SimbadResults extends Composite{
   public double getW(){
     return w;
   }
-  public boolean insideList(double x, double y){
-    double[] bounds = this.getBounds();
-    if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3]) return true;
-    return false;
+  public VRectangle getBackground(){
+    return background;
   }
+  // public boolean insideList(double x, double y){
+  //   double[] bounds = this.getBounds();
+  //   if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3]) return true;
+  //   return false;
+  // }
   public int insideWhichObject(double x, double y){
     double start = background.getBounds()[1];
     double locationY = start;

@@ -147,7 +147,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      updateSimbadResults(jpx, jpy);
+
+      if(insideSimbadResults(jpx, jpy)){
+        updateSimbadResults(jpx, jpy);
+      }
+      if(insideSimbadInfo(jpx, jpy)){
+          System.out.println("inside simbad info");
+      }
+
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -332,12 +339,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       SimbadResults list = getCurrentSimbadResults();
       Point2D.Double coords = new Point2D.Double();
       app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-      if(list.insideList(coords.getX(), coords.getY())){
-        Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-        updateSimbadInfo(coords.getX(),coords.getY(), list);
-        list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
-      }
-        app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+      Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
+      updateSimbadInfo(coords.getX(),coords.getY(), list);
+      list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
     }
 
     void updateSimbadInfo(double x, double y, SimbadResults list){
@@ -352,24 +356,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     }
 
     boolean insideSimbadResults(int jpx, int jpy){
-      Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
-      if(simbadResults.size()>0){
-        SimbadResults list = (SimbadResults) simbadResults.get(0);
-        Point2D.Double res = new Point2D.Double();
-        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,res);
-        return list.insideList(res.getX(), res.getY());
-      }
+      SimbadResults list = getCurrentSimbadResults();
+      if(list!= null) return list.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
+
     }
 
     boolean insideSimbadInfo(int jpx, int jpy){
-      Vector <Glyph> simbadInfo = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
-      if(simbadInfo.size()>0){
-        SimbadInfo info = (SimbadInfo) simbadInfo.get(0);
-        Point2D.Double res = new Point2D.Double();
-        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,res);
-        return info.insideInfo(res.getX(), res.getY());
-      }
+      SimbadInfo info = getCurrentSimbadInfo();
+      if(info != null) return info.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
     }
 

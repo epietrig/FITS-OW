@@ -30,8 +30,9 @@ public class SimbadInfo extends Composite{
   private double TEXT_SIZE = 20;
   private double OFFSET = 5;
   private Color BACKGROUND_COLOR = Color.gray;
-  private Color SELECTED_BACKGROUND_COLOR = Color.white;
+  private Color SELECTED_BACKGROUND_COLOR = new Color(195, 195, 195);
   private Color TEXT_COLOR = Color.black;
+  private Color SELECTED_TEXT_COLOR = new Color(34,34,34);
   private int Z = 0;
   private Font bold;
 
@@ -42,7 +43,7 @@ public class SimbadInfo extends Composite{
     this.h = (info.length+2)*TEXT_SIZE+OFFSET;
     this.w = getWidth(info);
 
-    background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, BACKGROUND_COLOR);
+    background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, SELECTED_BACKGROUND_COLOR);
     background.setVisible(true);
     this.addChild(background);
 
@@ -71,7 +72,7 @@ public class SimbadInfo extends Composite{
     Composite tabs = new Composite();
 
     basicDataTab = new VRectangle(left+w/4, top+2*OFFSET, Z, w/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR);
-    VText basicDataTabStr = new VText(left+OFFSET,top+OFFSET,Z,TEXT_COLOR,basicDataStr);
+    VText basicDataTabStr = new VText(left+OFFSET,top+OFFSET,Z,SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     selected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
@@ -93,13 +94,13 @@ public class SimbadInfo extends Composite{
   }
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
-    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR,obj.getIdentifier());
+    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE,Z,SELECTED_TEXT_COLOR,obj.getIdentifier());
     bold = identifier.getFont().deriveFont(Font.BOLD);
     identifier.setFont(bold);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
-      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+2),Z,TEXT_COLOR,info[i]);
+      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+2),Z,SELECTED_TEXT_COLOR,info[i]);
       text.setVisible(true);
       basicInfo.addChild(text);
     }
@@ -117,10 +118,20 @@ public class SimbadInfo extends Composite{
     return retval*5.5;
   }
 
-  public boolean insideInfo(double x, double y){
-    double[] bounds = this.getBounds();
-    if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3])
-      return true;
-    return false;
+  // public boolean insideInfo(double x, double y){
+  //   double[] bounds = this.getBounds();
+  //   if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3])
+  //     return true;
+  //   return false;
+  // }
+
+  public VRectangle getBasicDataTab(){
+    return basicDataTab;
+  }
+  public VRectangle getMeasurementsTab(){
+    return measurementsTab;
+  }
+  public VRectangle getBackground(){
+    return background;
   }
 }
