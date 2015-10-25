@@ -14,6 +14,9 @@ import fr.inria.ilda.fitsow.FITSOW;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 
 import fr.inria.ilda.fitsow.Config;
 
@@ -147,6 +150,5 @@ public class SimbadResults extends Composite{
     Point2D.Double location = ids[i].getLocation();
     return new SimbadInfo(obj, location.getX(), location.getY(), this);
   }
-
 
 }

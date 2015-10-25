@@ -21,7 +21,7 @@ public class SimbadInfo extends Composite{
   private Composite tabs;
   private String basicDataStr = "Basic Data";
   private String measurementsStr = "Measurements";
-  private String selected;
+  private String tabSelected;
   private VRectangle background;
   private VRectangle basicDataTab;
   private VRectangle measurementsTab;
@@ -74,7 +74,7 @@ public class SimbadInfo extends Composite{
     basicDataTab = new VRectangle(left+w/4, top-2*OFFSET, Z, w/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR);
     VText basicDataTabStr = new VText(left+OFFSET,top-18,Z,SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
-    selected = basicDataStr;
+    tabSelected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     basicDataTabStr.setFont(bold);
 
@@ -117,7 +117,23 @@ public class SimbadInfo extends Composite{
     }
     return retval*5.5;
   }
-
+  public void activateBasicDataTab(){
+    if(!tabSelected.equals(basicDataStr)){
+      tabSelected = basicDataStr;
+      basicDataTab.setColor(SELECTED_BACKGROUND_COLOR);
+      measurementsTab.setColor(BACKGROUND_COLOR);
+      this.addChild(basicData);
+      // this.removeChild(measurementsTab);
+    }
+  }
+  public void activateMeasurementsTab(){
+    if(!tabSelected.equals(measurementsStr)){
+      tabSelected = measurementsStr;
+      basicDataTab.setColor(BACKGROUND_COLOR);
+      measurementsTab.setColor(SELECTED_BACKGROUND_COLOR);
+      this.removeChild(basicData);
+    }
+  }
   // public boolean insideInfo(double x, double y){
   //   double[] bounds = this.getBounds();
   //   if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3])

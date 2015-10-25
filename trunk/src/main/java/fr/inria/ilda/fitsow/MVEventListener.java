@@ -150,8 +150,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       if(insideSimbadResults(jpx, jpy)){
         updateSimbadResults(jpx, jpy);
       }
-      if(insideSimbadInfo(jpx, jpy)){
-          System.out.println("inside simbad info");
+      SimbadInfo info = getCurrentSimbadInfo();
+      if(info != null){
+        if(info.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          info.activateBasicDataTab();
+        }
+        else if(info.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          info.activateMeasurementsTab();
+        }
       }
 
     }
