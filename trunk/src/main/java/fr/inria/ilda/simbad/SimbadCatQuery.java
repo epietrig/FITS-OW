@@ -38,9 +38,11 @@ public class SimbadCatQuery {
     }
 
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
-        List<AstroObject> retval = new ArrayList<AstroObject>();
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
-        return parseObjectList(readLines(queryUrl));
+        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        return astroObjs;
+        // return parseObjectList(readLines(queryUrl));
     }
 
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
@@ -55,14 +57,13 @@ public class SimbadCatQuery {
             // for more information about possible parameters
             String script = String.format(
                     "output console=off script=off\n" +
-                    "format object \"%%IDLIST(1)|%%COO(d;A)|%%COO(d;D)|%%OTYPE(V)|"+
-                    "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)|"+
-                    "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)|"+
-                    "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)|"+
-                    "%%COO(A,D,(W),Q,[E],B;GAL;J2000)|"+
-                    "%%PM(A,D,Q,E)|%%RV(V,Z,W,Q,E)|%%SP(S,Q)|%%PLX(V,Q,E)|%%MT(M,Q)|"+
-                    "%%FLUXLIST(U,B,V,R,I,J,H,K)"+
-                    "%%MEASLIST(ubv,cel) \"\n" +
+                    "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)#%%OTYPE(V)#"+
+                    "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
+                    "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"+
+                    "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
+                    "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
+                    "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
+                    "%%FLUXLIST(U,B,V,R,I,J,H,K)#%%MEASLIST$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
@@ -94,30 +95,40 @@ public class SimbadCatQuery {
     }
 
     //A better version should deal with http errors
-    private static List<String> readLines(URL url) throws IOException{
-        URLConnection uc = url.openConnection();
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                    uc.getInputStream()));
-        List<String> result = new ArrayList<String>();
-        String toAppend;
-        while((toAppend = in.readLine()) != null){
-            result.add(toAppend);
-        }
-        in.close();
-        return result;
-    }
+    // private static List<String> readLines(URL url) throws IOException{
+    //     List<String> result = SimbadParser.separateObjects(url);
+    //     for(String s:result){
+    //       System.out.println("result: "+s);
+    //     }
 
-    private static List<AstroObject> parseObjectList(List<String> strList){
-        ArrayList<AstroObject> retval = new ArrayList<AstroObject>();
-        for(String objStr: strList){
-            AstroObject candidate = AstroObject.fromSimbadRow(objStr);
-            if(candidate != null){
-                retval.add(candidate);
-            }
-        }
-        for(AstroObject obj : retval){
-          System.out.println(obj.toString());
-        }
-        return retval;
-    }
+        // URLConnection uc = url.openConnection();
+        // BufferedReader in = new BufferedReader(new InputStreamReader(
+        //             uc.getInputStream()));
+        // List<String> result = new ArrayList<String>();
+        // String toAppend;
+        // while((toAppend = in.readLine()) != null){
+          // System.out.println("URL: "+toAppend);
+            // result.add(toAppend);
+        // }
+        // in.close();
+        // return result;
+    // }
+
+    // private static List<AstroObject> parseObjectList(List<String> strList){
+    //     ArrayList<AstroObject> retval = new ArrayList<AstroObject>();
+    //     try{
+    //       for(String objStr: strList){
+    //           AstroObject candidate = AstroObject.fromSimbadRow(objStr);
+    //
+    //           if(candidate != null){
+    //               retval.add(candidate);
+    //           }
+    //       }
+    //       return retval;
+    //     }catch(Exception e){
+    //       System.out.println("caught something!");
+    //       e.printStackTrace();
+    //     }
+    //     return retval;
+    // }
 }

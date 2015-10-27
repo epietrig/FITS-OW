@@ -18,6 +18,11 @@ public class AstroObject {
     public static int BASIC_DATA_LENGTH = 5;
 
     public AstroObject(){}
+    public AstroObject(String identifier, Coordinates coords, HashMap<String,String> basicData){
+      this.identifier = identifier;
+      this.coords = coords;
+      this.basicData = basicData;
+    }
 
     /**
      * @param simRowStr - simbad row formatted as per the CatQuery
@@ -29,10 +34,14 @@ public class AstroObject {
       retval.basicData = new HashMap<String, String>();
 
       String[] elems = simRowStr.split("\\|");
-      if(elems.length < 3){
-        //this does not look like a valid row
-        return null;
-      }
+      // if(elems.length < 3){
+        // System.out.println("object of size:"+elems.length);
+        // for(String e : elems){
+          // System.out.println("e: "+e );
+        // }
+        // this does not look like a valid row
+        // return null;
+      // }
       retval.identifier = elems[0];
       retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
@@ -43,10 +52,12 @@ public class AstroObject {
           retval.basicData.put(keys[i-3], elems[i]);
         } //element is not empty
       }
-      for(String el : elems){
-        System.out.println(el);
-
-      }
+      // System.out.println("obj:");
+      // for(String el : elems){
+      //   System.out.println(el);
+      //
+      // }
+      // System.out.println("retval: "+retval);
       return retval;
     }
 
