@@ -61,9 +61,9 @@ public class SimbadParser{
   private static AstroObject stringToAstroObject(String str){
     String obj = str.substring(0,str.length()-1);
     String[] attrs = obj.split("_");
-    for(String atr : attrs){
-      System.out.println("attr: "+atr);
-    }
+    // for(String atr : attrs){
+    //   System.out.println("attr: "+atr);
+    // }
     if(attrs.length >= 2){
       String[] idAndCoords = attrs[0].split("#");
       String[] basicData = attrs[1].split("#");
@@ -74,7 +74,8 @@ public class SimbadParser{
         Coordinates coords =  new Coordinates(Double.parseDouble(idAndCoords[1]),
           Double.parseDouble(idAndCoords[2]));
         HashMap<String, String> basicDataHash = parseBasicData(basicData);
-        return new AstroObject(identifier, coords, basicDataHash);
+        String[] fluxes = basicData[basicData.length-1].split(",");
+        return new AstroObject(identifier, coords, basicDataHash, fluxes);
       }
     }
     return null;
@@ -82,14 +83,12 @@ public class SimbadParser{
 
  private static HashMap<String, String> parseBasicData(String[] attrs){
    HashMap<String, String> basicData = new HashMap<String, String>();
-   for(int i = 0; i < attrs.length; i++){
+   for(int i = 0; i < attrs.length-1; i++){
      String elementFirstComponent = attrs[i].split(",")[0];
-     System.out.println("1st cmponent: "+elementFirstComponent+" of key: "+Config.BD_KEYS[i]);
      if (!elementFirstComponent.trim().contains("~")){
-       basicData.put(Config.BD_KEYS[i], attrs[i]);
+        basicData.put(Config.BD_KEYS[i], attrs[i]);
      }
    }
    return basicData;
  }
-
 }

@@ -64,7 +64,7 @@ public class SimbadCatQuery {
                     "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
                     "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
-                    "%%FLUXLIST(U,B,V,R,I,J,H,K)_%%MEASLIST$ \"\n" +
+                    "%%FLUXLIST(; N = F (Q) B,)_%%MEASLIST(;AH)$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
