@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import jsky.science.Coordinates;
 import fr.inria.ilda.fitsow.Config;
+import java.util.Vector;
 
 public class SimbadParser{
 
@@ -77,6 +78,10 @@ public class SimbadParser{
         String[] fluxes = basicData[basicData.length-1].split(",");
         return new AstroObject(identifier, coords, basicDataHash, fluxes);
       }
+      // if(attrs.length == 3){
+      //   String[] elems = attrs[2].split("\\|");
+      //   HashMap<String, String[][]> measurements = parseMeasurements(elems);
+      // }
     }
     return null;
   }
@@ -91,4 +96,5 @@ public class SimbadParser{
    }
    return basicData;
  }
+
 }
