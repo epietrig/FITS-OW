@@ -182,7 +182,7 @@ public class FITSOW {
         mnCamera = mnSpace.addCamera();
         sqCamera = sqSpace.addCamera();
         crCamera = crSpace.addCamera();
-        Vector cameras = new Vector(5);
+        Vector cameras = new Vector();
         cameras.add(zfCamera);
         cameras.add(dCamera);
         cameras.add(mnCamera);

@@ -46,15 +46,17 @@ public class WallFITSOW extends FITSOW {
     }
 
     void initGUI(FOWOptions options){
+        System.out.println("initGuiWall");
         VirtualSpaceManager.INSTANCE.setMaster("WallFITSOW");
         super.initGUI(options);
         logoSpace = vsm.addVirtualSpace(VirtualSpace.ANONYMOUS);
         logoCam = logoSpace.addCamera();
         cg = new ClusterGeometry(options.blockWidth, options.blockHeight, options.numCols, options.numRows);
-        Vector ccameras = new Vector(2);
+        Vector ccameras = new Vector();
         ccameras.add(zfCamera);
         ccameras.add(dCamera);
         ccameras.add(mnCamera);
+        ccameras.add(sqCamera);
         ccameras.add(crCamera);
         ccameras.add(logoCam);
         cv = new ClusteredView(cg, options.numRows-1, options.numCols, options.numRows, ccameras);
