@@ -57,9 +57,17 @@ public class SimbadInfo extends Composite{
     this.addChild(tabs);
 
     this.basicData = basicData(top, left, obj, info);
+    //
+    // String[][] tableTest = new String[10][10];
+    // for(int i = 0 ; i < 10; i++){
+    //   for( int j = 0; j < 10; j++){
+    //     tableTest[i][j]="test!";
+    //   }}
+    // MeasurementsTable table = new MeasurementsTable(tableTest);
+
+    // this.basicData = table;
     this.basicData.setVisible(true);
     this.addChild(basicData);
-
 
   }
 

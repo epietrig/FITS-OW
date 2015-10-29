@@ -15,15 +15,16 @@ public class AstroObject {
     private String identifier;
     private Coordinates coords;
     private HashMap<String, String> basicData;
+    private String[] fluxes;
     public static int BASIC_DATA_LENGTH = 5;
 
     public AstroObject(){}
-    public AstroObject(String identifier, Coordinates coords, HashMap<String,String> basicData){
+    public AstroObject(String identifier, Coordinates coords, HashMap<String,String> basicData, String[] fluxes){
       this.identifier = identifier;
       this.coords = coords;
       this.basicData = basicData;
+      this.fluxes = fluxes;
     }
-
     /**
      * @param simRowStr - simbad row formatted as per the CatQuery
      * format.
@@ -90,12 +91,14 @@ public class AstroObject {
     public String basicDataToString(){
       String[] keys = Config.BD_KEYS;
       String retval = "";
-      for(int i = 0; i < keys.length; i++){
+      String fluxesStr = "";
+      for(int i = 0; i < keys.length-1; i++){
         String value = basicData.get(keys[i]);
-        if(value!=null){
-          retval = retval + keys[i]+ value + "\n";
-        }
+        if(value!=null) retval = retval + keys[i]+ value + "\n";
       }
+      for(int i = 0; i < fluxes.length; i++)
+        if(!fluxes[i].contains("~")) fluxesStr = fluxesStr + fluxes[i] + "\n";
+      if(fluxesStr != "") retval = retval + keys[keys.length-1]+"\n"+fluxesStr;
       return retval;
     }
 }
