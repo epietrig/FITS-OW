@@ -9,6 +9,7 @@ package fr.inria.ilda.simbad;
 import jsky.science.Coordinates;
 import java.util.HashMap;
 import fr.inria.ilda.fitsow.Config;
+import java.util.Vector;
 
 public class AstroObject {
 
@@ -16,14 +17,16 @@ public class AstroObject {
     private Coordinates coords;
     private HashMap<String, String> basicData;
     private String[] fluxes;
+    private Vector<Measurement> measurements;
     public static int BASIC_DATA_LENGTH = 5;
 
     public AstroObject(){}
-    public AstroObject(String identifier, Coordinates coords, HashMap<String,String> basicData, String[] fluxes){
+    public AstroObject(String identifier, Coordinates coords, HashMap<String,String> basicData, String[] fluxes, Vector<Measurement> measurements){
       this.identifier = identifier;
       this.coords = coords;
       this.basicData = basicData;
       this.fluxes = fluxes;
+      this.measurements = measurements;
     }
     /**
      * @param simRowStr - simbad row formatted as per the CatQuery
@@ -86,6 +89,10 @@ public class AstroObject {
 
     public HashMap<String,String> getBasicData(){
       return basicData;
+    }
+
+    public Vector<Measurement> getMeasurements(){
+      return measurements;
     }
 
     public String basicDataToString(){

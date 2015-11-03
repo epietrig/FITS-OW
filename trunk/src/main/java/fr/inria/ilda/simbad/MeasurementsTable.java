@@ -16,7 +16,7 @@ public class MeasurementsTable extends Composite{
   private final static Color BACKGROUND_COLOR = Color.white;
   private final static Color TEXT_COLOR = Color.black;
 
-  public MeasurementsTable(String[][] measurements){
+  public MeasurementsTable(String[][] measurements, double x, double y){
     this.w = 200;
     this.nCols = measurements[0].length;
     this.nRows = measurements.length;

@@ -64,7 +64,40 @@ public class SimbadCatQuery {
                     "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
                     "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
-                    "%%FLUXLIST(; N = F (Q) B,)_%%MEASLIST(;AH)$ \"\n" +
+                    "%%FLUXLIST(; N = F (Q) B,)"+
+                    "_%%MEASLIST(cel;AH)#"+
+                    "%%MEASLIST(cl.g;AH)#"+
+                    "%%MEASLIST(diameter;AH)#"+
+                    "%%MEASLIST(distance;AH)#"+
+                    "%%MEASLIST(einstein;AH)#"+
+                    "%%MEASLIST(fe_h;AH)#"+
+                    "%%MEASLIST(gcrv;AH)#"+
+                    "%%MEASLIST(gen;AH)#"+
+                    "%%MEASLIST(gj;AH)#"+
+                    "%%MEASLIST(hbet;AH)#"+
+                    "%%MEASLIST(hbet1;AH)#"+
+                    "%%MEASLIST(hgam;AH)#"+
+                    "%%MEASLIST(iras;AH)#"+
+                    "%%MEASLIST(irc;AH)#"+
+                    "%%MEASLIST(iso;AH)#"+
+                    "%%MEASLIST(iue;AH)#"+
+                    "%%MEASLIST(jp11;AH)#"+
+                    "%%MEASLIST(mk;AH)#"+
+                    "%%MEASLIST(orv;AH)#"+
+                    "%%MEASLIST(mesplx;AH)#"+
+                    "%%MEASLIST(mespm;AH)#"+
+                    "%%MEASLIST(pos;AH)#"+
+                    "%%MEASLIST(posa;AH)#"+
+                    "%%MEASLIST(rot;AH)#"+
+                    "%%MEASLIST(rvel;AH)#"+
+                    "%%MEASLIST(sao;AH)#"+
+                    "%%MEASLIST(td1;AH)#"+
+                    "%%MEASLIST(ubv;AH)#"+
+                    "%%MEASLIST(uvby;AH)#"+
+                    "%%MEASLIST(v*;AH)#"+
+                    "%%MEASLIST(xmm;AH)#"+
+                    "%%MEASLIST(z;AH)#"+
+                    "%%MEASLIST(ze;AH)"+"$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),

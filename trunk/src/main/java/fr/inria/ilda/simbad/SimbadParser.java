@@ -30,7 +30,7 @@ public class SimbadParser{
         object = object+toAppend;
         length = toAppend.length();
         if(length > 0 && toAppend.charAt(length-1) == '$'){
-          System.out.println("url obj : "+object);
+          // System.out.println("url obj : "+object);
           result.add(object);
           object = "";
         }
@@ -69,19 +69,16 @@ public class SimbadParser{
       String[] idAndCoords = attrs[0].split("#");
       String[] basicData = attrs[1].split("#");
       // String[] measurements = attrs[2].split("#");
-
       if(idAndCoords.length == 3){
         String identifier = idAndCoords[0];
         Coordinates coords =  new Coordinates(Double.parseDouble(idAndCoords[1]),
           Double.parseDouble(idAndCoords[2]));
         HashMap<String, String> basicDataHash = parseBasicData(basicData);
         String[] fluxes = basicData[basicData.length-1].split(",");
-        return new AstroObject(identifier, coords, basicDataHash, fluxes);
+        System.out.println("obj measurements: "+attrs[2]);
+        Vector<Measurement> measurements = parseMeasurements(attrs[2]);
+        return new AstroObject(identifier, coords, basicDataHash, fluxes, measurements);
       }
-      // if(attrs.length == 3){
-      //   String[] elems = attrs[2].split("\\|");
-      //   HashMap<String, String[][]> measurements = parseMeasurements(elems);
-      // }
     }
     return null;
   }
@@ -95,6 +92,39 @@ public class SimbadParser{
      }
    }
    return basicData;
+ }
+
+ private static Vector<Measurement> parseMeasurements(String attrs){
+   String[] measurements = attrs.split("#");
+   Vector<Measurement> retval = new Vector();
+   for(String measurement : measurements){
+     if(measurement.length()>0){
+       Measurement table = buildTable(measurement.split("\\|"));
+       retval.add(table);
+     }
+   }
+   return retval;
+ }
+
+ private static Measurement buildTable(String[] measurement){
+   String name = measurement[0];
+   int nRows = 1;
+   int nCols = 0;
+   for(int i = 1; i < measurement.length; i++){
+     if(measurement[i].equals(name)) nRows++;
+     else nCols++;
+   }
+
+   if(nRows > 0) nCols = nCols/nRows;
+   String[][] table = new String[nRows][nCols];
+   for(int i = 0 ; i < nRows; i++){
+     for(int j = 0; j < nCols; j++){
+       table[i][j] = measurement[i+1+j+nCols*i];
+     }
+   }
+
+   Measurement retval = new Measurement(name, table);
+   return retval;
  }
 
 }

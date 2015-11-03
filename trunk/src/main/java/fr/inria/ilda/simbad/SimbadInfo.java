@@ -18,6 +18,7 @@ import fr.inria.ilda.fitsow.Config;
 
 public class SimbadInfo extends Composite{
   private Composite basicData;
+  private Composite measurements;
   private Composite tabs;
   private String basicDataStr = "Basic Data";
   private String measurementsStr = "Measurements";
@@ -35,6 +36,7 @@ public class SimbadInfo extends Composite{
   private Color SELECTED_TEXT_COLOR = new Color(34,34,34);
   private int Z = 0;
   private Font bold;
+  private boolean measurementsActive = false;
 
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults stick){
@@ -57,13 +59,14 @@ public class SimbadInfo extends Composite{
     this.addChild(tabs);
 
     this.basicData = basicData(top, left, obj, info);
+    this.measurements = measurements(top, left, obj);
     //
     // String[][] tableTest = new String[10][10];
     // for(int i = 0 ; i < 10; i++){
-    //   for( int j = 0; j < 10; j++){
-    //     tableTest[i][j]="test!";
-    //   }}
-    // MeasurementsTable table = new MeasurementsTable(tableTest);
+      // for( int j = 0; j < 10; j++){
+        // tableTest[i][j]="test!";
+      // }}
+    // MeasurementsTable table = new MeasurementsTable(obj.getMeasurements().get(0).getTable(), 0, 0);
 
     // this.basicData = table;
     this.basicData.setVisible(true);
@@ -116,6 +119,31 @@ public class SimbadInfo extends Composite{
     return basicInfo;
   }
 
+  private Composite measurements(double top, double left, AstroObject obj){
+    Composite measurements= new Composite();
+    Vector<Measurement> vmeasurements = obj.getMeasurements();
+    // VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,SELECTED_TEXT_COLOR,obj.getIdentifier());
+    // bold = identifier.getFont().deriveFont(Font.BOLD);
+    // identifier.setFont(bold);
+    // identifier.setScale(1.3f);
+    // basicInfo.addChild(identifier);
+    // for(int i = 0; i < info.length; i++){
+      // VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,SELECTED_TEXT_COLOR,info[i]);
+      // text.setVisible(true);
+      // basicInfo.addChild(text);
+    // }
+    for(Measurement m : vmeasurements){
+      System.out.println("constucting m glyph");
+      MeasurementsTable mtable = new MeasurementsTable(m.getTable(), top, left);
+
+      System.out.println(" done constucting m glyph");
+      measurements.addChild(mtable);
+      System.out.println(" done a m glyph");
+
+    }
+    return measurements;
+  }
+
   private double getWidth(String[] info){
     int retval = 0;
     int length = 0;
@@ -130,8 +158,10 @@ public class SimbadInfo extends Composite{
       tabSelected = basicDataStr;
       basicDataTab.setColor(SELECTED_BACKGROUND_COLOR);
       measurementsTab.setColor(BACKGROUND_COLOR);
+      basicData.setVisible(true);
+      measurements.setVisible(false);
       this.addChild(basicData);
-      // this.removeChild(measurementsTab);
+      if(measurementsActive) this.removeChild(measurements);
     }
   }
   public void activateMeasurementsTab(){
@@ -139,7 +169,11 @@ public class SimbadInfo extends Composite{
       tabSelected = measurementsStr;
       basicDataTab.setColor(BACKGROUND_COLOR);
       measurementsTab.setColor(SELECTED_BACKGROUND_COLOR);
+      basicData.setVisible(false);
+      measurements.setVisible(true);
       this.removeChild(basicData);
+      // this.addChild(measurements);
+      measurementsActive = true;
     }
   }
   // public boolean insideInfo(double x, double y){
