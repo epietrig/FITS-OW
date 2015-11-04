@@ -140,8 +140,7 @@ public class SimbadQuery {
       }
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
-        SimbadResults results = new SimbadResults(objs, 200, 200);
-        app.sqSpace.addGlyph(results);
+        SimbadResults results = new SimbadResults(objs, 200, 200, app.sqSpace);
       }
       }catch(NullPointerException e){
         e.printStackTrace();

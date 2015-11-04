@@ -9,6 +9,7 @@ import fr.inria.zvtm.glyphs.VCross;
 import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
+import fr.inria.zvtm.engine.VirtualSpace;
 
 import fr.inria.ilda.fitsow.FITSOW;
 
@@ -41,7 +42,9 @@ public class SimbadResults extends Composite{
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
   private static final int Z = 0;
 
-  public SimbadResults(List<AstroObject> results, double x, double y){
+  private VirtualSpace vs;
+
+  public SimbadResults(List<AstroObject> results, double x, double y, VirtualSpace vs){
     this.results = results;
     this.setType(Config.T_ASTRO_OBJ_SR);
     size = results.size();
@@ -67,6 +70,9 @@ public class SimbadResults extends Composite{
       splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, SEGMENT_COLOR);
       this.addChild(splits[i]);
     }
+    this.vs = vs;
+    vs.addGlyph(this);
+
     this.setVisible(true);
   }
 
@@ -149,6 +155,10 @@ public class SimbadResults extends Composite{
     AstroObject obj = results.get(i);
     Point2D.Double location = ids[i].getLocation();
     return new SimbadInfo(obj, location.getX(), location.getY(), this);
+  }
+
+  public VirtualSpace getVirtualSpace(){
+    return vs;
   }
 
 }

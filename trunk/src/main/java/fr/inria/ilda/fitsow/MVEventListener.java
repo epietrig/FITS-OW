@@ -219,6 +219,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         else if(draggingSimbadInfo){
           SimbadInfo info = getCurrentSimbadInfo();
           info.move(jpx-lastJPX, lastJPY-jpy);
+          info.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
+          info.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
+
           lastJPX = jpx;
           lastJPY = jpy;
         }
@@ -354,10 +357,18 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       boolean selecting = list.highlight(index);
       Vector<Glyph> simbadInfoG = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
       if(simbadInfoG.size() > 0){
-        app.sqSpace.removeGlyph(simbadInfoG.get(0));
+        SimbadInfo info = (SimbadInfo) simbadInfoG.get(0);
+        app.sqSpace.removeGlyph(info);
+        if(info.getTabSelected().equals(info.basicDataStr))
+          app.sqSpace.removeGlyph(info.getBasicData());
+        else if(info.getTabSelected().equals(info.measurementsStr))
+          app.sqSpace.removeGlyph(info.getMeasurements());
       }
-      if(selecting)
-        app.sqSpace.addGlyph(list.getBasicInfo(index));
+      if(selecting){
+        SimbadInfo info = list.getBasicInfo(index);
+        app.sqSpace.addGlyph(info);
+        app.sqSpace.addGlyph(info.getBasicData());
+      }
     }
 
     boolean insideSimbadResults(int jpx, int jpy){

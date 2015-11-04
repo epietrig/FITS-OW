@@ -10,18 +10,21 @@ import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
 
+// import fr.inria.zvtm.engine.VirtualSpace;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.Font;
+import fr.inria.zvtm.engine.VirtualSpace;
 
 import fr.inria.ilda.fitsow.Config;
 
 public class SimbadInfo extends Composite{
-  private Composite basicData;
+  public Composite basicData;
   private Composite measurements;
   private Composite tabs;
-  private String basicDataStr = "Basic Data";
-  private String measurementsStr = "Measurements";
+  public static String basicDataStr = "Basic Data";
+  public static String measurementsStr = "Measurements";
   private String tabSelected;
   private VRectangle background;
   private VRectangle basicDataTab;
@@ -36,30 +39,34 @@ public class SimbadInfo extends Composite{
   private Color SELECTED_TEXT_COLOR = new Color(34,34,34);
   private int Z = 0;
   private Font bold;
-  private boolean measurementsActive = false;
+  private VirtualSpace vs;
 
 
-  public SimbadInfo(AstroObject obj, double x, double y, SimbadResults stick){
+  public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
     this.h = (info.length+2)*TEXT_SIZE+OFFSET;
     this.w = getWidth(info);
 
-    background = new VRectangle(x+w/2+stick.getW(), y, Z, w, h, SELECTED_BACKGROUND_COLOR);
+    background = new VRectangle(x+w/2+parent.getW(), y, Z, w, h, SELECTED_BACKGROUND_COLOR);
     background.setVisible(true);
     this.addChild(background);
 
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
-    double right = bounds[2];
+
 
     this.tabs = tabs(top, left);
     this.tabs.setVisible(true);
     this.addChild(tabs);
 
+    this.measurements =  measurements(top, left, obj);
     this.basicData = basicData(top, left, obj, info);
-    this.measurements = measurements(top, left, obj);
+
+    this.vs = parent.getVirtualSpace();
+
+    // this.measurements = measurements(top, left, obj);
     //
     // String[][] tableTest = new String[10][10];
     // for(int i = 0 ; i < 10; i++){
@@ -67,10 +74,6 @@ public class SimbadInfo extends Composite{
         // tableTest[i][j]="test!";
       // }}
     // MeasurementsTable table = new MeasurementsTable(obj.getMeasurements().get(0).getTable(), 0, 0);
-
-    // this.basicData = table;
-    this.basicData.setVisible(true);
-    this.addChild(basicData);
 
   }
 
@@ -120,28 +123,14 @@ public class SimbadInfo extends Composite{
   }
 
   private Composite measurements(double top, double left, AstroObject obj){
-    Composite measurements= new Composite();
+    Composite cMeasurements= new Composite();
     Vector<Measurement> vmeasurements = obj.getMeasurements();
-    // VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,SELECTED_TEXT_COLOR,obj.getIdentifier());
-    // bold = identifier.getFont().deriveFont(Font.BOLD);
-    // identifier.setFont(bold);
-    // identifier.setScale(1.3f);
-    // basicInfo.addChild(identifier);
-    // for(int i = 0; i < info.length; i++){
-      // VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,SELECTED_TEXT_COLOR,info[i]);
-      // text.setVisible(true);
-      // basicInfo.addChild(text);
-    // }
-    for(Measurement m : vmeasurements){
-      System.out.println("constucting m glyph");
-      MeasurementsTable mtable = new MeasurementsTable(m.getTable(), top, left);
-
-      System.out.println(" done constucting m glyph");
-      measurements.addChild(mtable);
-      System.out.println(" done a m glyph");
-
+    if(vmeasurements.size() > 0){
+      Measurement m = vmeasurements.get(0);
+      MeasurementsTable table = new MeasurementsTable(m.getTable(), left, top);
+      cMeasurements.addChild(table);
     }
-    return measurements;
+    return cMeasurements;
   }
 
   private double getWidth(String[] info){
@@ -158,36 +147,36 @@ public class SimbadInfo extends Composite{
       tabSelected = basicDataStr;
       basicDataTab.setColor(SELECTED_BACKGROUND_COLOR);
       measurementsTab.setColor(BACKGROUND_COLOR);
-      basicData.setVisible(true);
-      measurements.setVisible(false);
-      this.addChild(basicData);
-      if(measurementsActive) this.removeChild(measurements);
+      vs.removeGlyph(measurements);
+      vs.addGlyph(basicData);
+
     }
   }
+
   public void activateMeasurementsTab(){
     if(!tabSelected.equals(measurementsStr)){
       tabSelected = measurementsStr;
       basicDataTab.setColor(BACKGROUND_COLOR);
       measurementsTab.setColor(SELECTED_BACKGROUND_COLOR);
-      basicData.setVisible(false);
-      measurements.setVisible(true);
-      this.removeChild(basicData);
-      // this.addChild(measurements);
-      measurementsActive = true;
+      vs.removeGlyph(basicData);
+      vs.addGlyph(measurements);
     }
   }
-  // public boolean insideInfo(double x, double y){
-  //   double[] bounds = this.getBounds();
-  //   if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3])
-  //     return true;
-  //   return false;
-  // }
 
   public VRectangle getBasicDataTab(){
     return basicDataTab;
   }
   public VRectangle getMeasurementsTab(){
     return measurementsTab;
+  }
+  public Composite getBasicData(){
+    return basicData;
+  }
+  public Composite getMeasurements(){
+    return measurements;
+  }
+  public String getTabSelected(){
+    return tabSelected;
   }
   public VRectangle getBackground(){
     return background;
