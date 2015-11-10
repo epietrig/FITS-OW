@@ -75,7 +75,7 @@ public class SimbadParser{
           Double.parseDouble(idAndCoords[2]));
         HashMap<String, String> basicDataHash = parseBasicData(basicData);
         String[] fluxes = basicData[basicData.length-1].split(",");
-        System.out.println("obj measurements: "+attrs[2]);
+        // System.out.println("obj measurements: "+attrs[2]);
         Vector<Measurement> measurements = parseMeasurements(attrs[2]);
         return new AstroObject(identifier, coords, basicDataHash, fluxes, measurements);
       }
@@ -107,11 +107,11 @@ public class SimbadParser{
  }
 
  private static Measurement buildTable(String[] measurement){
-   String name = measurement[0];
+   String name = measurement[0].trim();
    int nRows = 1;
    int nCols = 0;
    for(int i = 1; i < measurement.length; i++){
-     if(measurement[i].equals(name)) nRows++;
+     if(measurement[i].equals(name) || measurement[i].contains(name)) nRows++;
      else nCols++;
    }
 

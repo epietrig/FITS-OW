@@ -132,6 +132,7 @@ public class Config {
     public static final String T_ASTRO_OBJ_LB = T_ASTRO_OBJ_PREFIX + "Lb";
     public static final String T_ASTRO_OBJ_SR = "SimbadResults";
     public static final String T_ASTRO_OBJ_BINFO = "SimbadInfo";
+    public static final String T_ASTRO_OBJ_MT = "SimbadMeasurementTable";
 
 
     /* ------------ Scales and color mappings ---------- */
@@ -254,6 +255,13 @@ public class Config {
     public static final Color SIMBAD_AO_LBCOLOR = Color.WHITE;
     public static final Color SIMBAD_AO_BACKGROUND = Color.BLACK;
     public static final float SIMBAD_AO_ALPHA = .7f;
+
+    public static final double TEXT_SIZE = 20;
+    public static final double OFFSET = 5;
+    public static final Color UNSELECTED_BACKGROUND_COLOR = Color.gray;
+    public static final Color SELECTED_BACKGROUND_COLOR = new Color(195, 195, 195);
+    public static final Color TEXT_COLOR = Color.black;
+    public static final Color SELECTED_TEXT_COLOR = new Color(34,34,34);
 
     public static final DecimalFormat ARCMIN_FORMATTER = new DecimalFormat("#0.0000");
 

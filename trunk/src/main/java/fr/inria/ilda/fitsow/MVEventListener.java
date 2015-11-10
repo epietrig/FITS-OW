@@ -44,6 +44,7 @@ import fr.inria.zuist.od.TextDescription;
 import java.awt.geom.Point2D.Double;
 import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
+import fr.inria.ilda.simbad.SimbadCriteria;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -334,6 +335,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     void enterQueryMode(){
         querying = true;
+        SimbadCriteria sc = new SimbadCriteria(0,0);
+        app.sqSpace.addGlyph(sc);
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
         app.scene.setStatusBarMessage("Select region to query:");
     }

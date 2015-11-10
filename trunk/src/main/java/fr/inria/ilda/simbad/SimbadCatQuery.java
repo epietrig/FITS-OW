@@ -97,7 +97,8 @@ public class SimbadCatQuery {
                     "%%MEASLIST(v*;AH)#"+
                     "%%MEASLIST(xmm;AH)#"+
                     "%%MEASLIST(z;AH)#"+
-                    "%%MEASLIST(ze;AH)"+"$ \"\n" +
+                    "%%MEASLIST(ze;AH)"+
+                    "$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
@@ -115,8 +116,8 @@ public class SimbadCatQuery {
     }
 
     private static URL makeSimbadScriptQueryUrl(String script) throws MalformedURLException {
-        //String prefix = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
-        String prefix = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
+        String prefix = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
+        // String prefix = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
         try{
             return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
         } catch (UnsupportedEncodingException eex){

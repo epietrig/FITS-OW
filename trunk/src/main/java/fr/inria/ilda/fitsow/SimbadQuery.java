@@ -99,6 +99,8 @@ public class SimbadQuery {
             @Override public List<AstroObject> construct(){
                 List<AstroObject> objs = null;
                 try{
+
+                  System.out.println("querying...");
                     objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
                     ioe.printStackTrace();
@@ -117,6 +119,7 @@ public class SimbadQuery {
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
       try{
         clearQueryResults();
+        System.out.println("displaying...");
         for(AstroObject obj: objs){
           Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
           VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
