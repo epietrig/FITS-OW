@@ -42,21 +42,29 @@ public class MeasurementsTable extends Composite{
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
+    double right = bounds[2];
+    double bottom = bounds[3];
 
     VText title = new VText(OFFSET+left, top+OFFSET, 0, TEXT_COLOR, name);
+    VSegment split = new VSegment(left, top-Config.TEXT_SIZE, right, top-Config.TEXT_SIZE,Z, Config.SELECTED_TEXT_COLOR);
     title.setScale(1.1f);
-    this.addChild(title);
+
     this.addChild(background);
+    this.addChild(title);
+    this.addChild(split);
 
     double xPosition = 0;
     for(int j = 0; j < nRows; j ++){
       for(int i = 0; i < nCols; i ++){
 
         VText mText = new VText(OFFSET+left+xPosition, top-15-20*j, 0, TEXT_COLOR, measurements[j][i].trim());
-        xPosition = xPosition+sizeOfColumns[i];
-        // VText mText = new VText(OFFSET+left+maxElementSize*i, top-15-20*j, 0, TEXT_COLOR, measurements[j][i].trim());
-        if(j==0)
+        if(j==0){
           mText.setFont(mText.getFont().deriveFont(Font.BOLD));
+          double xSplit = mText.getBounds()[0]-Config.OFFSET;
+          VSegment splits = new VSegment(xSplit,top,xSplit,bottom,Z,Color.gray);
+          this.addChild(splits);
+        }
+        xPosition = xPosition+sizeOfColumns[i];
         mText.setVisible(true);
         this.addChild(mText);
       }
@@ -92,5 +100,12 @@ public class MeasurementsTable extends Composite{
 
   public VRectangle getBackground(){
     return background;
+  }
+
+  public int getW(){
+    return w;
+  }
+  public int getH(){
+    return h;
   }
 }

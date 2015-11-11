@@ -29,10 +29,12 @@ public class SimbadInfo extends Composite{
   private VRectangle background;
   private VRectangle basicDataTab;
   private VRectangle measurementsTab;
+  private VText basicDataTabStr, measurementsTabStr;
   private double h;
   private double w;
+  private double wm, hm, x, y;
   private int Z = 0;
-  private Font bold;
+  private Font bold, notBold;
   private VirtualSpace vs;
 
 
@@ -41,15 +43,15 @@ public class SimbadInfo extends Composite{
     String[] info = obj.basicDataToString().split("\n");
     this.h = (info.length+2)*Config.TEXT_SIZE+Config.OFFSET;
     this.w = getWidth(info);
-
-    background = new VRectangle(x+w/2+parent.getW(), y, Z, w, h, Config.SELECTED_BACKGROUND_COLOR);
+    this.x = x+w/2+parent.getW();
+    this.y = y;
+    background = new VRectangle(this.x, y, Z, w, h, Config.SELECTED_BACKGROUND_COLOR);
     background.setVisible(true);
     this.addChild(background);
 
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
-
 
     this.tabs = tabs(top, left);
     this.tabs.setVisible(true);
@@ -61,23 +63,18 @@ public class SimbadInfo extends Composite{
     this.vs = parent.getVirtualSpace();
   }
 
-  // private int getHeight(String[] strs){
-  //   int length = strs.length;
-  //   System.out.println(strs[length-1]);
-  //   return length;
-  // }
   private Composite tabs(double top, double left){
     Composite tabs = new Composite();
 
     basicDataTab = new VRectangle(left+w/4, top-2*Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    VText basicDataTabStr = new VText(left+Config.OFFSET,top-18,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
+    basicDataTabStr = new VText(left+Config.OFFSET,top-18,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     tabSelected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     basicDataTabStr.setFont(bold);
 
     measurementsTab = new VRectangle(left+w/4+w/2, top-2*Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    VText measurementsTabStr = new VText(left+w/2+2*Config.OFFSET,top-18,Z,Config.TEXT_COLOR,measurementsStr);
+    measurementsTabStr = new VText(left+w/2+2*Config.OFFSET,top-18,Z,Config.TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
 
     basicDataTab.setVisible(true);
@@ -93,6 +90,7 @@ public class SimbadInfo extends Composite{
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
     VText identifier = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE*2,Z,Config.SELECTED_TEXT_COLOR,obj.getIdentifier());
+    notBold = identifier.getFont();
     bold = identifier.getFont().deriveFont(Font.BOLD);
     identifier.setFont(bold);
     identifier.setScale(1.3f);
@@ -109,6 +107,8 @@ public class SimbadInfo extends Composite{
   private Composite measurements(double top, double left, AstroObject obj){
     Composite cMeasurements= new Composite();
     Vector<Measurement> vmeasurements = obj.getMeasurements();
+    int maxWidth = 0;
+    int aux = 0;
     MeasurementsTable table;
     if(vmeasurements.size() > 0){
       for (Measurement m : vmeasurements){
@@ -117,8 +117,13 @@ public class SimbadInfo extends Composite{
         else
           table = new MeasurementsTable(m, left, top, 5);
         top = table.getBackground().getBounds()[3]-Config.TEXT_SIZE;
+        aux = table.getW();
+        hm = hm + table.getH();
+        if(aux > maxWidth) maxWidth = aux;
         cMeasurements.addChild(table);
       }
+    hm = hm + (Config.OFFSET+Config.TEXT_SIZE)*vmeasurements.size();
+    wm = maxWidth;
     }
     return cMeasurements;
   }
@@ -137,6 +142,23 @@ public class SimbadInfo extends Composite{
       tabSelected = basicDataStr;
       basicDataTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
       measurementsTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
+      basicDataTabStr.setFont(bold);
+      measurementsTabStr.setFont(notBold);
+      if(wm > w){
+        background.setWidth(w);
+        basicDataTab.setWidth(w/2);
+        measurementsTab.setWidth(w/2);
+        background.move((w-wm-20)/2,0);
+        basicDataTab.move((w-wm-20)/4,0);
+        double[] bounds = basicDataTab.getBounds();
+        measurementsTab.moveTo(bounds[2]+w/4,measurementsTab.getLocation().getY());
+        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
+        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
+      }
+      if(hm > h){
+        background.setHeight(h);
+        background.move(0,(hm+basicDataTab.getHeight()+20-h)/2);
+      }
       vs.removeGlyph(measurements);
       vs.addGlyph(basicData);
 
@@ -148,6 +170,23 @@ public class SimbadInfo extends Composite{
       tabSelected = measurementsStr;
       basicDataTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
       measurementsTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
+      measurementsTabStr.setFont(bold);
+      basicDataTabStr.setFont(notBold);
+      if(wm > w){
+        background.setWidth(wm+20);
+        basicDataTab.setWidth((wm+20)/2);
+        measurementsTab.setWidth((wm+20)/2);
+        background.move((wm-w+20)/2,0);
+        basicDataTab.move((wm+20-w)/4,0);
+        double[] bounds = basicDataTab.getBounds();
+        measurementsTab.moveTo(bounds[2]+(wm+20)/4,measurementsTab.getLocation().getY());
+        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
+        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
+      }
+      if(hm > h){
+        background.setHeight(hm+basicDataTab.getHeight()+20);
+        background.move(0,-(hm+basicDataTab.getHeight()+20-h)/2);
+      }
       vs.removeGlyph(basicData);
       vs.addGlyph(measurements);
     }

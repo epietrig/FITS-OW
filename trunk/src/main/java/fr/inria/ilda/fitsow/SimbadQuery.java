@@ -156,9 +156,12 @@ public class SimbadQuery {
       app.dSpace.removeGlyphs(toBeRemoved.toArray(new Glyph[toBeRemoved.size()]));
       app.dSpace.removeGlyphs(toBeRemoved2.toArray(new Glyph[toBeRemoved2.size()]));
       Vector<Glyph> toBeRemoved3 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
-      Vector<Glyph> toBeRemoved4 = app.sqSpace.getGlyphsOfType("SimbadInfo");
+      Vector<Glyph> toBeRemoved4 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
       app.sqSpace.removeGlyphs(toBeRemoved3.toArray(new Glyph[toBeRemoved3.size()]));
       app.sqSpace.removeGlyphs(toBeRemoved4.toArray(new Glyph[toBeRemoved4.size()]));
+      Vector<Glyph> toBeRemoved5 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_MT);
+      app.sqSpace.removeGlyphs(toBeRemoved5.toArray(new Glyph[toBeRemoved5.size()]));
+
     }
 
     void fadeOutQueryRegion(){
