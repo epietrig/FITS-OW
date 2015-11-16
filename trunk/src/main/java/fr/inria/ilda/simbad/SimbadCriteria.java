@@ -6,6 +6,8 @@ import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
 
+import fr.inria.zvtm.engine.VirtualSpace;
+
 import fr.inria.ilda.fitsow.Config;
 
 import java.awt.Color;
@@ -13,12 +15,10 @@ import java.awt.Font;
 
 import java.util.Vector;
 
-public class SimbadCriteria extends Composite{
-  private int w, h;
-  private double x, y;
-  private final static int Z = 0;
-  private Composite tabs, basicData, measurements, objectTypeFilter, properMotionFilter,
+public class SimbadCriteria extends SimbadQueryGlyph{
+  private Composite basicData, measurements, objectTypeFilter, properMotionFilter,
   parallaxesFilter, radialVelocityFilter, spectralTypeFilter, fluxesFilter;
+  private Tabs tabs;
   public static String basicDataStr = "Basic Data";
   public static String measurementsStr = "Measurements";
   private String tabSelected;
@@ -35,16 +35,18 @@ public class SimbadCriteria extends Composite{
 "v*","xmm","z","ze"};
   private Vector<VSegment> bsplits;
   private Vector<VSegment> msplits;
+  private double width2, height2;
 
-  public SimbadCriteria(double x, double y){
-    this.w = 300;
-    this.h = 700;
-    this.x = x;
-    this.y = y-500;
+  public SimbadCriteria(double x, double y, VirtualSpace vs){
+    super(x,y,vs);
+    this.width = 300;
+    this.height = 700;
+    this.height2 = height;
+    this.width2 = width;
     bsplits = new Vector();
     msplits = new Vector();
-    VRectangle container = new VRectangle (x, y+25, Z, w+50, h+100, Config.UNSELECTED_BACKGROUND_COLOR);
-    background = new VRectangle (x, y, Z, w, h, Config.SELECTED_BACKGROUND_COLOR);
+    VRectangle container = new VRectangle (x, y+25, Z, width+50, height+100, Config.UNSELECTED_BACKGROUND_COLOR);
+    background = new VRectangle (x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
     this.addChild(container);
     this.addChild(background);
 
@@ -57,11 +59,11 @@ public class SimbadCriteria extends Composite{
     optionalFilters.setScale(1.3f);
     this.addChild(optionalFilters);
 
-    this.tabs = tabs(top, left);
+    this.tabs = new Tabs(top, left, this, width2, height2);
     this.addChild(tabs);
 
     this.basicData = new Composite();
-    this.objectTypeFilter = objectTypeFilter(basicDataTab.getBounds()[3], left, right);
+    this.objectTypeFilter = objectTypeFilter(tabs.getBounds()[3], left, right);
     basicData.addChild(objectTypeFilter);
 
     this.properMotionFilter = properMotionFilter(bsplits.lastElement().getLocation().getY(),left, right);
@@ -81,28 +83,8 @@ public class SimbadCriteria extends Composite{
 
     // this.addChild(basicData);
 
-    this.measurements = measurements(basicDataTab.getBounds()[3],left,right);
+    this.measurements = measurements(tabs.getBounds()[3],left,right);
     this.addChild(measurements);
-  }
-
-  private Composite tabs(double top, double left){
-    Composite tabs = new Composite();
-    basicDataTab = new VRectangle(left+w/4, top-Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    VText basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*2,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
-    basicDataTabStr.setScale(1.3f);
-    tabSelected = basicDataStr;
-    bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
-    basicDataTabStr.setFont(bold);
-
-    measurementsTab = new VRectangle(left+w/4+w/2, top-Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    VText measurementsTabStr = new VText(left+w/2+2*Config.OFFSET,top-Config.OFFSET*2,Z,Config.TEXT_COLOR,measurementsStr);
-    measurementsTabStr.setScale(1.3f);
-
-    tabs.addChild(basicDataTab);
-    tabs.addChild(basicDataTabStr);
-    tabs.addChild(measurementsTab);
-    tabs.addChild(measurementsTabStr);
-    return tabs;
   }
   private void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
     VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
@@ -137,8 +119,8 @@ public class SimbadCriteria extends Composite{
         type = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
       }
       else{
-        square =  new VRectangle (left+2*Config.OFFSET+w/2, top-Config.TEXT_SIZE*(i+2-7), Z, 10, 10, Color.white);
-        type = new VText(left+5*Config.OFFSET+w/2, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-7), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
+        square =  new VRectangle (left+2*Config.OFFSET+width/2, top-Config.TEXT_SIZE*(i+2-7), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+width/2, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-7), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
       }
       objectType.addChild(square);
       objectType.addChild(type);
@@ -206,14 +188,14 @@ public class SimbadCriteria extends Composite{
         range = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+3), Z, Config.SELECTED_TEXT_COLOR, "Range:");
       }
       else if(i<20){
-        square =  new VRectangle (left+2*Config.OFFSET+w/3, top-Config.TEXT_SIZE*(i+2-10), Z, 10, 10, Color.white);
-        type = new VText(left+5*Config.OFFSET+w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-10), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
-        range = new VText(left+5*Config.OFFSET+w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-10), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+        square =  new VRectangle (left+2*Config.OFFSET+width/3, top-Config.TEXT_SIZE*(i+2-10), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-10), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
+        range = new VText(left+5*Config.OFFSET+width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-10), Z, Config.SELECTED_TEXT_COLOR, "Range:");
       }
       else{
-        square =  new VRectangle (left+2*Config.OFFSET+2*w/3, top-Config.TEXT_SIZE*(i+2-20), Z, 10, 10, Color.white);
-        type = new VText(left+5*Config.OFFSET+2*w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-20), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
-        range = new VText(left+5*Config.OFFSET+2*w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-20), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+        square =  new VRectangle (left+2*Config.OFFSET+2*width/3, top-Config.TEXT_SIZE*(i+2-20), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+2*width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-20), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
+        range = new VText(left+5*Config.OFFSET+2*width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-20), Z, Config.SELECTED_TEXT_COLOR, "Range:");
       }
       fluxes.addChild(square);
       fluxes.addChild(type);
@@ -246,5 +228,8 @@ public class SimbadCriteria extends Composite{
     }
     return m;
   }
+  // public VRectangle getBackground(){
+  //   return background;
+  // }
 
 }

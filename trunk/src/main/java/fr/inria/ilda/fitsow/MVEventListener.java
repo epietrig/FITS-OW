@@ -335,7 +335,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     void enterQueryMode(){
         querying = true;
-        SimbadCriteria sc = new SimbadCriteria(0,0);
+        SimbadCriteria sc = new SimbadCriteria(0,0,app.sqSpace);
         app.sqSpace.addGlyph(sc);
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
         app.scene.setStatusBarMessage("Select region to query:");

@@ -21,11 +21,8 @@ import java.awt.geom.AffineTransform;
 
 import fr.inria.ilda.fitsow.Config;
 
-
-
-public class SimbadResults extends Composite{
-  private int size, w, h;
-  private double x, y;
+public class SimbadResults extends SimbadQueryGlyph{
+  private int size;
   private VRectangle background;
   private VText[] ids;
   private VSegment[] splits;
@@ -40,21 +37,17 @@ public class SimbadResults extends Composite{
   private static final Color TEXT_UNSELECTED_COLOR = Color.white;
   private static final Color GLYPH_SELECTED_COLOR = Color.green;
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
-  private static final int Z = 0;
-
-  private VirtualSpace vs;
 
   public SimbadResults(List<AstroObject> results, double x, double y, VirtualSpace vs){
+    super(x, y, vs);
     this.results = results;
     this.setType(Config.T_ASTRO_OBJ_SR);
     size = results.size();
-    h = size*TEXT_SIZE+OFFSET;
-    w = 200;
-    this.x = y ;
-    this.y = x;
+    height = size*TEXT_SIZE+OFFSET;
+    width = 200;
     selected = -1;
     glyphSelected = -1;
-    background = new VRectangle (x, y, Z, w, h, BACKGROUND_COLOR);
+    background = new VRectangle (x, y, Z, width, height, BACKGROUND_COLOR);
     background.setVisible(true);
     this.addChild(background);
     double[] bounds = background.getBounds();
@@ -70,29 +63,13 @@ public class SimbadResults extends Composite{
       splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, SEGMENT_COLOR);
       this.addChild(splits[i]);
     }
-    this.vs = vs;
     vs.addGlyph(this);
 
     this.setVisible(true);
   }
-
-  public double getX(){
-    return x;
-  }
-  public double getY(){
-    return y;
-  }
-  public double getW(){
-    return w;
-  }
   public VRectangle getBackground(){
     return background;
   }
-  // public boolean insideList(double x, double y){
-  //   double[] bounds = this.getBounds();
-  //   if(bounds[0] < x && x < bounds[2] && y < bounds[1] && y > bounds[3]) return true;
-  //   return false;
-  // }
   public int insideWhichObject(double x, double y){
     double start = background.getBounds()[1];
     double locationY = start;
@@ -133,7 +110,6 @@ public class SimbadResults extends Composite{
       return glyphSelected;
     }
   }
-
   public void highlightCorrespondingGlyph(Vector<Glyph> gs, int i){
     if(i != glyphSelected){
       if(glyphSelected >= 0){
