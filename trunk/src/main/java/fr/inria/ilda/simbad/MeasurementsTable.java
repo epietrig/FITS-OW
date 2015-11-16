@@ -26,15 +26,12 @@ public class MeasurementsTable extends Composite{
     this.setType(Config.T_ASTRO_OBJ_MT);
     this.nCols = measurements[0].length;
     this.nRows = measurements.length;
-    // double maxElementSize = maxElementSize(measurements);
 
     double[] sizeOfColumns = sizeOfColumns(measurements);
     w = 0;
     for(double size: sizeOfColumns){
       w = w+(int)size;
     }
-    // w = w + OFFSET*nCols;
-    // this.w = (int)maxElementSize*nCols;
     this.h = (nRows)*20;
 
     background = new VRectangle (x+w/2+OFFSET, y-h/2-topOffset, Z, w, h, BACKGROUND_COLOR);

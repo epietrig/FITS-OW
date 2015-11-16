@@ -11,12 +11,14 @@ import fr.inria.ilda.fitsow.Config;
 import java.awt.Color;
 import java.awt.Font;
 
+import java.util.Vector;
+
 public class SimbadCriteria extends Composite{
   private int w, h;
   private double x, y;
   private final static int Z = 0;
-  private Composite tabs;
-  private Composite objectTypeSelection;
+  private Composite tabs, basicData, measurements, objectTypeFilter, properMotionFilter,
+  parallaxesFilter, radialVelocityFilter, spectralTypeFilter, fluxesFilter;
   public static String basicDataStr = "Basic Data";
   public static String measurementsStr = "Measurements";
   private String tabSelected;
@@ -26,72 +28,223 @@ public class SimbadCriteria extends Composite{
   private Font bold;
   private static String[] objectTypes = {"Star", "Galaxie", "InterStellar Matter",
   "Multiple Object", "Candidates", "Gravitation", "Inexistent", "Radio", "IR", "Red", "Blue", "UV", "X", "gamma"};
-
+  private static String[] fluxTypes = {"U", "V", "B", "R","I","J","K","H","u","g","r","i","z"};
+  private static String[] catalogs = {"cel","cl.g","diameter","distance","einstein",
+"fe_h","gcrv","gen","gj","hbet","hbet1","hgam","iras","irc","iso","iue","jp11", "mk",
+"orv","mesplx","mespm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
+"v*","xmm","z","ze"};
+  private Vector<VSegment> bsplits;
+  private Vector<VSegment> msplits;
 
   public SimbadCriteria(double x, double y){
     this.w = 300;
-    this.h = 200;
+    this.h = 700;
     this.x = x;
-    this.y = y;
+    this.y = y-500;
+    bsplits = new Vector();
+    msplits = new Vector();
+    VRectangle container = new VRectangle (x, y+25, Z, w+50, h+100, Config.UNSELECTED_BACKGROUND_COLOR);
     background = new VRectangle (x, y, Z, w, h, Config.SELECTED_BACKGROUND_COLOR);
-    background.setVisible(true);
+    this.addChild(container);
     this.addChild(background);
+
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
     double right = bounds[2];
 
-    VText optionalFilters = new VText(left+Config.OFFSET,top-Config.OFFSET*3,Z,Config.TEXT_COLOR,"Optional Filters");
+    VText optionalFilters = new VText(left,container.getBounds()[1]-Config.TEXT_SIZE,Z,Config.TEXT_COLOR,"Optional Filters");
     optionalFilters.setScale(1.3f);
     this.addChild(optionalFilters);
 
     this.tabs = tabs(top, left);
-    this.tabs.setVisible(true);
     this.addChild(tabs);
 
-    this.objectTypeSelection = objectTypeSelection(basicDataTab.getBounds()[3], left, right);
-    this.addChild(objectTypeSelection);
+    this.basicData = new Composite();
+    this.objectTypeFilter = objectTypeFilter(basicDataTab.getBounds()[3], left, right);
+    basicData.addChild(objectTypeFilter);
+
+    this.properMotionFilter = properMotionFilter(bsplits.lastElement().getLocation().getY(),left, right);
+    basicData.addChild(properMotionFilter);
+
+    this.parallaxesFilter = parallaxesFilter(bsplits.lastElement().getLocation().getY(),left, right);
+    basicData.addChild(parallaxesFilter);
+
+    this.radialVelocityFilter = radialVelocityFilter(bsplits.lastElement().getLocation().getY(),left, right);
+    basicData.addChild(radialVelocityFilter);
+
+    this.spectralTypeFilter = spectralTypeFilter(bsplits.lastElement().getLocation().getY(),left, right);
+    basicData.addChild(spectralTypeFilter);
+
+    this.fluxesFilter = fluxesFilter(bsplits.lastElement().getLocation().getY(),left, right);
+    basicData.addChild(fluxesFilter);
+
+    // this.addChild(basicData);
+
+    this.measurements = measurements(basicDataTab.getBounds()[3],left,right);
+    this.addChild(measurements);
   }
 
   private Composite tabs(double top, double left){
     Composite tabs = new Composite();
-    basicDataTab = new VRectangle(left+w/4, top-6*Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    VText basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*7,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
+    basicDataTab = new VRectangle(left+w/4, top-Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
+    VText basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*2,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     tabSelected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     basicDataTabStr.setFont(bold);
 
-    measurementsTab = new VRectangle(left+w/4+w/2, top-6*Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    VText measurementsTabStr = new VText(left+w/2+2*Config.OFFSET,top-Config.OFFSET*7,Z,Config.TEXT_COLOR,measurementsStr);
+    measurementsTab = new VRectangle(left+w/4+w/2, top-Config.OFFSET, Z, w/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
+    VText measurementsTabStr = new VText(left+w/2+2*Config.OFFSET,top-Config.OFFSET*2,Z,Config.TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
 
-    basicDataTab.setVisible(true);
     tabs.addChild(basicDataTab);
-    basicDataTabStr.setVisible(true);
     tabs.addChild(basicDataTabStr);
-    measurementsTab.setVisible(true);
     tabs.addChild(measurementsTab);
-    measurementsTabStr.setVisible(true);
     tabs.addChild(measurementsTabStr);
     return tabs;
   }
+  private void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
+    VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
+    title.setScale(1.1f);
+    c.addChild(title);
+    VSegment split1 = new VSegment(left, top-Config.OFFSET-Config.TEXT_SIZE, right, top-Config.OFFSET-Config.TEXT_SIZE,Z, Config.SELECTED_TEXT_COLOR);
+    bsplits.add(split1);
+    c.addChild(split1);
+    VSegment split2 = new VSegment(left, top-size, right, top-size ,Z, Config.SELECTED_TEXT_COLOR);
+    bsplits.add(split2);
+    c.addChild(split2);
+  }
+  private void qualitySelector(Composite c, double x, double y){
+    VText quality = new VText(x,y,Z,Config.SELECTED_TEXT_COLOR,"Quality:");
+    c.addChild(quality);
+    for(char alphabet = 'A'; alphabet <= 'E';alphabet++) {
+      VRectangle square =  new VRectangle (x+((int)alphabet-65)*2*Config.TEXT_SIZE+Config.OFFSET, y-Config.TEXT_SIZE+Config.OFFSET, Z, 10, 10, Color.white);
+      VText qualityStr = new VText(x+((int)alphabet-65)*2*Config.TEXT_SIZE+3*Config.OFFSET, y-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, Character.toString(alphabet));
+      c.addChild(square);
+      c.addChild(qualityStr);
+    }
+  }
 
-  private Composite objectTypeSelection(double top, double left, double right){
+  private Composite objectTypeFilter(double top, double left, double right){
     Composite objectType = new Composite();
-    VText objectTypeStr = new VText(left+Config.OFFSET,top-Config.OFFSET,Z,Config.SELECTED_TEXT_COLOR,"Object type:");
-    objectType.addChild(objectTypeStr);
-    VSegment split = new VSegment(left, top-Config.OFFSET-Config.TEXT_SIZE, right, top-Config.OFFSET-Config.TEXT_SIZE,Z, Config.SELECTED_TEXT_COLOR);
-    objectType.addChild(split);
+    setFilterLayout("Object Type:", Config.OFFSET+Config.TEXT_SIZE*9, objectType, top, left, right);
+    VRectangle square;
+    VText type;
     for(int i = 0; i < objectTypes.length; i++){
       if( i < 7){
-        VText type = new VText(left+Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+1), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
-        objectType.addChild(type);
+        square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
       }
+      else{
+        square =  new VRectangle (left+2*Config.OFFSET+w/2, top-Config.TEXT_SIZE*(i+2-7), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+w/2, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-7), Z, Config.SELECTED_TEXT_COLOR, objectTypes[i]);
+      }
+      objectType.addChild(square);
+      objectType.addChild(type);
     }
     return objectType;
   }
 
+  private Composite properMotionFilter(double top, double left, double right){
+    Composite properMotion = new Composite();
+    setFilterLayout("Proper Motion:", Config.OFFSET+Config.TEXT_SIZE*5, properMotion, top, left, right);
+    VText ra = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Right ascension angle:");
+    VText dec = new VText(left+Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Declination angle:");
+    properMotion.addChild(ra);
+    properMotion.addChild(dec);
+    qualitySelector(properMotion, left+Config.OFFSET, top-4*Config.TEXT_SIZE);
+    return properMotion;
+  }
 
+  private Composite radialVelocityFilter(double top, double left, double right){
+    Composite radialVelocity = new Composite();
+    setFilterLayout("Radial velocity:", Config.OFFSET+Config.TEXT_SIZE*5, radialVelocity, top, left, right);
+    VText type = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Type:");
+    VText rv = new VText(left+Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Range:");
+    radialVelocity.addChild(type);
+    radialVelocity.addChild(rv);
+    qualitySelector(radialVelocity, left+Config.OFFSET, top-4*Config.TEXT_SIZE);
+    return radialVelocity;
+  }
+
+  private Composite parallaxesFilter(double top, double left, double right){
+    Composite parallaxes = new Composite();
+    setFilterLayout("Parallax:", Config.OFFSET*2+Config.TEXT_SIZE*3, parallaxes, top, left, right);
+    qualitySelector(parallaxes, left+Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*2);
+    return parallaxes;
+  }
+
+  private Composite spectralTypeFilter(double top, double left, double right){
+    Composite spectralType = new Composite();
+    setFilterLayout("Spectral Type:", 2*Config.OFFSET+Config.TEXT_SIZE*8, spectralType, top, left, right);
+    VText tc = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Temperature class:");
+    VText first = new VText(left+2*Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"1st digit:");
+    VText second = new VText(left+2*Config.OFFSET,top-4*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"2nd digit:");
+    VText third = new VText(left+2*Config.OFFSET,top-5*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"3rd digit:");
+    spectralType.addChild(tc);
+    spectralType.addChild(first);
+    spectralType.addChild(second);
+    spectralType.addChild(third);
+
+    VText lc = new VText(left+Config.OFFSET,top-6*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Luminosity class:");
+    spectralType.addChild(lc);
+    qualitySelector(spectralType, left+Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*7);
+    return spectralType;
+  }
+
+  private Composite fluxesFilter(double top, double left, double right){
+    Composite fluxes = new Composite();
+    setFilterLayout("Flux:", 2*Config.OFFSET+Config.TEXT_SIZE*13, fluxes, top, left, right);
+
+    VRectangle square;
+    VText type, range;
+    for(int i = 0; i < fluxTypes.length*2; i=i+2){
+      if( i < 10){
+        square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
+        range = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+3), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+      }
+      else if(i<20){
+        square =  new VRectangle (left+2*Config.OFFSET+w/3, top-Config.TEXT_SIZE*(i+2-10), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-10), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
+        range = new VText(left+5*Config.OFFSET+w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-10), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+      }
+      else{
+        square =  new VRectangle (left+2*Config.OFFSET+2*w/3, top-Config.TEXT_SIZE*(i+2-20), Z, 10, 10, Color.white);
+        type = new VText(left+5*Config.OFFSET+2*w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-20), Z, Config.SELECTED_TEXT_COLOR, fluxTypes[i/2]);
+        range = new VText(left+5*Config.OFFSET+2*w/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-20), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+      }
+      fluxes.addChild(square);
+      fluxes.addChild(type);
+      fluxes.addChild(range);
+    }
+    qualitySelector(fluxes, left+Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*12);
+    return fluxes;
+  }
+
+  private Composite measurements(double top, double left, double right){
+    Composite m = new Composite();
+    VRectangle square;
+    VText name, options;
+    square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
+    name = new VText(left+6*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE, Z, Config.SELECTED_TEXT_COLOR, "All");
+    VSegment split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
+    m.addChild(square);
+    m.addChild(name);
+    m.addChild(split);
+    msplits.add(split);
+    for(int i = 0; i < catalogs.length; i++){
+      square =  new VRectangle (left+3*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
+      name = new VText(left+7*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, catalogs[i]);
+      options = new VText(right-20*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, "Advanced Options");
+      split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2), right, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2) ,Z, Config.SELECTED_TEXT_COLOR);
+      m.addChild(square);
+      m.addChild(name);
+      m.addChild(options);
+      m.addChild(split);
+    }
+    return m;
+  }
 
 }
