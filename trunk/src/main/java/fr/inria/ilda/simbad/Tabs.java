@@ -19,6 +19,7 @@ public class Tabs extends SimbadQueryGlyph{
   public Tabs(double top, double left, SimbadQueryGlyph parent, double height2, double width2){
     super(left, top, parent.getVS());
     this.width = parent.getWidth();
+    this.height = parent.getHeight();
     this.parent = parent;
     this.width2 = width2;
     this.height2 = height2;
@@ -38,14 +39,6 @@ public class Tabs extends SimbadQueryGlyph{
     this.addChild(basicDataTabStr);
     this.addChild(measurementsTab);
     this.addChild(measurementsTabStr);
-  }
-
-  public VRectangle getBasicDataTab(){
-    return basicDataTab;
-  }
-
-  public VRectangle getMeasurementsTab(){
-    return measurementsTab;
   }
 
   @Override
@@ -111,4 +104,19 @@ public class Tabs extends SimbadQueryGlyph{
     }
   }
 
+  public VRectangle getBasicDataTab(){
+    return basicDataTab;
+  }
+  public VRectangle getMeasurementsTab(){
+    return measurementsTab;
+  }
+  public String getTabSelected(){
+    return tabSelected;
+  }
+  public void setWidth2(double width2){
+    this.width2 = width2;
+  }
+  public void setHeight2(double height2){
+    this.height2 = height2;
+  }
 }

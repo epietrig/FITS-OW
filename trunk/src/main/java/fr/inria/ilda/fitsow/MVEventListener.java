@@ -45,6 +45,7 @@ import java.awt.geom.Point2D.Double;
 import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
+import fr.inria.ilda.simbad.Tabs;
 
 class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -152,12 +153,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         updateSimbadResults(jpx, jpy);
       }
       SimbadInfo info = getCurrentSimbadInfo();
+      Tabs tabs = info.getTabs();
       if(info != null){
-        if(info.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          info.activateBasicDataTab();
+        if(
+        tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateBasicDataTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
         }
-        else if(info.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          info.activateMeasurementsTab();
+        else if(
+        tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateMeasurementsTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
         }
       }
 
@@ -362,9 +366,9 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       if(simbadInfoG.size() > 0){
         SimbadInfo info = (SimbadInfo) simbadInfoG.get(0);
         app.sqSpace.removeGlyph(info);
-        if(info.getTabSelected().equals(info.basicDataStr))
+        if(info.getTabs().getTabSelected().equals(info.getTabs().basicDataStr))
           app.sqSpace.removeGlyph(info.getBasicData());
-        else if(info.getTabSelected().equals(info.measurementsStr))
+        else if(info.getTabs().getTabSelected().equals(info.getTabs().measurementsStr))
           app.sqSpace.removeGlyph(info.getMeasurements());
       }
       if(selecting){

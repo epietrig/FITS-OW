@@ -10,8 +10,6 @@ import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
 
-// import fr.inria.zvtm.engine.VirtualSpace;
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.Font;
@@ -22,14 +20,15 @@ import fr.inria.ilda.fitsow.Config;
 public class SimbadInfo extends SimbadQueryGlyph{
   public Composite basicData;
   private Composite measurements;
-  private Composite tabs;
-  public static String basicDataStr = "Basic Data";
-  public static String measurementsStr = "Measurements";
-  private String tabSelected;
+  // private Composite tabs;
+  private Tabs tabs;
+  // public static String basicDataStr = "Basic Data";
+  // public static String measurementsStr = "Measurements";
+  // private String tabSelected;
   private VRectangle background;
-  private VRectangle basicDataTab;
-  private VRectangle measurementsTab;
-  private VText basicDataTabStr, measurementsTabStr;
+  // private VRectangle basicDataTab;
+  // private VRectangle measurementsTab;
+  // private VText basicDataTabStr, measurementsTabStr;
   private double wm, hm;
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
@@ -47,8 +46,9 @@ public class SimbadInfo extends SimbadQueryGlyph{
     double left = bounds[0];
     double top = bounds[1];
 
-    this.tabs = tabs(top, left);
-    this.tabs.setVisible(true);
+    // this.tabs = tabs(top, left);
+    this.tabs = new Tabs(top, left, this, height, width);
+    // this.tabs.setVisible(true);
     this.addChild(tabs);
 
     this.measurements =  measurements(top, left, obj);
@@ -57,26 +57,6 @@ public class SimbadInfo extends SimbadQueryGlyph{
     this.vs = parent.getVirtualSpace();
   }
 
-  private Composite tabs(double top, double left){
-    Composite tabs = new Composite();
-
-    basicDataTab = new VRectangle(left+width/4, top-2*Config.OFFSET, Z, width/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    basicDataTabStr = new VText(left+Config.OFFSET,top-18,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
-    basicDataTabStr.setScale(1.3f);
-    tabSelected = basicDataStr;
-    bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
-    basicDataTabStr.setFont(bold);
-
-    measurementsTab = new VRectangle(left+width/4+width/2, top-2*Config.OFFSET, Z, width/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    measurementsTabStr = new VText(left+width/2+2*Config.OFFSET,top-18,Z,Config.TEXT_COLOR,measurementsStr);
-    measurementsTabStr.setScale(1.3f);
-
-    tabs.addChild(basicDataTab);
-    tabs.addChild(basicDataTabStr);
-    tabs.addChild(measurementsTab);
-    tabs.addChild(measurementsTabStr);
-    return tabs;
-  }
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
     VText identifier = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE*2,Z,Config.SELECTED_TEXT_COLOR,obj.getIdentifier());
@@ -96,10 +76,12 @@ public class SimbadInfo extends SimbadQueryGlyph{
   private Composite measurements(double top, double left, AstroObject obj){
     Composite cMeasurements= new Composite();
     Vector<Measurement> vmeasurements = obj.getMeasurements();
-    int maxWidth = 0;
+    double maxWidth = 0;
+    double maxHeight = 0;
     int aux = 0;
     MeasurementsTable table;
     if(vmeasurements.size() > 0){
+      System.out.println("this should display measrements");
       for (Measurement m : vmeasurements){
         if(m.equals(vmeasurements.firstElement()))
           table = new MeasurementsTable(m, left, top-Config.TEXT_SIZE, 25);
@@ -107,12 +89,13 @@ public class SimbadInfo extends SimbadQueryGlyph{
           table = new MeasurementsTable(m, left, top, 5);
         top = table.getBackground().getBounds()[3]-Config.TEXT_SIZE;
         aux = table.getW();
-        hm = hm + table.getH();
+        maxHeight = maxHeight + table.getH();
         if(aux > maxWidth) maxWidth = aux;
         cMeasurements.addChild(table);
       }
-    hm = hm + (Config.OFFSET+Config.TEXT_SIZE)*vmeasurements.size();
-    wm = maxWidth;
+    maxHeight = maxHeight + (Config.OFFSET+Config.TEXT_SIZE)*vmeasurements.size();
+    tabs.setWidth2(maxWidth);
+    tabs.setHeight2(maxHeight);
     }
     return cMeasurements;
   }
@@ -126,76 +109,18 @@ public class SimbadInfo extends SimbadQueryGlyph{
     }
     return retval*5.5;
   }
-  public void activateBasicDataTab(){
-    if(!tabSelected.equals(basicDataStr)){
-      tabSelected = basicDataStr;
-      basicDataTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
-      basicDataTabStr.setFont(bold);
-      measurementsTabStr.setFont(notBold);
-      if(wm > width){
-        background.setWidth(width);
-        basicDataTab.setWidth(width/2);
-        measurementsTab.setWidth(width/2);
-        background.move((width-wm-20)/2,0);
-        basicDataTab.move((width-wm-20)/4,0);
-        double[] bounds = basicDataTab.getBounds();
-        measurementsTab.moveTo(bounds[2]+width/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
-      }
-      if(hm > height){
-        background.setHeight(height);
-        background.move(0,(hm+basicDataTab.getHeight()+20-height)/2);
-      }
-      vs.removeGlyph(measurements);
-      vs.addGlyph(basicData);
 
-    }
+  public Tabs getTabs(){
+    return tabs;
   }
 
-  public void activateMeasurementsTab(){
-    if(!tabSelected.equals(measurementsStr)){
-      tabSelected = measurementsStr;
-      basicDataTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
-      measurementsTabStr.setFont(bold);
-      basicDataTabStr.setFont(notBold);
-      if(wm > width){
-        background.setWidth(wm+20);
-        basicDataTab.setWidth((wm+20)/2);
-        measurementsTab.setWidth((wm+20)/2);
-        background.move((wm-width+20)/2,0);
-        basicDataTab.move((wm+20-width)/4,0);
-        double[] bounds = basicDataTab.getBounds();
-        measurementsTab.moveTo(bounds[2]+(wm+20)/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
-      }
-      if(hm > height){
-        background.setHeight(hm+basicDataTab.getHeight()+20);
-        background.move(0,-(hm+basicDataTab.getHeight()+20-height)/2);
-      }
-      vs.removeGlyph(basicData);
-      vs.addGlyph(measurements);
-    }
-  }
-
-  public VRectangle getBasicDataTab(){
-    return basicDataTab;
-  }
-  public VRectangle getMeasurementsTab(){
-    return measurementsTab;
-  }
   public Composite getBasicData(){
     return basicData;
   }
   public Composite getMeasurements(){
     return measurements;
   }
-  public String getTabSelected(){
-    return tabSelected;
-  }
+
   public VRectangle getBackground(){
     return background;
   }
