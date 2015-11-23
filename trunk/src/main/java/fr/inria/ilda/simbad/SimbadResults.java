@@ -22,7 +22,7 @@ import java.awt.geom.AffineTransform;
 import fr.inria.ilda.fitsow.Config;
 
 public class SimbadResults extends SimbadQueryGlyph{
-  private int size;
+  // private int size;
   private VRectangle background;
   private VText[] ids;
   private VSegment[] splits;
@@ -39,12 +39,11 @@ public class SimbadResults extends SimbadQueryGlyph{
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
 
   public SimbadResults(List<AstroObject> results, double x, double y, VirtualSpace vs){
-    super(x, y, vs);
+    super(x, y, 200, results.size()*TEXT_SIZE+OFFSET,vs);
     this.results = results;
     this.setType(Config.T_ASTRO_OBJ_SR);
-    size = results.size();
-    height = size*TEXT_SIZE+OFFSET;
-    width = 200;
+    // height = size*TEXT_SIZE+OFFSET;
+    // width = 200;
     selected = -1;
     glyphSelected = -1;
     background = new VRectangle (x, y, Z, width, height, BACKGROUND_COLOR);
@@ -54,6 +53,7 @@ public class SimbadResults extends SimbadQueryGlyph{
     double top = bounds[1];
     double left = bounds[0];
     double right = bounds[2];
+    int size = results.size();
     ids = new VText[size];
     splits = new VSegment[size];
     for(int i = 0; i <size; i++){

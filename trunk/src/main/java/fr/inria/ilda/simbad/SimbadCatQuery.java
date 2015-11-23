@@ -76,6 +76,7 @@ public class SimbadCatQuery {
                     "%%MEASLIST(gj;AH)#"+
                     "%%MEASLIST(hbet;AH)#"+
                     "%%MEASLIST(hbet1;AH)#"+
+                    "%%MEASLIST(herschel;AH)#"+
                     "%%MEASLIST(hgam;AH)#"+
                     "%%MEASLIST(iras;AH)#"+
                     "%%MEASLIST(irc;AH)#"+
@@ -84,8 +85,8 @@ public class SimbadCatQuery {
                     "%%MEASLIST(jp11;AH)#"+
                     "%%MEASLIST(mk;AH)#"+
                     "%%MEASLIST(orv;AH)#"+
-                    "%%MEASLIST(mesplx;AH)#"+
-                    "%%MEASLIST(mespm;AH)#"+
+                    "%%MEASLIST(plx;AH)#"+
+                    "%%MEASLIST(pm;AH)#"+
                     "%%MEASLIST(pos;AH)#"+
                     "%%MEASLIST(posa;AH)#"+
                     "%%MEASLIST(rot;AH)#"+
@@ -94,7 +95,9 @@ public class SimbadCatQuery {
                     "%%MEASLIST(td1;AH)#"+
                     "%%MEASLIST(ubv;AH)#"+
                     "%%MEASLIST(uvby;AH)#"+
+                    "%%MEASLIST(uvby1;AH)#"+
                     "%%MEASLIST(v*;AH)#"+
+                    "%%MEASLIST(velocities;AH)#"+
                     "%%MEASLIST(xmm;AH)#"+
                     "%%MEASLIST(z;AH)#"+
                     "%%MEASLIST(ze;AH)"+

@@ -5,22 +5,23 @@ import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.VSegment;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.Glyph;
+import fr.inria.zvtm.engine.VirtualSpace;
 
 import fr.inria.ilda.fitsow.Config;
 
 import java.awt.Color;
 import java.awt.Font;
 
-public class MeasurementsTable extends Composite{
-  private int w, h, nRows, nCols;
-  private double x, y;
+public class MeasurementsTable extends SimbadQueryGlyph{
+  private int nRows, nCols;
   private VRectangle background;
   private final static int Z = 0;
   private final static Color BACKGROUND_COLOR = Color.white;
   private final static Color TEXT_COLOR = Color.black;
   private final static int OFFSET = 5;
 
-  public MeasurementsTable(Measurement measurement, double x, double y, double topOffset){
+  public MeasurementsTable(Measurement measurement, double x, double y, double topOffset, VirtualSpace vs){
+    super(x, y, 0, 0, vs);
     String[][] measurements = measurement.getTable();
     String name = measurement.getName();
     this.setType(Config.T_ASTRO_OBJ_MT);
@@ -28,13 +29,15 @@ public class MeasurementsTable extends Composite{
     this.nRows = measurements.length;
 
     double[] sizeOfColumns = sizeOfColumns(measurements);
-    w = 0;
+    double w = 0;
     for(double size: sizeOfColumns){
-      w = w+(int)size;
+      w = w+size;
     }
-    this.h = (nRows)*20;
 
-    background = new VRectangle (x+w/2+OFFSET, y-h/2-topOffset, Z, w, h, BACKGROUND_COLOR);
+    this.width = w;
+    this.height =(nRows)*20;
+
+    background = new VRectangle (x+width/2+OFFSET, y-height/2-topOffset, Z, width, height, BACKGROUND_COLOR);
     background.setVisible(true);
     double[] bounds = background.getBounds();
     double left = bounds[0];
@@ -97,12 +100,5 @@ public class MeasurementsTable extends Composite{
 
   public VRectangle getBackground(){
     return background;
-  }
-
-  public int getW(){
-    return w;
-  }
-  public int getH(){
-    return h;
   }
 }

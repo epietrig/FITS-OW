@@ -11,9 +11,11 @@ public abstract class SimbadQueryGlyph extends Composite{
   protected final static int Z = 0;
   protected VirtualSpace vs;
 
-  public SimbadQueryGlyph(double x, double y, VirtualSpace vs){
+  public SimbadQueryGlyph(double x, double y, double width, double height, VirtualSpace vs){
     this.x = x;
     this.y = y;
+    this.width = width;
+    this.height = height;
     this.vs = vs;
   }
   public double getX(){

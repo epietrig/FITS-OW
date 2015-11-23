@@ -16,36 +16,35 @@ import java.awt.Font;
 import java.util.Vector;
 
 public class SimbadCriteria extends SimbadQueryGlyph{
-  private Composite basicData, measurements, objectTypeFilter, properMotionFilter,
+  private Composite basicData, objectTypeFilter, properMotionFilter,
   parallaxesFilter, radialVelocityFilter, spectralTypeFilter, fluxesFilter;
+  private SimbadMFilter measurements;
   private Tabs tabs;
   private VRectangle background, container;
   private Font bold;
   private static String[] objectTypes = {"Star", "Galaxie", "InterStellar Matter",
   "Multiple Object", "Candidates", "Gravitation", "Inexistent", "Radio", "IR", "Red", "Blue", "UV", "X", "gamma"};
   private static String[] fluxTypes = {"U", "V", "B", "R","I","J","K","H","u","g","r","i","z"};
-  private static String[] catalogs = {"cel","cl.g","diameter","distance","einstein",
-"fe_h","gcrv","gen","gj","hbet","hbet1","hgam","iras","irc","iso","iue","jp11", "mk",
-"orv","mesplx","mespm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
-"v*","xmm","z","ze"};
+//   private static String[] catalogs = {"cel","cl.g","diameter","distance","einstein",
+// "fe_h","gcrv","gen","gj","hbet","hbet1","herschel","hgam","iras","irc","iso","iue","jp11", "mk",
+// "orv","plx","pm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
+// "v*","velocities","xmm","z","ze"};
   private Vector<VSegment> bsplits;
   private double width2, height2;
 
   /**Measurements Composite components---------------------------------------**/
-  private VSegment[] msplits;
-  private VRectangle[] msquares;
+  // private VSegment[] msplits;
+  // private VRectangle[] msquares;
 
   public SimbadCriteria(double x, double y, VirtualSpace vs){
-    super(x,y,vs);
+    super(x,y,300,920,vs);
     this.setType(Config.T_ASTRO_OBJ_SC);
-    this.width = 300;
-    this.height = 920;
     this.height2 = 500;
     this.width2 = width;
 
     bsplits = new Vector();
-    msquares = new VRectangle[35];
-    msplits = new VSegment[35];
+    // msquares = new VRectangle[catalogs.length+1];
+    // msplits = new VSegment[catalogs.length+1];
 
     container = new VRectangle (x, y+25, Z, width+50, height+100, Config.UNSELECTED_BACKGROUND_COLOR);
     background = new VRectangle (x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
@@ -83,7 +82,9 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     this.fluxesFilter = fluxesFilter(bsplits.lastElement().getLocation().getY(),left, right);
     basicData.addChild(fluxesFilter);
 
-    this.measurements = measurements(tabs.getBounds()[3],left,right);
+    // this.measurements = measurements(tabs.getBounds()[3],left,right);
+    this.measurements = new SimbadMFilter(tabs.getBounds()[3],left,right, vs, this);
+
   }
 
   private void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
@@ -205,66 +206,66 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     return fluxes;
   }
 
-  private Composite measurements(double top, double left, double right){
-    Composite m = new Composite();
-    VText name, options;
-    VRectangle square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
-    name = new VText(left+6*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE, Z, Config.SELECTED_TEXT_COLOR, "All");
-    VSegment split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
-    m.addChild(square);
-    m.addChild(name);
-    m.addChild(split);
-    msplits[0] = split;
-    msquares[0] = square;
-    for(int i = 0; i < catalogs.length; i++){
-      square =  new VRectangle (left+3*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
-      name = new VText(left+7*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, catalogs[i]);
-      options = new VText(right-20*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, "Advanced Options");
-      split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2), right, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2) ,Z, Config.SELECTED_TEXT_COLOR);
-      m.addChild(square);
-      m.addChild(name);
-      m.addChild(options);
-      m.addChild(split);
-      msquares[i+1] = square;
-      msplits[i+1] = split;
-    }
-    return m;
-  }
+  // private Composite measurements(double top, double left, double right){
+  //   Composite m = new Composite();
+  //   VText name, options;
+  //   VRectangle square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
+  //   name = new VText(left+6*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE, Z, Config.SELECTED_TEXT_COLOR, "All");
+  //   VSegment split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
+  //   m.addChild(square);
+  //   m.addChild(name);
+  //   m.addChild(split);
+  //   msplits[0] = split;
+  //   msquares[0] = square;
+  //   for(int i = 0; i < catalogs.length; i++){
+  //     square =  new VRectangle (left+3*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
+  //     name = new VText(left+7*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, catalogs[i]);
+  //     options = new VText(right-20*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, "Advanced Options");
+  //     split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2), right, top-2*Config.OFFSET-Config.TEXT_SIZE*(i+2) ,Z, Config.SELECTED_TEXT_COLOR);
+  //     m.addChild(square);
+  //     m.addChild(name);
+  //     m.addChild(options);
+  //     m.addChild(split);
+  //     msquares[i+1] = square;
+  //     msplits[i+1] = split;
+  //   }
+  //   return m;
+  // }
 
-  public void selectMeasurement(int m){
-    if(m == 0){
-      if(msquares[0].getColor().equals(Color.red)){
-        for(VRectangle square : msquares){
-          square.setColor(Color.white);
-        }
-      }
-      else{
-        for(VRectangle square : msquares){
-          square.setColor(Color.red);
-        }
-      }
-    }
-    else if(m > 0){
-      VRectangle selectedSquare = msquares[m];
-      if(selectedSquare.getColor().equals(Color.red))
-        selectedSquare.setColor(Color.white);
-      else
-        selectedSquare.setColor(Color.red);
-    }
-  }
-
-  public int getMeasurementSelected(double x, double y){
-    double top = background.getBounds()[1];
-    if(x < background.getLocation().getX()){
-      for(int i = 0; i < msplits.length; i++){
-        if(y < top && y > msplits[i].getLocation().getY()){
-          return i;
-        }
-        top = msplits[i].getLocation().getY();
-      }
-    }
-    return -1;
-  }
+  // public void selectMeasurement(int m){
+  //   if(m == 0){
+  //     if(msquares[0].getColor().equals(Color.red)){
+  //       for(VRectangle square : msquares){
+  //         square.setColor(Color.white);
+  //       }
+  //     }
+  //     else{
+  //       for(VRectangle square : msquares){
+  //         square.setColor(Color.red);
+  //       }
+  //     }
+  //   }
+  //   else if(m > 0){
+  //     VRectangle selectedSquare = msquares[m];
+  //     if(selectedSquare.getColor().equals(Color.red))
+  //       selectedSquare.setColor(Color.white);
+  //     else
+  //       selectedSquare.setColor(Color.red);
+  //   }
+  // }
+  //
+  // public int getMeasurementSelected(double x, double y){
+  //   double top = background.getBounds()[1];
+  //   if(x < background.getLocation().getX()){
+  //     for(int i = 0; i < msplits.length; i++){
+  //       if(y < top && y > msplits[i].getLocation().getY()){
+  //         return i;
+  //       }
+  //       top = msplits[i].getLocation().getY();
+  //     }
+  //   }
+  //   return -1;
+  // }
 
   public Tabs getTabs(){
     return tabs;
@@ -278,8 +279,9 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public Composite getBasicData(){
     return basicData;
   }
-  public Composite getMeasurements(){
+  public SimbadMFilter getMeasurements(){
     return measurements;
   }
+
 
 }

@@ -166,7 +166,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         if(criteria.getTabs().getTabSelected().equals(criteria.getTabs().getMeasurementsStr())){
           Point2D.Double coords = new Point2D.Double();
           app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-          criteria.selectMeasurement(criteria.getMeasurementSelected(coords.getX(), coords.getY()));
+          criteria.getMeasurements().selectMeasurement(criteria.getMeasurements().getMeasurementSelected(coords.getX(), coords.getY()));
         }
       }
       updateSimbadInfoTabs(jpx, jpy);

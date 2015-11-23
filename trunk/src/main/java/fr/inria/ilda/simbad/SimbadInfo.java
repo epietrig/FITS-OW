@@ -29,10 +29,10 @@ public class SimbadInfo extends SimbadQueryGlyph{
   // private VRectangle basicDataTab;
   // private VRectangle measurementsTab;
   // private VText basicDataTabStr, measurementsTabStr;
-  private double wm, hm;
+  // private double wm, hm;
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
-    super(x,y,parent.getVS());
+    super(x,y,0,0,parent.getVS());
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
     this.height = (info.length+2)*Config.TEXT_SIZE+Config.OFFSET;
@@ -74,17 +74,17 @@ public class SimbadInfo extends SimbadQueryGlyph{
     Vector<Measurement> vmeasurements = obj.getMeasurements();
     double maxWidth = 0;
     double maxHeight = 0;
-    int aux = 0;
+    double aux = 0;
     MeasurementsTable table;
     if(vmeasurements.size() > 0){
       for (Measurement m : vmeasurements){
         if(m.equals(vmeasurements.firstElement()))
-          table = new MeasurementsTable(m, left, top-Config.TEXT_SIZE, 25);
+          table = new MeasurementsTable(m, left, top-Config.TEXT_SIZE, 25, vs);
         else
-          table = new MeasurementsTable(m, left, top, 5);
+          table = new MeasurementsTable(m, left, top, 5, vs);
         top = table.getBackground().getBounds()[3]-Config.TEXT_SIZE;
-        aux = table.getW();
-        maxHeight = maxHeight + table.getH();
+        aux = table.getWidth();
+        maxHeight = maxHeight + table.getHeight();
         if(aux > maxWidth) maxWidth = aux;
         cMeasurements.addChild(table);
       }
