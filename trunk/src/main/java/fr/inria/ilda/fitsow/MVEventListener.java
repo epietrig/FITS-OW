@@ -72,6 +72,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     boolean draggingFITS = false;
     boolean draggingSimbadResults = false;
     boolean draggingSimbadInfo = false;
+    boolean draggingSimbadCriteria = false;
 
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
@@ -86,8 +87,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         lastJPX = jpx;
         lastJPY = jpy;
 
-
-        if (querying){
+        if (querying && !insideSimbadCriteria(jpx, jpy)){
             sq = new SimbadQuery(app);
             if (ciFITSImage != null){
                 sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
@@ -103,6 +103,12 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         }
         else if(insideSimbadInfo(jpx, jpy)){
           draggingSimbadInfo = true;
+          draggingFITS = false;
+          draggingSimbadResults = false;
+        }
+        else if(insideSimbadCriteria(jpx, jpy)){
+          draggingSimbadCriteria = true;
+          draggingSimbadInfo = false;
           draggingFITS = false;
           draggingSimbadResults = false;
         }
@@ -128,11 +134,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         if(draggingSimbadInfo){
           draggingSimbadInfo = false;
         }
+        if(draggingSimbadCriteria){
+          draggingSimbadCriteria = false;
+        }
         if (draggingFITS){
             app.dSpacePicker.unstickLastGlyph();
             draggingFITS = false;
         }
-        if (querying){
+        if (querying && !insideSimbadCriteria(jpx, jpy)){
             exitQueryMode();
             if (sq != null){
                 if (ciFITSImage != null){
@@ -152,19 +161,16 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       if(insideSimbadResults(jpx, jpy)){
         updateSimbadResults(jpx, jpy);
       }
-      SimbadInfo info = getCurrentSimbadInfo();
-      Tabs tabs = info.getTabs();
-      if(info != null){
-        if(
-        tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateBasicDataTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
-        }
-        else if(
-        tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateMeasurementsTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
+      if(insideSimbadCriteria(jpx, jpy)){
+        SimbadCriteria criteria = getCurrentSimbadCriteria();
+        if(criteria.getTabs().getTabSelected().equals(criteria.getTabs().getMeasurementsStr())){
+          Point2D.Double coords = new Point2D.Double();
+          app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+          criteria.selectMeasurement(criteria.getMeasurementSelected(coords.getX(), coords.getY()));
         }
       }
-
+      updateSimbadInfoTabs(jpx, jpy);
+      updateSimbadCriteriaTabs(jpx, jpy); //if I'm clicking tabs, update them
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -226,6 +232,15 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
           info.move(jpx-lastJPX, lastJPY-jpy);
           info.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
           info.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
+
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
+        else if(draggingSimbadCriteria){
+          SimbadCriteria criteria = getCurrentSimbadCriteria();
+          criteria.move(jpx-lastJPX, lastJPY-jpy);
+          criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
+          criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
 
           lastJPX = jpx;
           lastJPY = jpy;
@@ -341,11 +356,16 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
         querying = true;
         SimbadCriteria sc = new SimbadCriteria(0,0,app.sqSpace);
         app.sqSpace.addGlyph(sc);
+        app.sqSpace.addGlyph(sc.getBasicData());
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
         app.scene.setStatusBarMessage("Select region to query:");
     }
 
     void exitQueryMode(){
+        SimbadCriteria criteria = getCurrentSimbadCriteria();
+        app.sqSpace.removeGlyph(criteria.getBasicData());
+        app.sqSpace.removeGlyph(criteria.getMeasurements());
+        app.sqSpace.removeGlyph(criteria);
         app.scene.setStatusBarMessage(null);
         querying = false;
     }
@@ -378,16 +398,49 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       }
     }
 
+    void updateSimbadInfoTabs(int jpx, int jpy){
+      SimbadInfo info = getCurrentSimbadInfo();
+      if(info != null){
+        Tabs tabs = info.getTabs();
+        if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateBasicDataTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
+        }
+        else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateMeasurementsTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
+        }
+      }
+    }
+
+    void updateSimbadCriteriaTabs(int jpx, int jpy){
+      SimbadCriteria criteria = getCurrentSimbadCriteria();
+      if(criteria!= null){
+        Tabs tabs = criteria.getTabs();
+        if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateBasicDataTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
+        }
+        else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+          tabs.activateMeasurementsTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
+        }
+      }
+    }
+
     boolean insideSimbadResults(int jpx, int jpy){
       SimbadResults list = getCurrentSimbadResults();
       if(list!= null) return list.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
-
     }
 
     boolean insideSimbadInfo(int jpx, int jpy){
       SimbadInfo info = getCurrentSimbadInfo();
-      if(info != null) return info.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+      if(info != null)
+        return info.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+      return false;
+    }
+
+    boolean insideSimbadCriteria(int jpx, int jpy){
+      SimbadCriteria criteria = getCurrentSimbadCriteria();
+      if(criteria != null)
+        return criteria.getContainer().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
     }
 
@@ -404,6 +457,14 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       if(simbadInfo.size()>0){
         SimbadInfo info = (SimbadInfo) simbadInfo.get(0);
         return info;
+      }
+      return null;
+    }
+    SimbadCriteria getCurrentSimbadCriteria(){
+      Vector<Glyph> simbadCriteria = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
+      if(simbadCriteria.size()>0){
+        SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
+        return criteria;
       }
       return null;
     }

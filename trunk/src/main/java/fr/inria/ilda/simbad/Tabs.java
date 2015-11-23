@@ -119,4 +119,7 @@ public class Tabs extends SimbadQueryGlyph{
   public void setHeight2(double height2){
     this.height2 = height2;
   }
+  public String getMeasurementsStr(){
+    return measurementsStr;
+  }
 }

@@ -19,12 +19,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private Composite basicData, measurements, objectTypeFilter, properMotionFilter,
   parallaxesFilter, radialVelocityFilter, spectralTypeFilter, fluxesFilter;
   private Tabs tabs;
-  public static String basicDataStr = "Basic Data";
-  public static String measurementsStr = "Measurements";
-  private String tabSelected;
-  private VRectangle background;
-  private VRectangle basicDataTab;
-  private VRectangle measurementsTab;
+  private VRectangle background, container;
   private Font bold;
   private static String[] objectTypes = {"Star", "Galaxie", "InterStellar Matter",
   "Multiple Object", "Candidates", "Gravitation", "Inexistent", "Radio", "IR", "Red", "Blue", "UV", "X", "gamma"};
@@ -34,18 +29,25 @@ public class SimbadCriteria extends SimbadQueryGlyph{
 "orv","mesplx","mespm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
 "v*","xmm","z","ze"};
   private Vector<VSegment> bsplits;
-  private Vector<VSegment> msplits;
   private double width2, height2;
+
+  /**Measurements Composite components---------------------------------------**/
+  private VSegment[] msplits;
+  private VRectangle[] msquares;
 
   public SimbadCriteria(double x, double y, VirtualSpace vs){
     super(x,y,vs);
+    this.setType(Config.T_ASTRO_OBJ_SC);
     this.width = 300;
-    this.height = 700;
-    this.height2 = height;
+    this.height = 920;
+    this.height2 = 500;
     this.width2 = width;
+
     bsplits = new Vector();
-    msplits = new Vector();
-    VRectangle container = new VRectangle (x, y+25, Z, width+50, height+100, Config.UNSELECTED_BACKGROUND_COLOR);
+    msquares = new VRectangle[35];
+    msplits = new VSegment[35];
+
+    container = new VRectangle (x, y+25, Z, width+50, height+100, Config.UNSELECTED_BACKGROUND_COLOR);
     background = new VRectangle (x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
     this.addChild(container);
     this.addChild(background);
@@ -59,7 +61,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     optionalFilters.setScale(1.3f);
     this.addChild(optionalFilters);
 
-    this.tabs = new Tabs(top, left, this, width2, height2);
+    this.tabs = new Tabs(top, left, this, height2, width2);
     this.addChild(tabs);
 
     this.basicData = new Composite();
@@ -81,11 +83,9 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     this.fluxesFilter = fluxesFilter(bsplits.lastElement().getLocation().getY(),left, right);
     basicData.addChild(fluxesFilter);
 
-    // this.addChild(basicData);
-
     this.measurements = measurements(tabs.getBounds()[3],left,right);
-    this.addChild(measurements);
   }
+
   private void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
     VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
     title.setScale(1.1f);
@@ -207,15 +207,15 @@ public class SimbadCriteria extends SimbadQueryGlyph{
 
   private Composite measurements(double top, double left, double right){
     Composite m = new Composite();
-    VRectangle square;
     VText name, options;
-    square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
+    VRectangle square =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
     name = new VText(left+6*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE, Z, Config.SELECTED_TEXT_COLOR, "All");
     VSegment split = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
     m.addChild(square);
     m.addChild(name);
     m.addChild(split);
-    msplits.add(split);
+    msplits[0] = split;
+    msquares[0] = square;
     for(int i = 0; i < catalogs.length; i++){
       square =  new VRectangle (left+3*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
       name = new VText(left+7*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, catalogs[i]);
@@ -225,11 +225,61 @@ public class SimbadCriteria extends SimbadQueryGlyph{
       m.addChild(name);
       m.addChild(options);
       m.addChild(split);
+      msquares[i+1] = square;
+      msplits[i+1] = split;
     }
     return m;
   }
-  // public VRectangle getBackground(){
-  //   return background;
-  // }
+
+  public void selectMeasurement(int m){
+    if(m == 0){
+      if(msquares[0].getColor().equals(Color.red)){
+        for(VRectangle square : msquares){
+          square.setColor(Color.white);
+        }
+      }
+      else{
+        for(VRectangle square : msquares){
+          square.setColor(Color.red);
+        }
+      }
+    }
+    else if(m > 0){
+      VRectangle selectedSquare = msquares[m];
+      if(selectedSquare.getColor().equals(Color.red))
+        selectedSquare.setColor(Color.white);
+      else
+        selectedSquare.setColor(Color.red);
+    }
+  }
+
+  public int getMeasurementSelected(double x, double y){
+    double top = background.getBounds()[1];
+    if(x < background.getLocation().getX()){
+      for(int i = 0; i < msplits.length; i++){
+        if(y < top && y > msplits[i].getLocation().getY()){
+          return i;
+        }
+        top = msplits[i].getLocation().getY();
+      }
+    }
+    return -1;
+  }
+
+  public Tabs getTabs(){
+    return tabs;
+  }
+  public VRectangle getBackground(){
+    return background;
+  }
+  public VRectangle getContainer(){
+    return container;
+  }
+  public Composite getBasicData(){
+    return basicData;
+  }
+  public Composite getMeasurements(){
+    return measurements;
+  }
 
 }

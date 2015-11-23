@@ -133,6 +133,7 @@ public class Config {
     public static final String T_ASTRO_OBJ_SR = "SimbadResults";
     public static final String T_ASTRO_OBJ_BINFO = "SimbadInfo";
     public static final String T_ASTRO_OBJ_MT = "SimbadMeasurementTable";
+    public static final String T_ASTRO_OBJ_SC = "SimbadCriteria";
 
 
     /* ------------ Scales and color mappings ---------- */

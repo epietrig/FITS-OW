@@ -39,16 +39,13 @@ public class SimbadInfo extends SimbadQueryGlyph{
     this.width = getWidth(info);
     this.x = x+width/2+parent.getWidth();
     background = new VRectangle(this.x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
-    background.setVisible(true);
     this.addChild(background);
 
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
 
-    // this.tabs = tabs(top, left);
     this.tabs = new Tabs(top, left, this, height, width);
-    // this.tabs.setVisible(true);
     this.addChild(tabs);
 
     this.measurements =  measurements(top, left, obj);
@@ -67,7 +64,6 @@ public class SimbadInfo extends SimbadQueryGlyph{
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
       VText text = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE*(i+3),Z,Config.SELECTED_TEXT_COLOR,info[i]);
-      text.setVisible(true);
       basicInfo.addChild(text);
     }
     return basicInfo;
@@ -81,7 +77,6 @@ public class SimbadInfo extends SimbadQueryGlyph{
     int aux = 0;
     MeasurementsTable table;
     if(vmeasurements.size() > 0){
-      System.out.println("this should display measrements");
       for (Measurement m : vmeasurements){
         if(m.equals(vmeasurements.firstElement()))
           table = new MeasurementsTable(m, left, top-Config.TEXT_SIZE, 25);
