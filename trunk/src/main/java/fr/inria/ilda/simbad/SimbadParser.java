@@ -26,11 +26,12 @@ public class SimbadParser{
       String object = "";
       int length;
       while((toAppend = in.readLine()) != null){
+        // System.out.println(toAppend);
         toAppend = toAppend.trim();
         object = object+toAppend;
         length = toAppend.length();
-        if(length > 0 && toAppend.charAt(length-1) == '$'){
-          // System.out.println("url obj : "+object);
+        if(length > 0 && toAppend.endsWith("$$")){
+          // System.out.println("url obj : "+object+"\n");
           result.add(object);
           object = "";
         }
@@ -61,15 +62,15 @@ public class SimbadParser{
 
   private static AstroObject stringToAstroObject(String str){
     String obj = str.substring(0,str.length()-1);
-    String[] attrs = obj.split("_");
-    // for(String atr : attrs){
-    //   System.out.println("attr: "+atr);
-    // }
+    String[] attrs = obj.split("\\$");
+    for(String atr : attrs){
+      // System.out.println("attr: "+atr+"\n");
+    }
     if(attrs.length >= 2){
       String[] idAndCoords = attrs[0].split("#");
       String[] basicData = attrs[1].split("#");
       // String[] measurements = attrs[2].split("#");
-      if(idAndCoords.length == 3){
+      if(idAndCoords.length >= 3){
         String identifier = idAndCoords[0];
         Coordinates coords =  new Coordinates(Double.parseDouble(idAndCoords[1]),
           Double.parseDouble(idAndCoords[2]));
@@ -98,6 +99,7 @@ public class SimbadParser{
    String[] measurements = attrs.split("#");
    Vector<Measurement> retval = new Vector();
    for(String measurement : measurements){
+    //  System.out.println("m: "+ measurement +"\n");
      if(measurement.length()>0){
        Measurement table = buildTable(measurement.split("\\|"));
        retval.add(table);

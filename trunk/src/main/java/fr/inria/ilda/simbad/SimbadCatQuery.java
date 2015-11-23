@@ -58,14 +58,14 @@ public class SimbadCatQuery {
             String script = String.format(
                     "output console=off script=off\n" +
                     "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)"+
-                    "_%%OTYPE(V)#"+
+                    "$%%OTYPE(V)#"+
                     "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
                     "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"+
                     "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
                     "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
                     "%%FLUXLIST(; N = F (Q) B,)"+
-                    "_%%MEASLIST(cel;AH)#"+
+                    "$%%MEASLIST(cel;AH)#"+
                     "%%MEASLIST(cl.g;AH)#"+
                     "%%MEASLIST(diameter;AH)#"+
                     "%%MEASLIST(distance;AH)#"+
@@ -98,7 +98,7 @@ public class SimbadCatQuery {
                     "%%MEASLIST(xmm;AH)#"+
                     "%%MEASLIST(z;AH)#"+
                     "%%MEASLIST(ze;AH)"+
-                    "$ \"\n" +
+                    "$$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),

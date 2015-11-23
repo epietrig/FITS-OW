@@ -32,6 +32,7 @@ import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.ilda.simbad.AstroObject;
 import fr.inria.ilda.simbad.SimbadCatQuery;
 import fr.inria.ilda.simbad.SimbadResults;
+import fr.inria.ilda.simbad.SimbadInfo;
 
 import jsky.coords.WorldCoords;
 
@@ -155,12 +156,17 @@ public class SimbadQuery {
       Vector<Glyph> toBeRemoved2 = app.dSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_LB);
       app.dSpace.removeGlyphs(toBeRemoved.toArray(new Glyph[toBeRemoved.size()]));
       app.dSpace.removeGlyphs(toBeRemoved2.toArray(new Glyph[toBeRemoved2.size()]));
-      Vector<Glyph> toBeRemoved3 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
+
+      Vector<Glyph> toBeRemoved3 =  app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
+      app.dSpace.removeGlyphs(toBeRemoved3.toArray(new Glyph[toBeRemoved3.size()]));
+
       Vector<Glyph> toBeRemoved4 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
-      app.sqSpace.removeGlyphs(toBeRemoved3.toArray(new Glyph[toBeRemoved3.size()]));
-      app.sqSpace.removeGlyphs(toBeRemoved4.toArray(new Glyph[toBeRemoved4.size()]));
-      Vector<Glyph> toBeRemoved5 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_MT);
-      app.sqSpace.removeGlyphs(toBeRemoved5.toArray(new Glyph[toBeRemoved5.size()]));
+      if(toBeRemoved4.size() > 0){
+          SimbadInfo siTobeRemoved = (SimbadInfo) toBeRemoved4.get(0);
+          app.sqSpace.removeGlyph(siTobeRemoved.getBasicData());
+          app.sqSpace.removeGlyph(siTobeRemoved.getMeasurements());
+          app.sqSpace.removeGlyph(siTobeRemoved);
+      }
 
     }
 
