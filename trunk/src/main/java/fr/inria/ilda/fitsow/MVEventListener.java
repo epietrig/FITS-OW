@@ -47,7 +47,7 @@ import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
 import fr.inria.ilda.simbad.Tabs;
 
-class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
+public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
     static final float MAIN_SPEED_FACTOR = 50.0f;
 
@@ -78,6 +78,8 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
     JSkyFitsImage ciFITSImage = null;
 
     SimbadQuery sq;
+
+    SimbadCriteria lastSimbadCriteria;
 
     MVEventListener(FITSOW app){
         this.app = app;
@@ -363,6 +365,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
 
     void exitQueryMode(){
         SimbadCriteria criteria = getCurrentSimbadCriteria();
+        lastSimbadCriteria = criteria;
         app.sqSpace.removeGlyph(criteria.getBasicData());
         app.sqSpace.removeGlyph(criteria.getMeasurements());
         app.sqSpace.removeGlyph(criteria);
@@ -460,7 +463,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       }
       return null;
     }
-    SimbadCriteria getCurrentSimbadCriteria(){
+    public SimbadCriteria getCurrentSimbadCriteria(){
       Vector<Glyph> simbadCriteria = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
       if(simbadCriteria.size()>0){
         SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
@@ -468,5 +471,7 @@ class MVEventListener implements ViewListener, CameraListener, ComponentListener
       }
       return null;
     }
-
+    public SimbadCriteria getLastSimbadCriteria(){
+      return lastSimbadCriteria;
+    }
 }

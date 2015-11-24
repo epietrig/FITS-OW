@@ -20,16 +20,8 @@ import fr.inria.ilda.fitsow.Config;
 public class SimbadInfo extends SimbadQueryGlyph{
   public Composite basicData;
   private Composite measurements;
-  // private Composite tabs;
   private Tabs tabs;
-  // public static String basicDataStr = "Basic Data";
-  // public static String measurementsStr = "Measurements";
-  // private String tabSelected;
   private VRectangle background;
-  // private VRectangle basicDataTab;
-  // private VRectangle measurementsTab;
-  // private VText basicDataTabStr, measurementsTabStr;
-  // private double wm, hm;
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
     super(x,y,0,0,parent.getVS());
@@ -50,8 +42,6 @@ public class SimbadInfo extends SimbadQueryGlyph{
 
     this.measurements =  measurements(top, left, obj);
     this.basicData = basicData(top, left, obj, info);
-
-    this.vs = parent.getVirtualSpace();
   }
 
   private Composite basicData(double top, double left, AstroObject obj, String[] info){

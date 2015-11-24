@@ -22,23 +22,23 @@ import java.text.DecimalFormat;
 import jsky.science.Coordinates;
 
 import fr.inria.ilda.fitsow.Config;
+import fr.inria.ilda.fitsow.MVEventListener;
 
 /**
  * Performs queries on the Simbad catalog.
  */
 public class SimbadCatQuery {
-
-    public static void main(String[] args) throws Exception{
-        Locale.setDefault(new Locale("en", "US"));
-        //attempt to retrieve objects from the Simbad catalog
-        List<AstroObject> objs = makeSimbadCoordQuery(1, 4, 12);
-        for(AstroObject obj: objs){
-            System.err.println(obj);
-        }
-    }
-
-    public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
-        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
+    //
+    // public static void main(String[] args) throws Exception{
+    //     Locale.setDefault(new Locale("en", "US"));
+    //     //attempt to retrieve objects from the Simbad catalog
+    //     List<AstroObject> objs = makeSimbadCoordQuery(1, 4, 12);
+    //     for(AstroObject obj: objs){
+    //         System.err.println(obj);
+    //     }
+    // }
+    public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin, MVEventListener listener) throws IOException{
+        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin, listener);
         List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
@@ -46,7 +46,7 @@ public class SimbadCatQuery {
     }
 
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
-            double radMin){
+            double radMin, MVEventListener listener){
         try{
             // Coordinates query script example:
             // format object "%IDLIST(1)|%COO(d;A)|%COO(d;D)"
@@ -55,8 +55,12 @@ public class SimbadCatQuery {
             Coordinates coords = new Coordinates(ra, dec);
             // look at http://simbad.u-strasbg.fr/simbad/sim-help?Page=sim-url
             // for more information about possible parameters
+            SimbadCriteria criteria = listener.getLastSimbadCriteria();
+            String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
+            // System.out.println(measurementsQuery);
             String script = String.format(
                     "output console=off script=off\n" +
+                    // "format ASCII "+
                     "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)"+
                     "$%%OTYPE(V)#"+
                     "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
@@ -64,43 +68,44 @@ public class SimbadCatQuery {
                     "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
                     "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
-                    "%%FLUXLIST(; N = F (Q) B,)"+
-                    "$%%MEASLIST(cel;AH)#"+
-                    "%%MEASLIST(cl.g;AH)#"+
-                    "%%MEASLIST(diameter;AH)#"+
-                    "%%MEASLIST(distance;AH)#"+
-                    "%%MEASLIST(einstein;AH)#"+
-                    "%%MEASLIST(fe_h;AH)#"+
-                    "%%MEASLIST(gcrv;AH)#"+
-                    "%%MEASLIST(gen;AH)#"+
-                    "%%MEASLIST(gj;AH)#"+
-                    "%%MEASLIST(hbet;AH)#"+
-                    "%%MEASLIST(hbet1;AH)#"+
-                    "%%MEASLIST(herschel;AH)#"+
-                    "%%MEASLIST(hgam;AH)#"+
-                    "%%MEASLIST(iras;AH)#"+
-                    "%%MEASLIST(irc;AH)#"+
-                    "%%MEASLIST(iso;AH)#"+
-                    "%%MEASLIST(iue;AH)#"+
-                    "%%MEASLIST(jp11;AH)#"+
-                    "%%MEASLIST(mk;AH)#"+
-                    "%%MEASLIST(orv;AH)#"+
-                    "%%MEASLIST(plx;AH)#"+
-                    "%%MEASLIST(pm;AH)#"+
-                    "%%MEASLIST(pos;AH)#"+
-                    "%%MEASLIST(posa;AH)#"+
-                    "%%MEASLIST(rot;AH)#"+
-                    "%%MEASLIST(rvel;AH)#"+
-                    "%%MEASLIST(sao;AH)#"+
-                    "%%MEASLIST(td1;AH)#"+
-                    "%%MEASLIST(ubv;AH)#"+
-                    "%%MEASLIST(uvby;AH)#"+
-                    "%%MEASLIST(uvby1;AH)#"+
-                    "%%MEASLIST(v*;AH)#"+
-                    "%%MEASLIST(velocities;AH)#"+
-                    "%%MEASLIST(xmm;AH)#"+
-                    "%%MEASLIST(z;AH)#"+
-                    "%%MEASLIST(ze;AH)"+
+                    "%%FLUXLIST(; N = F (Q) B,)$#"+
+                    measurementsQuery +
+                    // "$%%MEASLIST(cel;AH)#"+
+                    // "%%MEASLIST(cl.g;AH)#"+
+                    // "%%MEASLIST(diameter;AH)#"+
+                    // "%%MEASLIST(distance;AH)#"+
+                    // "%%MEASLIST(einstein;AH)#"+
+                    // "%%MEASLIST(fe_h;AH)#"+
+                    // "%%MEASLIST(gcrv;AH)#"+
+                    // "%%MEASLIST(gen;AH)#"+
+                    // "%%MEASLIST(gj;AH)#"+
+                    // "%%MEASLIST(hbet;AH)#"+
+                    // "%%MEASLIST(hbet1;AH)#"+
+                    // "%%MEASLIST(herschel;AH)#"+
+                    // "%%MEASLIST(hgam;AH)#"+
+                    // "%%MEASLIST(iras;AH)#"+
+                    // "%%MEASLIST(irc;AH)#"+
+                    // "%%MEASLIST(iso;AH)#"+
+                    // "%%MEASLIST(iue;AH)#"+
+                    // "%%MEASLIST(jp11;AH)#"+
+                    // "%%MEASLIST(mk;AH)#"+
+                    // "%%MEASLIST(orv;AH)#"+
+                    // "%%MEASLIST(plx;AH)#"+
+                    // "%%MEASLIST(pm;AH)#"+
+                    // "%%MEASLIST(pos;AH)#"+
+                    // "%%MEASLIST(posa;AH)#"+
+                    // "%%MEASLIST(rot;AH)#"+
+                    // "%%MEASLIST(rvel;AH)#"+
+                    // "%%MEASLIST(sao;AH)#"+
+                    // "%%MEASLIST(td1;AH)#"+
+                    // "%%MEASLIST(ubv;AH)#"+
+                    // "%%MEASLIST(uvby;AH)#"+
+                    // "%%MEASLIST(uvby1;AH)#"+
+                    // "%%MEASLIST(v*;AH)#"+
+                    // "%%MEASLIST(velocities;AH)#"+
+                    // "%%MEASLIST(xmm;AH)#"+
+                    // "%%MEASLIST(z;AH)#"+
+                    // "%%MEASLIST(ze;AH)#"+
                     "$$ \"\n" +
                     "query coo %s %s radius=%sm",
                     //XXX the 'replace' operation is ugly, should be improved
@@ -132,41 +137,4 @@ public class SimbadCatQuery {
 
     }
 
-    //A better version should deal with http errors
-    // private static List<String> readLines(URL url) throws IOException{
-    //     List<String> result = SimbadParser.separateObjects(url);
-    //     for(String s:result){
-    //       System.out.println("result: "+s);
-    //     }
-
-        // URLConnection uc = url.openConnection();
-        // BufferedReader in = new BufferedReader(new InputStreamReader(
-        //             uc.getInputStream()));
-        // List<String> result = new ArrayList<String>();
-        // String toAppend;
-        // while((toAppend = in.readLine()) != null){
-          // System.out.println("URL: "+toAppend);
-            // result.add(toAppend);
-        // }
-        // in.close();
-        // return result;
-    // }
-
-    // private static List<AstroObject> parseObjectList(List<String> strList){
-    //     ArrayList<AstroObject> retval = new ArrayList<AstroObject>();
-    //     try{
-    //       for(String objStr: strList){
-    //           AstroObject candidate = AstroObject.fromSimbadRow(objStr);
-    //
-    //           if(candidate != null){
-    //               retval.add(candidate);
-    //           }
-    //       }
-    //       return retval;
-    //     }catch(Exception e){
-    //       System.out.println("caught something!");
-    //       e.printStackTrace();
-    //     }
-    //     return retval;
-    // }
 }

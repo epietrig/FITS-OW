@@ -281,5 +281,9 @@ public class Config {
     public static final String BD_MT = "Morpholocial type :";
     public static final String[] BD_KEYS = {BD_OT, BD_COORD_ICRS,BD_COORD_FK5,
       BD_COORD_FK4, BD_COORD_GAL, BD_PM, BD_RV, BD_PLX, BD_SP, BD_MT, BD_FLUXES};
+    public static final String[] CATALOGS = {"cel","cl.g","diameter","distance","einstein",
+      "fe_h","gcrv","gen","gj","hbet","hbet1","herschel","hgam","iras","irc","iso","iue","jp11", "mk",
+      "orv","plx","pm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
+      "v*","velocities","xmm","z","ze"};
 
 }
