@@ -54,7 +54,8 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     this.addChild(tabs);
 
     this.basicData = new Composite();
-    this.objectTypeFilter = objectTypeFilter(tabs.getBounds()[3], left, right);
+    // this.objectTypeFilter = objectTypeFilter(tabs.getBounds()[3], left, right);
+    this.objectTypeFilter = new SimbadOTypeFilter(this, tabs.getBounds()[3], left, right);
     basicData.addChild(objectTypeFilter);
 
     this.properMotionFilter = properMotionFilter(bsplits.lastElement().getLocation().getY(),left, right);
@@ -76,7 +77,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
 
   }
 
-  private void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
+  public void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
     VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
     title.setScale(1.1f);
     c.addChild(title);

@@ -58,7 +58,13 @@ public class SimbadCatQuery {
             SimbadCriteria criteria = listener.getLastSimbadCriteria();
             String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
             // System.out.println(measurementsQuery);
-            String script = String.format(
+            System.out.println("ra: "+coords.raToString());
+            System.out.println("dec: "+coords.decToString());
+            System.out.println("r: "+Config.ARCMIN_FORMATTER.format(radMin));
+
+
+            String script =
+             String.format(
                     "output console=off script=off\n" +
                     // "format ASCII "+
                     "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)"+
@@ -70,52 +76,18 @@ public class SimbadCatQuery {
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
                     "%%FLUXLIST(; N = F (Q) B,)$#"+
                     measurementsQuery +
-                    // "$%%MEASLIST(cel;AH)#"+
-                    // "%%MEASLIST(cl.g;AH)#"+
-                    // "%%MEASLIST(diameter;AH)#"+
-                    // "%%MEASLIST(distance;AH)#"+
-                    // "%%MEASLIST(einstein;AH)#"+
-                    // "%%MEASLIST(fe_h;AH)#"+
-                    // "%%MEASLIST(gcrv;AH)#"+
-                    // "%%MEASLIST(gen;AH)#"+
-                    // "%%MEASLIST(gj;AH)#"+
-                    // "%%MEASLIST(hbet;AH)#"+
-                    // "%%MEASLIST(hbet1;AH)#"+
-                    // "%%MEASLIST(herschel;AH)#"+
-                    // "%%MEASLIST(hgam;AH)#"+
-                    // "%%MEASLIST(iras;AH)#"+
-                    // "%%MEASLIST(irc;AH)#"+
-                    // "%%MEASLIST(iso;AH)#"+
-                    // "%%MEASLIST(iue;AH)#"+
-                    // "%%MEASLIST(jp11;AH)#"+
-                    // "%%MEASLIST(mk;AH)#"+
-                    // "%%MEASLIST(orv;AH)#"+
-                    // "%%MEASLIST(plx;AH)#"+
-                    // "%%MEASLIST(pm;AH)#"+
-                    // "%%MEASLIST(pos;AH)#"+
-                    // "%%MEASLIST(posa;AH)#"+
-                    // "%%MEASLIST(rot;AH)#"+
-                    // "%%MEASLIST(rvel;AH)#"+
-                    // "%%MEASLIST(sao;AH)#"+
-                    // "%%MEASLIST(td1;AH)#"+
-                    // "%%MEASLIST(ubv;AH)#"+
-                    // "%%MEASLIST(uvby;AH)#"+
-                    // "%%MEASLIST(uvby1;AH)#"+
-                    // "%%MEASLIST(v*;AH)#"+
-                    // "%%MEASLIST(velocities;AH)#"+
-                    // "%%MEASLIST(xmm;AH)#"+
-                    // "%%MEASLIST(z;AH)#"+
-                    // "%%MEASLIST(ze;AH)#"+
                     "$$ \"\n" +
-                    "query coo %s %s radius=%sm",
-                    //XXX the 'replace' operation is ugly, should be improved
+                    // "query coo %s %s radius=%sm\n"+
+                    "query sample region(%s%s,%sm) & maintypes=star\n",
+                    //the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
                     // coords.decToString().replace(',','.')
                     // fixed by forcing the Locale to en/US
                     //|%%PM|%%RV|%%FLUXLIST|%%SP|%%MT|%%DIM
                     coords.raToString(),
                     coords.decToString(),
-                    Config.ARCMIN_FORMATTER.format(radMin));
+                    Config.ARCMIN_FORMATTER.format(radMin)
+                    );
             return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...

@@ -285,5 +285,8 @@ public class Config {
       "fe_h","gcrv","gen","gj","hbet","hbet1","herschel","hgam","iras","irc","iso","iue","jp11", "mk",
       "orv","plx","pm","pos","posa","rot","rvel","sao","td1","ubv","uvby","uvby1",
       "v*","velocities","xmm","z","ze"};
+    public static String[] OBJECT_TYPES = {"Star", "Galaxie", "InterStellar Matter",
+      "Multiple Object", "Candidates", "Gravitation", "Inexistent", "Radio", "IR", "Red", "Blue", "UV", "X", "gamma"};
+
 
 }
