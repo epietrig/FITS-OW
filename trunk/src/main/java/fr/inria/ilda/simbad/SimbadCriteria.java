@@ -16,9 +16,10 @@ import java.awt.Font;
 import java.util.Vector;
 
 public class SimbadCriteria extends SimbadQueryGlyph{
-  private Composite basicData, objectTypeFilter, properMotionFilter,
+  private Composite basicData, properMotionFilter,
   parallaxesFilter, radialVelocityFilter, spectralTypeFilter, fluxesFilter;
   private SimbadMFilter measurements;
+  private SimbadOTypeFilter objectTypeFilter;
   private Tabs tabs;
   private VRectangle background, container;
   private Font bold;
@@ -210,6 +211,9 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public SimbadMFilter getMeasurements(){
     return measurements;
+  }
+  public SimbadOTypeFilter getObjectTypeFilter(){
+    return objectTypeFilter;
   }
 
 

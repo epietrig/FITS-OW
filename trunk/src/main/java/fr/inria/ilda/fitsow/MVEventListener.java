@@ -165,10 +165,15 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
       if(insideSimbadCriteria(jpx, jpy)){
         SimbadCriteria criteria = getCurrentSimbadCriteria();
-        if(criteria.getTabs().getTabSelected().equals(criteria.getTabs().getMeasurementsStr())){
-          Point2D.Double coords = new Point2D.Double();
-          app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+        Tabs tabs = criteria.getTabs();
+        Point2D.Double coords = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+
+        if(tabs.getTabSelected().equals(tabs.getMeasurementsStr())){
           criteria.getMeasurements().selectMeasurement(criteria.getMeasurements().getMeasurementSelected(coords.getX(), coords.getY()));
+        }
+        else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
+          System.out.println(criteria.getObjectTypeFilter().coordInsideOTFilter(coords.getX(), coords.getY()));
         }
       }
       updateSimbadInfoTabs(jpx, jpy);

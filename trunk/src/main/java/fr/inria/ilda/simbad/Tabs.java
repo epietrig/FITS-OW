@@ -120,4 +120,7 @@ public class Tabs extends SimbadQueryGlyph{
   public String getMeasurementsStr(){
     return measurementsStr;
   }
+  public String getBasicDataStr(){
+    return basicDataStr;
+  }
 }
