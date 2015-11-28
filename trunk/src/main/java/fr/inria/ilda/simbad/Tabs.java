@@ -45,7 +45,7 @@ public class Tabs extends SimbadQueryGlyph{
     bounds[0] = basicDataTab.getBounds()[0];
     bounds[1] = basicDataTab.getBounds()[1];
     bounds[2] = measurementsTab.getBounds()[2];
-    bounds[3] = measurementsTab.getBounds()[3];
+    bounds[3] = basicDataTab.getBounds()[3];
     return bounds;
   }
   public void activateBasicDataTab(VRectangle background, Composite measurements, Composite basicData){

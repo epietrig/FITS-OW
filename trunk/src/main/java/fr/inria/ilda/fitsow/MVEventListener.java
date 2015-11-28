@@ -15,6 +15,10 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Point2D;
 
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JDialog;
+
 import java.util.Vector;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -168,12 +172,29 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         Tabs tabs = criteria.getTabs();
         Point2D.Double coords = new Point2D.Double();
         app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-
+        double x = coords.getX();
+        double y = coords.getY();
         if(tabs.getTabSelected().equals(tabs.getMeasurementsStr())){
-          criteria.getMeasurements().selectMeasurement(criteria.getMeasurements().getMeasurementSelected(coords.getX(), coords.getY()));
+          criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x, y, app.sqCamera));
         }
         else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
-          System.out.println(criteria.getObjectTypeFilter().coordInsideOTFilter(coords.getX(), coords.getY()));
+          if(criteria.getObjectTypeFilter().coordInsideComponent(x, y)){
+          criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x, y, app.sqCamera));
+          }
+          else if(criteria.getPMFilter().coordInsideComponent(x, y)){
+            int angle = criteria.getPMFilter().getItemSelected(x, y, app.sqCamera);
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            String inputValue ="";
+            if(angle == 0){
+              optionPane = new JOptionPane("right ascension of proper motion (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value");
+            }else if(angle ==1){
+              optionPane = new JOptionPane("declination of proper motion (mas) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value");
+            }
+            criteria.getPMFilter().select(angle, inputValue);
+          }
         }
       }
       updateSimbadInfoTabs(jpx, jpy);

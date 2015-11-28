@@ -4,6 +4,7 @@ import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.VSegment;
 
 import fr.inria.zvtm.engine.VirtualSpace;
+import fr.inria.zvtm.engine.Camera;
 
 import fr.inria.ilda.fitsow.Config;
 
@@ -13,6 +14,7 @@ public class SimbadMFilter extends SimbadQueryGlyph{
   private VSegment[] msplits;
   private VRectangle[] msquares;
   private SimbadCriteria parent;
+  private VSegment l1, l2;
 
   public SimbadMFilter(double top, double left, double right, VirtualSpace vs, SimbadCriteria parent){
     super(left, top, 0, 0, vs);
@@ -42,7 +44,7 @@ public class SimbadMFilter extends SimbadQueryGlyph{
     }
   }
 
-  public void selectMeasurement(int m){
+  public void select(int m){
     if(m == 0){
       if(msquares[0].getColor().equals(Color.red)){
         for(VRectangle square : msquares){
@@ -64,7 +66,7 @@ public class SimbadMFilter extends SimbadQueryGlyph{
     }
   }
 
-  public int getMeasurementSelected(double x, double y){
+  public int getItemSelected(double x, double y, Camera c){
     double top = parent.getBackground().getBounds()[1];
     if(x < parent.getBackground().getLocation().getX()){
       for(int i = 0; i < msplits.length; i++){
@@ -77,7 +79,8 @@ public class SimbadMFilter extends SimbadQueryGlyph{
     return -1;
   }
 
-  public int[] getMeasurementsSelected(){
+  public int[] getAllSelected(){
+    int count = 0;
     if(msquares[0].getColor().equals(Color.red)){
       int[] retval = new int[1];
       retval[0] = 1;
@@ -87,12 +90,22 @@ public class SimbadMFilter extends SimbadQueryGlyph{
       int[] retval = new int[Config.CATALOGS.length];
       for(int i = 1; i < msquares.length; i++){
         if(msquares[i].getColor().equals(Color.red)){
+          count++;
           retval[i-1] = 1;
         }
         else retval[i-1] = 0;
       }
+      if(count == 0) retval = null;
       return retval;
     }
   }
-
+public boolean coordInsideComponent(double x, double y){
+  return true;
+}
+public void setl1(VSegment l1){
+  this.l1 = l1;
+}
+public void setl2(VSegment l2){
+  this.l2 = l2;
+}
 }

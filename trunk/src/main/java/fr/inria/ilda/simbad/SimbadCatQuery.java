@@ -56,12 +56,12 @@ public class SimbadCatQuery {
             // look at http://simbad.u-strasbg.fr/simbad/sim-help?Page=sim-url
             // for more information about possible parameters
             SimbadCriteria criteria = listener.getLastSimbadCriteria();
-            String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
-            // System.out.println(measurementsQuery);
-            System.out.println("ra: "+coords.raToString());
-            System.out.println("dec: "+coords.decToString());
-            System.out.println("r: "+Config.ARCMIN_FORMATTER.format(radMin));
-
+            String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getAllSelected());
+            String objectTypeQuery = SimbadQueryConstructor.objectTypeSelector(criteria.getObjectTypeFilter().getAllSelected());
+            if(!objectTypeQuery.equals("")) objectTypeQuery = "&"+objectTypeQuery;
+            String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
+              criteria.getPMFilter().getDecStr(),criteria.getPMFilter().getQualitiesSelected());
+            if(!properMotionQuery.equals("")) properMotionQuery = "& "+ properMotionQuery;
 
             String script =
              String.format(
@@ -78,7 +78,7 @@ public class SimbadCatQuery {
                     measurementsQuery +
                     "$$ \"\n" +
                     // "query coo %s %s radius=%sm\n"+
-                    "query sample region(%s%s,%sm) & maintypes=star\n",
+                    "query sample region(%s%s,%sm)"+objectTypeQuery+properMotionQuery"\n",
                     //the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
                     // coords.decToString().replace(',','.')
