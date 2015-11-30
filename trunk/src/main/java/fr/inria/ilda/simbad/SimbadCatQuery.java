@@ -72,6 +72,23 @@ public class SimbadCatQuery {
             int[] q = rvFilter.getQualitiesSelected();
             String radialVelocityQuery = SimbadQueryConstructor.radialVelocitySelector(rv, z, cz,q);
             if(!radialVelocityQuery.equals("")) radialVelocityQuery = " & "+radialVelocityQuery;
+
+            SimbadSTFilter stFilter = criteria.getSTFilter();
+            String st = stFilter.getSTStr();
+            String lc = stFilter.getLCStr();
+            String pec = stFilter.getPecStr();
+            int[] qst = stFilter.getQualitiesSelected();
+            String spectralTypeQuery = SimbadQueryConstructor.spectralTypeSelector(st, lc, pec,qst);
+            if(!spectralTypeQuery.equals("")) spectralTypeQuery = " & "+spectralTypeQuery;
+
+            SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
+            String[] rangeStrs = fluxFilter.getRangeStrs();
+            int[] qf = fluxFilter.getQualitiesSelected();
+            int[] fluxes = fluxFilter.getFluxesSelected();
+            String fluxRangeQuery = SimbadQueryConstructor.fluxRangeSelector(rangeStrs, qf);
+            if(!fluxRangeQuery.equals("")) fluxRangeQuery = " & "+  fluxRangeQuery;
+            String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
+
             String script =
              String.format(
                     "output console=off script=off\n" +
@@ -83,12 +100,18 @@ public class SimbadCatQuery {
                     "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
                     "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
                     "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
-                    "%%FLUXLIST(; N = F (Q) B,)$#"+
+                    // "%%FLUXLIST(; N = F (Q) B,)$#"+
+                    "%%"+fluxQuery+"$#"+
                     measurementsQuery +
                     "$$ \"\n" +
                     // "query coo %s %s radius=%sm\n"+
-                    "query sample region(%s%s,%sm)"+objectTypeQuery+properMotionQuery+parallaxQuery+
-                    radialVelocityQuery+"\n",
+                    "query sample region(%s%s,%sm)"+objectTypeQuery+
+                    properMotionQuery+
+                    parallaxQuery+
+                    radialVelocityQuery+
+                    spectralTypeQuery+
+                    fluxRangeQuery+
+                    "\n",
                     //the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
                     // coords.decToString().replace(',','.')

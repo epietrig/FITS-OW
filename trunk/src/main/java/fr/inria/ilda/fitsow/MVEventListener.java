@@ -224,6 +224,36 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             }
             criteria.getRVFilter().select(value,inputValue);
           }
+          else if(criteria.getSTFilter().coordInsideComponent(x,y)){
+            int value = criteria.getSTFilter().getItemSelected(x,y,app.sqCamera);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value == 0){
+              optionPane = new JOptionPane("Spectral type ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter spectral type in the format:\n >=/<=/>/</!=/= value ");
+            }
+            else if(value == 1){
+              optionPane = new JOptionPane("Luminosity class ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter luminosity value in the format:\n >=/<=/>/</!=/= value ");
+            }
+            else if(value ==2){
+              optionPane = new JOptionPane("Peculiarities ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter Peculiarities in the format:\n =/!= numrical-value");
+            }
+            criteria.getSTFilter().select(value,inputValue);
+          }
+          else if(criteria.getFluxFilter().coordInsideComponent(x,y)){
+            int value = criteria.getFluxFilter().getItemSelected(x,y,app.sqCamera);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value%2!=0 && value<25 && value >0){
+              optionPane = new JOptionPane(Config.FLUX_TYPES[value/2]+" Range", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter range of "+Config.FLUX_TYPES[value/2]+" magnitude in the format:\n =/!= value");
+            }
+            criteria.getFluxFilter().select(value, inputValue);
+          }
         }
       }
       updateSimbadInfoTabs(jpx, jpy);

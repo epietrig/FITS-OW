@@ -142,6 +142,10 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public SimbadRVFilter getRVFilter(){
     return radialVelocityFilter;
   }
-
-
+  public SimbadSTFilter getSTFilter(){
+    return spectralTypeFilter;
+  }
+  public SimbadFluxFilter getFluxFilter(){
+    return fluxesFilter;
+  }
 }

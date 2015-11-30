@@ -22,7 +22,7 @@ public class SimbadPMFilter extends SimbadQueryGlyph{
   public SimbadPMFilter(SimbadCriteria parent, double top, double left, double right){
     super(left+(right-left)/2,top-(Config.OFFSET+Config.TEXT_SIZE*5)/2, right-left, Config.OFFSET+Config.TEXT_SIZE*5, parent.getVS());
     this.parent = parent;
-    parent.setFilterLayout("Proper Motion:", Config.OFFSET+Config.TEXT_SIZE*5, this.parent, top, left, right);
+    parent.setFilterLayout("Proper Motion:", Config.OFFSET+Config.TEXT_SIZE*5, parent, top, left, right);
     ra = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Right ascension angle:");
     dec = new VText(left+Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Declination angle:");
     this.addChild(ra);

@@ -26,7 +26,7 @@ public class SimbadParser{
       String object = "";
       int length;
       while((toAppend = in.readLine()) != null){
-        System.out.println(toAppend);
+        // System.out.println(toAppend);
         toAppend = toAppend.trim();
         object = object+toAppend;
         length = toAppend.length();

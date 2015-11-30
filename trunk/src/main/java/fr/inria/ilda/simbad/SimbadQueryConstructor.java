@@ -74,6 +74,49 @@ measurements*/
     else if(retval.equals("")) retval = q;
     return retval;
   }
+  public static String spectralTypeSelector(String st, String lc, String pec, int[] qualities){
+    String retval="";
+    if(!st.equals("")) retval = "sptypes"+st;
+    if(!lc.equals("")){
+      if(!retval.equals("")) retval =retval+ "& splum"+lc;
+      else retval = "splum"+lc;
+    }
+    if(!pec.equals("")){
+      if(!retval.equals("")) retval = retval+"& sppec"+pec;
+      else retval = "sppec"+pec;
+    }
+    String q = qualitySelector(qualities, "spqual");
+    if(!retval.equals("") && !q.equals("")) retval = retval+" & "+q;
+    else if(retval.equals("")) retval = q;
+    return retval;
+  }
+
+  public static String fluxRangeSelector(String[] rStr, int[] qualities){
+    String retval = "";
+    for(int i = 0; i < rStr.length; i++){
+      if(!rStr[i].equals("")){
+        if(retval.equals("")) retval = Config.FLUX_TYPES[i]+"mag"+rStr[i];
+        else retval = retval + " & "+ Config.FLUX_TYPES[i]+"mag"+rStr[i];
+      }
+    }
+    String q = qualitySelector(qualities, "fluxqual");
+    if(!retval.equals("") && !q.equals("")) retval = retval+" & "+q;
+    else if(retval.equals("")) retval = q;
+    return retval;
+  }
+
+  public static String fluxSelector(int[] fIndex){
+    String retval = "FLUXLIST(";
+    int count=0;
+    for(int i = 0; i < fIndex.length; i++){
+      if(fIndex[i] == 1){
+        if(retval.equals("FLUXLIST(")) retval = retval + Config.FLUX_TYPES[i];
+        else retval = retval + "," +Config.FLUX_TYPES[i];
+      }
+    }
+    retval = retval + "; N = F (Q) B,)";
+    return retval;
+  }
 
   public static String qualitySelector(int[] qualities, String qName){
     String q="";
