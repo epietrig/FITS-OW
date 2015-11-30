@@ -31,37 +31,66 @@ measurements*/
         retval = retval + "maintypes="+Config.OBJECT_TYPES[i].toLowerCase()+" | ";
     }
     retval = retval.trim();
-    if(retval.endsWith("|")) retval = retval.substring(0, retval.length()-1);
+    if(retval.endsWith("|")){
+      retval.trim();
+      retval = retval.substring(0, retval.length()-1);
+    }
     return retval;
   }
 
   public static String properMotionSelector(String ra, String dec, int[] qualities){
     String retval ="";
     if(!ra.equals("")) retval = "ra"+ra;
-    if(!dec.equals("")) retval = retval+" & dec"+dec;
+    if(!dec.equals("")){
+      if(!retval.equals("")) retval = retval+" & dec"+dec;
+      else retval = "dec"+dec;
+    }
+    String q=qualitySelector(qualities,"pmqual");
+    if(!retval.equals("") && !q.equals("")) retval = retval+" & "+q;
+    else if(retval.equals("")) retval = q;
+    return retval;
+  }
+  public static String parallaxSelector(String parallax, int[] qualities){
+    String retval="";
+    if(!parallax.equals("")) retval = "plx"+parallax;
+    String q = qualitySelector(qualities,"plxqual");
+    if(!retval.equals("") && !q.equals("")) retval = retval+" & "+q;
+    else if(retval.equals("")) retval = q;
+    return retval;
+  }
+  public static String radialVelocitySelector(String rv, String z, String cz, int[] qualities){
+    String retval="";
+    if(!rv.equals("")) retval = "radvel"+rv;
+    if(!z.equals("")){
+      if(!retval.equals("")) retval =retval+ "& redshift"+z;
+      else retval = "redshift"+z;
+    }
+    if(!cz.equals("")){
+      if(!retval.equals("")) retval = retval+"& cz"+cz;
+      else retval = "cz"+cz;
+    }
+    String q = qualitySelector(qualities, "rvqual");
+    if(!retval.equals("") && !q.equals("")) retval = retval+" & "+q;
+    else if(retval.equals("")) retval = q;
+    return retval;
+  }
+
+  public static String qualitySelector(int[] qualities, String qName){
     String q="";
     for(int i = 0; i < qualities.length; i++){
       int ascii = i + 65;
-      System.out.println("q("+i+"): "+qualities[i]);
       if(qualities[i] == 1){
-        System.out.println("I shold be adding q "+Character.toString((char) ascii));
-        q = q + "pmqual="+Character.toString((char) ascii)+" | ";
-        System.out.println(q);
+        q = q + qName+"="+Character.toString((char) ascii)+" | ";
       }
     }
     q = q.trim();
     if(q.endsWith("|")){
       q = q.substring(0,q.length()-2);
-      System.out.println(q);
     }
     if(!q.equals("")){
       q = "("+q+")";
-      System.out.println(q);
     }
-    if(!retval.equals("")) retval = retval+" & "+q;
-    else retval = q;
-
-    return retval;
+    return q;
   }
 
 }

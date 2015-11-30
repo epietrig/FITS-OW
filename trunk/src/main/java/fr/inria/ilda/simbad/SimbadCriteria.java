@@ -31,7 +31,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private double width2, height2;
 
   public SimbadCriteria(double x, double y, VirtualSpace vs){
-    super(x,y,300,920,vs);
+    super(x,y,300,960,vs);
     this.setType(Config.T_ASTRO_OBJ_SC);
     this.height2 = 500;
     this.width2 = width;
@@ -135,6 +135,12 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public SimbadPMFilter getPMFilter(){
     return properMotionFilter;
+  }
+  public SimbadParallaxFilter getParallaxFiler(){
+    return parallaxesFilter;
+  }
+  public SimbadRVFilter getRVFilter(){
+    return radialVelocityFilter;
   }
 
 

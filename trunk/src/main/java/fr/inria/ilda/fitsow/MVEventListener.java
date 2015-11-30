@@ -195,6 +195,35 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             }
             criteria.getPMFilter().select(angle, inputValue);
           }
+          else if(criteria.getParallaxFiler().coordInsideComponent(x,y)){
+            int parallax = criteria.getParallaxFiler().getItemSelected(x, y, app.sqCamera);
+            String inputValue ="";
+            if(parallax == 0){
+              JFrame parent = new JFrame();
+              JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
+            }
+            criteria.getParallaxFiler().select(parallax, inputValue);
+          }
+          else if(criteria.getRVFilter().coordInsideComponent(x,y)){
+            int value = criteria.getRVFilter().getItemSelected(x,y,app.sqCamera);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value == 0){
+              optionPane = new JOptionPane("Radial velocity (km/s) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value");
+            }
+            else if(value == 1){
+              optionPane = new JOptionPane("Redshift ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value");
+            }
+            else if(value ==2){
+              optionPane = new JOptionPane("cz ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter cz in the format:\n >=/<=/=/!= numrical-value");
+            }
+            criteria.getRVFilter().select(value,inputValue);
+          }
         }
       }
       updateSimbadInfoTabs(jpx, jpy);

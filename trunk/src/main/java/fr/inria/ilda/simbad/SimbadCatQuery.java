@@ -62,7 +62,16 @@ public class SimbadCatQuery {
             String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
               criteria.getPMFilter().getDecStr(),criteria.getPMFilter().getQualitiesSelected());
             if(!properMotionQuery.equals("")) properMotionQuery = "& "+ properMotionQuery;
-
+            String parallaxQuery = SimbadQueryConstructor.parallaxSelector(criteria.getParallaxFiler().getParallaxStr(),
+              criteria.getParallaxFiler().getQualitiesSelected());
+            if(!parallaxQuery.equals("")) parallaxQuery = "& "+parallaxQuery;
+            SimbadRVFilter rvFilter = criteria.getRVFilter();
+            String rv = rvFilter.getRVStr();
+            String z = rvFilter.getZStr();
+            String cz = rvFilter.getCZStr();
+            int[] q = rvFilter.getQualitiesSelected();
+            String radialVelocityQuery = SimbadQueryConstructor.radialVelocitySelector(rv, z, cz,q);
+            if(!radialVelocityQuery.equals("")) radialVelocityQuery = " & "+radialVelocityQuery;
             String script =
              String.format(
                     "output console=off script=off\n" +
@@ -78,7 +87,8 @@ public class SimbadCatQuery {
                     measurementsQuery +
                     "$$ \"\n" +
                     // "query coo %s %s radius=%sm\n"+
-                    "query sample region(%s%s,%sm)"+objectTypeQuery+properMotionQuery"\n",
+                    "query sample region(%s%s,%sm)"+objectTypeQuery+properMotionQuery+parallaxQuery+
+                    radialVelocityQuery+"\n",
                     //the 'replace' operation is ugly, should be improved
                     // coords.raToString().replace(',', '.'),
                     // coords.decToString().replace(',','.')
@@ -88,6 +98,7 @@ public class SimbadCatQuery {
                     coords.decToString(),
                     Config.ARCMIN_FORMATTER.format(radMin)
                     );
+                    System.out.println(script);
             return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...
