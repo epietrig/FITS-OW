@@ -1,0 +1,57 @@
+\documentclass[upright, contnum]{umemoria}
+\depto{DEPARTAMENTO DE CIENCIAS DE LA COMPUTACIÓN}
+\author{AMANDA MARGARITA MEGAN IBSEN OSORIO}
+\title{VISUALIZACION DE CONSULTAS SOBRE DATOS ASTRONÓMICOS EN UN WALL-DISPLAY}
+\auspicio{}
+\date{DICIEMBRE 2015}
+\guia{NANCY HITSCHFELD KAHLER}
+\carrera{INGENIERA CIVIL EN COMPUTACIÓN}
+\memoria{MEMORIA PARA OPTAR AL TÍTULO DE}
+\comision{BARBARA POBLETE LABRA}{CLAUDIO GUTIÉRREZ GALLARDO}{\ }
+
+\usepackage{lipsum}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+\begin{abstract}
+Hoy en día en astronomía el formato FITS es el más utilizado para guardar las observaciones astronómicas como imagen. Normalmente estas imágenes son de gran tamaño, por lo que un monitor de un computador de escritorio no es lo suficientemente grande como para poder visualizarlas en una razón 1:1 (1 pixel de imagen por 1 pixel del monitor), lo que puede dificultar su análisis. Bajo este contexto y a pedido del Instituto de Astrofísica de la Universidad Católica, el equipo Massive Data de la Fundación Inria Chile desarrolló una aplicación llamada FITS-OW, que permite visualizar imágenes astronómicas en formato FITS en un wall display (una matriz de monitores manejada por un cluster de computadores), además de aplicarles distintos filtros de color y escalas.\\
+Luego de esta primera etapa de desarrollo y de conversaciones con el Instituto de Astrofísica de la PUC, se acordó iniciar una segunda etapa, cuyo objetivo sería conectar la aplicación FITS-OW a la base de datos astronómica de objetos extra-solares SIMBAD y permitir al usuario hacer consultas respecto de la imagen visualizada dentro de la misma aplicación.\\
+La presente memoria consiste precisamente en el desarrollo completo de esta segunda etapa. Para esto se debió realizar el diseño y la implementación de diversas componentes: una interfaz de usuario para poder formular consultas, un módulo que tradujera estas consultas a una consulta que la base de datos escogida pudiera entender, un módulo que realizara la conexión con SIMBAD y ejecutara la consulta, un módulo que conviertiera las respuestas a una estructura de datos conveninte y finalmente, una interaz de usuario que desplegara los resultados de manera gráfica en el wall display. Todo lo anterior se desarrolló en \textit{Java}.\\
+Además, dado que el hardware utilizado no es el común y corriente, fue necesario encontrar una manera adecuada de interactuar con él. Para esto, se decidió utilizar la librería \textit{Smarties}, que permite la interacción con un \textit{wall display} por medio de un dispositivo \textit{Android}, como un \textit{Tablet} o un \textit{Smartphone}.\\
+El resultado final es entonces una aplicación que permite al usuario desplegar una imágen astronómica en formato \textit{FITS} y hacer consultas respecto de los objetos astronómicos contenidos en ella, marcando una región o entragando coordenadas o identificadores. Se pueden aplicar además diversos filtros a la consulta, por ejemplo, se puede preguntar sólo por objetos de un cierto tipo (estrellas, rayos gamma, galaxias, etc), o preguntar por objetos que estén sólo entre cierto rango de algún atributo básico (como velocidad radial, movimiento propio, tipo espectral, etc). La aplicación marca los objetos encontrados en la imagen y despliega también una lista de estos. Al seleccionar cada objeto por separado, se despliega información adicional respecto de este, como sus atributos básicos o mediciones que el usuario haya especificado.
+ 
+\end{abstract}
+
+\begin{dedicatoria} % opcional
+\end{dedicatoria}
+
+\begin{thanks} % opcional
+%\lipsum[1-2]
+\end{thanks}
+\cleardoublepage
+
+\tableofcontents
+\listoftables % opcional
+\listoffigures % opcional
+
+\mainmatter
+
+\input{intro.tex}
+%\input{cap1.tex}
+%\input{cap2.tex}
+%\input{conclu.tex}
+
+% \input{glosario.tex} % opcional
+
+\bibliographystyle{plain}
+\bibliography{bibliografia}
+
+% \input{anexo_apendices.tex} % opcionales
+
+\end{document}
