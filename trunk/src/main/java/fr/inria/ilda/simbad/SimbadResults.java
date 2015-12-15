@@ -38,7 +38,7 @@ public class SimbadResults extends SimbadQueryGlyph{
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
 
   public SimbadResults(List<AstroObject> results, double x, double y, VirtualSpace vs){
-    super(x, y, 200, results.size()*TEXT_SIZE+OFFSET,vs);
+    super(200, results.size()*TEXT_SIZE+OFFSET,vs);
     this.results = results;
     this.setType(Config.T_ASTRO_OBJ_SR);
     selected = -1;

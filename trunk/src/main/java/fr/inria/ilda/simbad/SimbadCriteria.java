@@ -16,7 +16,7 @@ import java.awt.Font;
 import java.util.Vector;
 
 public class SimbadCriteria extends SimbadQueryGlyph{
-  private Composite basicData;
+  private Composite basicData, queryType;
   private SimbadMFilter measurements;
   private SimbadOTypeFilter objectTypeFilter;
   private SimbadPMFilter properMotionFilter;
@@ -25,22 +25,21 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private SimbadSTFilter spectralTypeFilter;
   private SimbadFluxFilter fluxesFilter;
   private Tabs tabs;
-  private VRectangle background, container;
+  private VRectangle background;
   private Font bold;
   private Vector<VSegment> bsplits;
   private double width2, height2;
 
   public SimbadCriteria(double x, double y, VirtualSpace vs){
-    super(x,y,300,960,vs);
+    super(300,960,vs);
     this.setType(Config.T_ASTRO_OBJ_SC);
     this.height2 = 500;
     this.width2 = width;
 
     bsplits = new Vector();
 
-    container = new VRectangle (x, y+25, Z, width+50, height+100, Config.UNSELECTED_BACKGROUND_COLOR);
     background = new VRectangle (x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
-    this.addChild(container);
+
     this.addChild(background);
 
     double[] bounds = background.getBounds();
@@ -48,9 +47,6 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     double top = bounds[1];
     double right = bounds[2];
 
-    VText optionalFilters = new VText(left,container.getBounds()[1]-Config.TEXT_SIZE,Z,Config.TEXT_COLOR,"Optional Filters");
-    optionalFilters.setScale(1.3f);
-    this.addChild(optionalFilters);
 
     this.tabs = new Tabs(top, left, this, height2, width2);
     this.addChild(tabs);
@@ -121,9 +117,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public VRectangle getBackground(){
     return background;
   }
-  public VRectangle getContainer(){
-    return container;
-  }
+
   public Composite getBasicData(){
     return basicData;
   }

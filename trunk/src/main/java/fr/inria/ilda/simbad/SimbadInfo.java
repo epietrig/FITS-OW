@@ -24,7 +24,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
   private VRectangle background;
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
-    super(x,y,0,0,parent.getVS());
+    super(0,0,parent.getVS());
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
     this.height = (info.length+2)*Config.TEXT_SIZE+Config.OFFSET;

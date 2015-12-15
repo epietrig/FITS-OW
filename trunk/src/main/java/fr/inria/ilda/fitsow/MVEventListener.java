@@ -49,6 +49,7 @@ import java.awt.geom.Point2D.Double;
 import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
+import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
 import fr.inria.ilda.simbad.Tabs;
 
 public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
@@ -256,6 +257,17 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           }
         }
       }
+      if(insideSimbadQueryTypeSelector(jpx,jpy)){
+        SimbadQueryTypeSelector sqts = getCurrentSimbadQueryTypeSelector();
+        int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);
+        sqts.select(selectedButtonIndex);
+        if(selectedButtonIndex == 0 | selectedButtonIndex == 1){
+          SimbadCriteria sc = new SimbadCriteria(sqts.getWidth()/2,0,app.sqSpace);
+          app.sqSpace.addGlyph(sc);
+          app.sqSpace.addGlyph(sc.getBasicData());
+        }
+
+      }
       updateSimbadInfoTabs(jpx, jpy);
       updateSimbadCriteriaTabs(jpx, jpy); //if I'm clicking tabs, update them
     }
@@ -441,9 +453,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     void enterQueryMode(){
         querying = true;
-        SimbadCriteria sc = new SimbadCriteria(0,0,app.sqSpace);
-        app.sqSpace.addGlyph(sc);
-        app.sqSpace.addGlyph(sc.getBasicData());
+        SimbadQueryTypeSelector ts = new SimbadQueryTypeSelector(app.sqSpace);
+        app.sqSpace.addGlyph(ts);
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
         app.scene.setStatusBarMessage("Select region to query:");
     }
@@ -528,7 +539,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean insideSimbadCriteria(int jpx, int jpy){
       SimbadCriteria criteria = getCurrentSimbadCriteria();
       if(criteria != null)
-        return criteria.getContainer().coordInsideP(jpx, jpy, app.sqCamera);
+        return criteria.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+      return false;
+    }
+
+    boolean insideSimbadQueryTypeSelector(int jpx, int jpy){
+      SimbadQueryTypeSelector ts = getCurrentSimbadQueryTypeSelector();
+      if(ts != null)
+        return ts.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
     }
 
@@ -553,6 +571,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       if(simbadCriteria.size()>0){
         SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
         return criteria;
+      }
+      return null;
+    }
+    public SimbadQueryTypeSelector getCurrentSimbadQueryTypeSelector(){
+      Vector<Glyph> simbadQueryTypeSelector = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SQTS);
+      if(simbadQueryTypeSelector.size()>0){
+        SimbadQueryTypeSelector queryTypeSelector = (SimbadQueryTypeSelector) simbadQueryTypeSelector.get(0);
+        return queryTypeSelector;
       }
       return null;
     }

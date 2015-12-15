@@ -17,7 +17,7 @@ public class Tabs extends SimbadQueryGlyph{
   private double width2, height2;
 
   public Tabs(double top, double left, SimbadQueryGlyph parent, double height2, double width2){
-    super(left, top, parent.getWidth(), parent.getHeight(), parent.getVS());
+    super(parent.getWidth(), parent.getHeight(), parent.getVS());
     this.parent = parent;
     this.width2 = width2;
     this.height2 = height2;

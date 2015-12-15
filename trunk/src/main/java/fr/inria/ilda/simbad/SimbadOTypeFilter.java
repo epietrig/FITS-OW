@@ -18,7 +18,7 @@ public class SimbadOTypeFilter extends SimbadQueryGlyph{
   private VSegment l1, l2;
 
   public SimbadOTypeFilter(SimbadCriteria parent, double top, double left, double right){
-    super(left+(right-left)/2,top-(Config.OFFSET+Config.TEXT_SIZE*9)/2,right-left,Config.OFFSET+Config.TEXT_SIZE*9, parent.getVS());
+    super(right-left,Config.OFFSET+Config.TEXT_SIZE*9, parent.getVS());
     this.parent = parent;
     double[] bckg = parent.getBackground().getBounds();
     parent.setFilterLayout("Object Type:", height, this, top, left, right);

@@ -21,7 +21,7 @@ public class SimbadRVFilter extends SimbadQueryGlyph{
   private String czStr = "";
 
   public SimbadRVFilter(SimbadCriteria parent, double top, double left, double right){
-    super(left+(right-left)/2,top-(Config.OFFSET+Config.TEXT_SIZE*5)/2,right-left,top-5*Config.TEXT_SIZE,parent.getVS());
+    super(right-left,top-5*Config.TEXT_SIZE,parent.getVS());
     this.parent = parent;
     parent.setFilterLayout("Radial velocity:", Config.OFFSET+Config.TEXT_SIZE*6, this, top, left, right);
     rv = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Radial velocity (km/s):");

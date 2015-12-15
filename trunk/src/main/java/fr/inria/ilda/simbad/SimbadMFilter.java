@@ -17,7 +17,7 @@ public class SimbadMFilter extends SimbadQueryGlyph{
   private VSegment l1, l2;
 
   public SimbadMFilter(double top, double left, double right, VirtualSpace vs, SimbadCriteria parent){
-    super(left, top, 0, 0, vs);
+    super(0, 0, vs);
     this.parent = parent;
     msquares = new VRectangle[Config.CATALOGS.length+1];
     msplits = new VSegment[Config.CATALOGS.length+1];

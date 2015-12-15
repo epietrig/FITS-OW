@@ -20,7 +20,7 @@ public class SimbadSTFilter extends SimbadQueryGlyph{
   private String pecStr = "";
   private VRectangle[] qsquares = null;
   public SimbadSTFilter(SimbadCriteria parent, double top, double left, double right){
-    super(left+(right-left)/2, top-(Config.OFFSET+Config.TEXT_SIZE*5)/2, right-left, Config.OFFSET+Config.TEXT_SIZE*5, parent.getVS());
+    super(right-left, Config.OFFSET+Config.TEXT_SIZE*5, parent.getVS());
     this.parent = parent;
     parent.setFilterLayout("Spectral Type:", 2*Config.OFFSET+Config.TEXT_SIZE*6, this, top, left, right);
     st = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Spectral type:");

@@ -19,7 +19,7 @@ public class SimbadParallaxFilter extends SimbadQueryGlyph{
   private VRectangle[] qsquares = null;
 
   public SimbadParallaxFilter(SimbadCriteria parent, double top, double left, double right){
-    super(left+(right-left)/2, top-Config.OFFSET*2+Config.TEXT_SIZE*4, Config.OFFSET*2+Config.TEXT_SIZE*4,right-left, parent.getVS());
+    super(Config.OFFSET*2+Config.TEXT_SIZE*4,right-left, parent.getVS());
     this.parent = parent;
     parent.setFilterLayout("Parallax:", Config.OFFSET*2+Config.TEXT_SIZE*4, this, top, left, right);
     parallax = new VText(left+Config.OFFSET,top-2*Config.TEXT_SIZE-Config.OFFSET,Z,Config.SELECTED_TEXT_COLOR,"Parallax:");

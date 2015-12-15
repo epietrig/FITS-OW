@@ -134,6 +134,7 @@ public class Config {
     public static final String T_ASTRO_OBJ_BINFO = "SimbadInfo";
     public static final String T_ASTRO_OBJ_MT = "SimbadMeasurementTable";
     public static final String T_ASTRO_OBJ_SC = "SimbadCriteria";
+    public static final String T_ASTRO_OBJ_SQTS = "SimbadQueryTypeSelector";
 
 
     /* ------------ Scales and color mappings ---------- */

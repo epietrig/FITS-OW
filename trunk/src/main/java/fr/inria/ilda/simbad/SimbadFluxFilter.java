@@ -20,7 +20,7 @@ public class SimbadFluxFilter extends SimbadQueryGlyph{
   VText[]range;
   private String[] rangeStr;
   public SimbadFluxFilter(SimbadCriteria parent, double top, double left, double right){
-    super(left-(right-left)/2, top-(2*Config.OFFSET+Config.TEXT_SIZE*13)/2, right-left, 2*Config.OFFSET+Config.TEXT_SIZE*13, parent.getVS());
+    super(right-left, 2*Config.OFFSET+Config.TEXT_SIZE*13, parent.getVS());
     this.parent = parent;
     squares = new VRectangle[13];
     type = new VText[13];
@@ -97,7 +97,7 @@ public class SimbadFluxFilter extends SimbadQueryGlyph{
     }
     return retval;
   }
-  
+
   public String[] getRangeStrs(){
     return rangeStr;
   }
