@@ -78,8 +78,8 @@ public class FITSOW {
     static final short ZUIST_FITS_LAYER = 0;
     static final short DATA_LAYER = 1;
     static final short MENU_LAYER = 2;
-    static final short SIMBAD_LAYER = 4;
-    static final short CURSOR_LAYER = 3;
+    static final short SIMBAD_LAYER = 3;
+    static final short CURSOR_LAYER = 4;
 
     FITSScene scene;
 

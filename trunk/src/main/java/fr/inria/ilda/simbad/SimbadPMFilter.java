@@ -16,8 +16,8 @@ public class SimbadPMFilter extends SimbadQueryGlyph{
   private String raStr ="";
   private String decStr="";
   private VRectangle[] qsquares = null;
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
+  private SimbadCriteria parent;//sacar
+  private VSegment l1, l2;//sacar
 
   public SimbadPMFilter(SimbadCriteria parent, double top, double left, double right){
     super(right-left, Config.OFFSET+Config.TEXT_SIZE*5, parent.getVS());

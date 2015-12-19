@@ -6,11 +6,12 @@ import java.awt.Font;
 import fr.inria.zvtm.engine.VirtualSpace;
 
 public abstract class SimbadQueryGlyph extends Composite{
-  protected double x, y, width, height;
+  protected double x, y, width, height;//no tiene sentido guardar x e y
+  //agregar backgroung
   protected Font bold, notBold;
   protected final static int Z = 0;
   protected VirtualSpace vs;
-
+//hacer vs estático, camera tb
   public SimbadQueryGlyph(double width, double height, VirtualSpace vs){
     this.width = width;
     this.height = height;

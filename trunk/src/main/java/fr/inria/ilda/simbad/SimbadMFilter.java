@@ -13,9 +13,9 @@ import java.awt.Color;
 public class SimbadMFilter extends SimbadQueryGlyph{
   private VSegment[] msplits;
   private VRectangle[] msquares;
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
-
+  private SimbadCriteria parent;//doesnt really needit
+  private VSegment l1, l2;//doesnt need them either, once i add bckg
+//I should be getting vs from parent class
   public SimbadMFilter(double top, double left, double right, VirtualSpace vs, SimbadCriteria parent){
     super(0, 0, vs);
     this.parent = parent;
@@ -78,7 +78,7 @@ public class SimbadMFilter extends SimbadQueryGlyph{
     }
     return -1;
   }
-
+//rename to getMeasurementsSelected()
   public int[] getAllSelected(){
     int count = 0;
     if(msquares[0].getColor().equals(Color.red)){

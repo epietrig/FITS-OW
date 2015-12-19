@@ -12,8 +12,8 @@ import fr.inria.ilda.fitsow.Config;
 import java.awt.Color;
 
 public class SimbadSTFilter extends SimbadQueryGlyph{
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
+  private SimbadCriteria parent;//sacar
+  private VSegment l1, l2;//sacar
   private VText st, lc, pec;
   private String stStr = "";
   private String lcStr = "";

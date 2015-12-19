@@ -13,7 +13,7 @@ public class Tabs extends SimbadQueryGlyph{
   private String tabSelected;
   private VRectangle basicDataTab, measurementsTab;
   private VText basicDataTabStr, measurementsTabStr;
-  private SimbadQueryGlyph parent;
+  private SimbadQueryGlyph parent;//doesnt really need it
   private double width2, height2;
 
   public Tabs(double top, double left, SimbadQueryGlyph parent, double height2, double width2){
@@ -47,7 +47,7 @@ public class Tabs extends SimbadQueryGlyph{
     bounds[2] = measurementsTab.getBounds()[2];
     bounds[3] = basicDataTab.getBounds()[3];
     return bounds;
-  }
+  }//sacar
   public void activateBasicDataTab(VRectangle background, Composite measurements, Composite basicData){
     if(!tabSelected.equals(basicDataStr)){
       tabSelected = basicDataStr;

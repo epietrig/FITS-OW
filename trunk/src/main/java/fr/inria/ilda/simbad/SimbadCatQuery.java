@@ -22,106 +22,59 @@ import java.text.DecimalFormat;
 import jsky.science.Coordinates;
 
 import fr.inria.ilda.fitsow.Config;
-import fr.inria.ilda.fitsow.MVEventListener;
+// import fr.inria.ilda.fitsow.MVEventListener;
 
 /**
  * Performs queries on the Simbad catalog.
  */
 public class SimbadCatQuery {
-    //
-    // public static void main(String[] args) throws Exception{
-    //     Locale.setDefault(new Locale("en", "US"));
-    //     //attempt to retrieve objects from the Simbad catalog
-    //     List<AstroObject> objs = makeSimbadCoordQuery(1, 4, 12);
-    //     for(AstroObject obj: objs){
-    //         System.err.println(obj);
-    //     }
-    // }
-    public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin, MVEventListener listener) throws IOException{
-        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin, listener);
+
+    private static String formatString = "output console=off script=off\n" +
+      "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)"+
+      "$%%OTYPE(V)#"+
+      "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
+      "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"+
+      "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
+      "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
+      "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#";
+
+    public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
+        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
         List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
-        // return parseObjectList(readLines(queryUrl));
+    }
+
+    public static List<AstroObject> makeSimbadIdQuery(String id) throws IOException{
+        URL queryUrl = makeSimbadIdQueryUrl(id);
+        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        return astroObjs;
     }
 
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
-            double radMin, MVEventListener listener){
+            double radMin){
         try{
-            // Coordinates query script example:
-            // format object "%IDLIST(1)|%COO(d;A)|%COO(d;D)"
-            // query coo 12 30 +10 20 radius=6m
-
             Coordinates coords = new Coordinates(ra, dec);
-            // look at http://simbad.u-strasbg.fr/simbad/sim-help?Page=sim-url
-            // for more information about possible parameters
-            SimbadCriteria criteria = listener.getLastSimbadCriteria();
-            String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getAllSelected());
-            String objectTypeQuery = SimbadQueryConstructor.objectTypeSelector(criteria.getObjectTypeFilter().getAllSelected());
-            if(!objectTypeQuery.equals("")) objectTypeQuery = "&"+objectTypeQuery;
-            String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
-              criteria.getPMFilter().getDecStr(),criteria.getPMFilter().getQualitiesSelected());
-            if(!properMotionQuery.equals("")) properMotionQuery = "& "+ properMotionQuery;
-            String parallaxQuery = SimbadQueryConstructor.parallaxSelector(criteria.getParallaxFiler().getParallaxStr(),
-              criteria.getParallaxFiler().getQualitiesSelected());
-            if(!parallaxQuery.equals("")) parallaxQuery = "& "+parallaxQuery;
-            SimbadRVFilter rvFilter = criteria.getRVFilter();
-            String rv = rvFilter.getRVStr();
-            String z = rvFilter.getZStr();
-            String cz = rvFilter.getCZStr();
-            int[] q = rvFilter.getQualitiesSelected();
-            String radialVelocityQuery = SimbadQueryConstructor.radialVelocitySelector(rv, z, cz,q);
-            if(!radialVelocityQuery.equals("")) radialVelocityQuery = " & "+radialVelocityQuery;
-
-            SimbadSTFilter stFilter = criteria.getSTFilter();
-            String st = stFilter.getSTStr();
-            String lc = stFilter.getLCStr();
-            String pec = stFilter.getPecStr();
-            int[] qst = stFilter.getQualitiesSelected();
-            String spectralTypeQuery = SimbadQueryConstructor.spectralTypeSelector(st, lc, pec,qst);
-            if(!spectralTypeQuery.equals("")) spectralTypeQuery = " & "+spectralTypeQuery;
-
-            SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
-            String[] rangeStrs = fluxFilter.getRangeStrs();
-            int[] qf = fluxFilter.getQualitiesSelected();
-            int[] fluxes = fluxFilter.getFluxesSelected();
-            String fluxRangeQuery = SimbadQueryConstructor.fluxRangeSelector(rangeStrs, qf);
-            if(!fluxRangeQuery.equals("")) fluxRangeQuery = " & "+  fluxRangeQuery;
-            String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
-
+            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
             String script =
-             String.format(
-                    "output console=off script=off\n" +
-                    // "format ASCII "+
-                    "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)"+
-                    "$%%OTYPE(V)#"+
-                    "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
-                    "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"+
-                    "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
-                    "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
-                    "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#"+
-                    // "%%FLUXLIST(; N = F (Q) B,)$#"+
-                    "%%"+fluxQuery+"$#"+
-                    measurementsQuery +
-                    "$$ \"\n" +
-                    // "query coo %s %s radius=%sm\n"+
-                    "query sample region(%s%s,%sm)"+objectTypeQuery+
-                    properMotionQuery+
-                    parallaxQuery+
-                    radialVelocityQuery+
-                    spectralTypeQuery+
-                    fluxRangeQuery+
-                    "\n",
-                    //the 'replace' operation is ugly, should be improved
-                    // coords.raToString().replace(',', '.'),
-                    // coords.decToString().replace(',','.')
-                    // fixed by forcing the Locale to en/US
-                    //|%%PM|%%RV|%%FLUXLIST|%%SP|%%MT|%%DIM
-                    coords.raToString(),
-                    coords.decToString(),
-                    Config.ARCMIN_FORMATTER.format(radMin)
-                    );
-                    System.out.println(script);
+            String.format(formatString+ queryOptionalFilters(criteria)+
+                    "query sample region(%s%s,%sm)"+ queryOptionalCriteria(criteria),
+                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin));
+            return makeSimbadScriptQueryUrl(script);
+        } catch (MalformedURLException ex){
+            //we are supposed to create well-formed URLs here...
+            throw new Error(ex);
+        }
+    }
+
+
+    private static URL makeSimbadIdQueryUrl(String id){
+        try{
+            // Coordinates coords = new Coordinates(ra, dec);
+            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
+            String script = formatString+ queryOptionalFilters(criteria)+
+                    "query sample cat "+ id + queryOptionalCriteria(criteria);
             return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...
@@ -130,17 +83,66 @@ public class SimbadCatQuery {
     }
 
     private static URL makeSimbadScriptQueryUrl(String script) throws MalformedURLException {
-        String prefix = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
-        // String prefix = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
-        try{
-            return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
-        } catch (UnsupportedEncodingException eex){
-            //Java implementations are required to offer UTF-8 encoding
-            //support, so we should not trigger this.
-            //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
-            throw new Error(eex);
-        }
+      String prefix = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
+      // String prefix = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
+      try{
+          return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
+      } catch (UnsupportedEncodingException eex){
+          //Java implementations are required to offer UTF-8 encoding
+          //support, so we should not trigger this.
+          //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
+          throw new Error(eex);
+      }
 
+    }
+
+    private static String queryOptionalFilters(SimbadCriteria criteria){
+      String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getAllSelected());
+      SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
+      int[] fluxes = fluxFilter.getFluxesSelected();
+      String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
+      return "%%"+fluxQuery+"$#"+measurementsQuery +"$$ \"\n";
+    }
+
+    private static String queryOptionalCriteria(SimbadCriteria criteria){
+      String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getAllSelected());
+
+      String objectTypeQuery = SimbadQueryConstructor.objectTypeSelector(criteria.getObjectTypeFilter().getAllSelected());
+      if(!objectTypeQuery.equals("")) objectTypeQuery = "&"+objectTypeQuery;
+
+      String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
+        criteria.getPMFilter().getDecStr(),criteria.getPMFilter().getQualitiesSelected());
+      if(!properMotionQuery.equals("")) properMotionQuery = "& "+ properMotionQuery;
+
+      String parallaxQuery = SimbadQueryConstructor.parallaxSelector(criteria.getParallaxFiler().getParallaxStr(),
+        criteria.getParallaxFiler().getQualitiesSelected());
+      if(!parallaxQuery.equals("")) parallaxQuery = "& "+parallaxQuery;
+
+      SimbadRVFilter rvFilter = criteria.getRVFilter();
+      String rv = rvFilter.getRVStr();
+      String z = rvFilter.getZStr();
+      String cz = rvFilter.getCZStr();
+      int[] q = rvFilter.getQualitiesSelected();
+      String radialVelocityQuery = SimbadQueryConstructor.radialVelocitySelector(rv, z, cz,q);
+      if(!radialVelocityQuery.equals("")) radialVelocityQuery = " & "+radialVelocityQuery;
+
+      SimbadSTFilter stFilter = criteria.getSTFilter();
+      String st = stFilter.getSTStr();
+      String lc = stFilter.getLCStr();
+      String pec = stFilter.getPecStr();
+      int[] qst = stFilter.getQualitiesSelected();
+      String spectralTypeQuery = SimbadQueryConstructor.spectralTypeSelector(st, lc, pec,qst);
+      if(!spectralTypeQuery.equals("")) spectralTypeQuery = " & "+spectralTypeQuery;
+
+      SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
+      String[] rangeStrs = fluxFilter.getRangeStrs();
+      int[] qf = fluxFilter.getQualitiesSelected();
+      int[] fluxes = fluxFilter.getFluxesSelected();
+      String fluxRangeQuery = SimbadQueryConstructor.fluxRangeSelector(rangeStrs, qf);
+      if(!fluxRangeQuery.equals("")) fluxRangeQuery = " & "+  fluxRangeQuery;
+      String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
+
+      return objectTypeQuery+properMotionQuery+parallaxQuery+radialVelocityQuery+spectralTypeQuery+fluxRangeQuery+"\n";
     }
 
 }

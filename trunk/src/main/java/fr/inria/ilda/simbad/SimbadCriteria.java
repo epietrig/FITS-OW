@@ -25,11 +25,12 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private SimbadSTFilter spectralTypeFilter;
   private SimbadFluxFilter fluxesFilter;
   private Tabs tabs;
-  private VRectangle background;
-  private Font bold;
-  private Vector<VSegment> bsplits;
-  private double width2, height2;
+  private VRectangle background;//this should be on SimbadQueryGlyph
+  private Font bold;//idem
+  private Vector<VSegment> bsplits;//shouldnt exist, going to change
+  private double width2, height2;//should be on tabs
 
+  public static SimbadCriteria lastSimbadCriteria;
   public SimbadCriteria(double x, double y, VirtualSpace vs){
     super(300,960,vs);
     this.setType(Config.T_ASTRO_OBJ_SC);
@@ -46,7 +47,6 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     double left = bounds[0];
     double top = bounds[1];
     double right = bounds[2];
-
 
     this.tabs = new Tabs(top, left, this, height2, width2);
     this.addChild(tabs);
@@ -85,7 +85,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     this.measurements = new SimbadMFilter(tabs.getBounds()[3],left,right, vs, this);
 
   }
-
+//this shouldn't be here. should be on class SFilters
   public void setFilterLayout(String titleStr, double size, Composite c, double top, double left, double right){
     VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
     title.setScale(1.1f);
@@ -97,6 +97,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     bsplits.add(split2);
     c.addChild(split2);
   }
+  //idem
   public VRectangle[] qualitySelector(Composite c, double x, double y){
     VText quality = new VText(x,y,Z,Config.SELECTED_TEXT_COLOR,"Quality:");
     c.addChild(quality);
@@ -141,5 +142,18 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public SimbadFluxFilter getFluxFilter(){
     return fluxesFilter;
+  }
+  //this should somehow use vs on SimbadQueryGlyph, not pass it as parameter
+  //also, the method itself should be on SimbadQueryGlyph
+  public static SimbadCriteria getCurrentSimbadCriteria(VirtualSpace sqSpace){
+    Vector<Glyph> simbadCriteria = sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
+    if(simbadCriteria.size()>0){
+      SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
+      return criteria;
+    }
+    return null;
+  }
+  public static SimbadCriteria getLastSimbadCriteria(){
+    return lastSimbadCriteria;
   }
 }

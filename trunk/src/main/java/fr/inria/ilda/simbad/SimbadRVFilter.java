@@ -13,8 +13,8 @@ import java.awt.Color;
 
 public class SimbadRVFilter extends SimbadQueryGlyph{
   private VRectangle qsquares[] = null;
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
+  private SimbadCriteria parent;//sacar
+  private VSegment l1, l2;//sacar
   private VText rv, z, cz;
   private String rvStr="";
   private String zStr="";

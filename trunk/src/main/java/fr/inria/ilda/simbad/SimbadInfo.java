@@ -21,14 +21,14 @@ public class SimbadInfo extends SimbadQueryGlyph{
   public Composite basicData;
   private Composite measurements;
   private Tabs tabs;
-  private VRectangle background;
+  private VRectangle background;// should be on parent class
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
     super(0,0,parent.getVS());
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
     this.height = (info.length+2)*Config.TEXT_SIZE+Config.OFFSET;
-    this.width = getWidth(info);
+    this.width = calculateWidth(info);
     this.x = x+width/2+parent.getWidth();
     background = new VRectangle(this.x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
     this.addChild(background);
@@ -85,7 +85,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
     return cMeasurements;
   }
 
-  private double getWidth(String[] info){
+  private double calculateWidth(String[] info){
     int retval = 0;
     int length = 0;
     for(String str : info){
@@ -105,7 +105,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
   public Composite getMeasurements(){
     return measurements;
   }
-
+//should be on parent class
   public VRectangle getBackground(){
     return background;
   }

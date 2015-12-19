@@ -14,8 +14,8 @@ import java.awt.Color;
 public class SimbadOTypeFilter extends SimbadQueryGlyph{
   private VRectangle otsquares[];
   private VText types[];
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
+  private SimbadCriteria parent;//doenst need it
+  private VSegment l1, l2;//doesnt need it
 
   public SimbadOTypeFilter(SimbadCriteria parent, double top, double left, double right){
     super(right-left,Config.OFFSET+Config.TEXT_SIZE*9, parent.getVS());
@@ -62,7 +62,7 @@ public class SimbadOTypeFilter extends SimbadQueryGlyph{
         selectedSquare.setColor(color.red);
     }
   }
-
+//change name to getOTSelected()
   public int[] getAllSelected(){
     int[] retval = new int[Config.OBJECT_TYPES.length];
     for(int i = 0; i < otsquares.length; i++){

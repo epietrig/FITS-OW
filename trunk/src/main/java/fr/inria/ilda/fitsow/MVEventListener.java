@@ -84,7 +84,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     SimbadQuery sq;
 
-    SimbadCriteria lastSimbadCriteria;
+    // SimbadCriteria lastSimbadCriteria;
 
     MVEventListener(FITSOW app){
         this.app = app;
@@ -169,7 +169,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         updateSimbadResults(jpx, jpy);
       }
       if(insideSimbadCriteria(jpx, jpy)){
-        SimbadCriteria criteria = getCurrentSimbadCriteria();
+        SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
         Tabs tabs = criteria.getTabs();
         Point2D.Double coords = new Point2D.Double();
         app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
@@ -336,7 +336,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           lastJPY = jpy;
         }
         else if(draggingSimbadCriteria){
-          SimbadCriteria criteria = getCurrentSimbadCriteria();
+          SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
           criteria.move(jpx-lastJPX, lastJPY-jpy);
           criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
           criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
@@ -460,8 +460,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void exitQueryMode(){
-        SimbadCriteria criteria = getCurrentSimbadCriteria();
-        lastSimbadCriteria = criteria;
+        SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
+        SimbadCriteria.lastSimbadCriteria = criteria;
         app.sqSpace.removeGlyph(criteria.getBasicData());
         app.sqSpace.removeGlyph(criteria.getMeasurements());
         app.sqSpace.removeGlyph(criteria);
@@ -511,7 +511,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void updateSimbadCriteriaTabs(int jpx, int jpy){
-      SimbadCriteria criteria = getCurrentSimbadCriteria();
+      SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
       if(criteria!= null){
         Tabs tabs = criteria.getTabs();
         if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
@@ -537,7 +537,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     boolean insideSimbadCriteria(int jpx, int jpy){
-      SimbadCriteria criteria = getCurrentSimbadCriteria();
+      SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
       if(criteria != null)
         return criteria.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
@@ -566,14 +566,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
       return null;
     }
-    public SimbadCriteria getCurrentSimbadCriteria(){
-      Vector<Glyph> simbadCriteria = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
-      if(simbadCriteria.size()>0){
-        SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
-        return criteria;
-      }
-      return null;
-    }
+    // public SimbadCriteria getCurrentSimbadCriteria(){
+    //   Vector<Glyph> simbadCriteria = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
+    //   if(simbadCriteria.size()>0){
+    //     SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
+    //     return criteria;
+    //   }
+    //   return null;
+    // }
     public SimbadQueryTypeSelector getCurrentSimbadQueryTypeSelector(){
       Vector<Glyph> simbadQueryTypeSelector = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SQTS);
       if(simbadQueryTypeSelector.size()>0){
@@ -582,7 +582,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
       return null;
     }
-    public SimbadCriteria getLastSimbadCriteria(){
-      return lastSimbadCriteria;
-    }
+    // public SimbadCriteria getLastSimbadCriteria(){
+    //   return lastSimbadCriteria;
+    // }
 }

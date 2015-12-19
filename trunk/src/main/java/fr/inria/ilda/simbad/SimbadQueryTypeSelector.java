@@ -13,10 +13,10 @@ import java.awt.Font;
 import java.awt.Color;
 
 public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
-  VRectangle[] buttons;
-  VRectangle background;
-  int selected;
-
+  private VRectangle[] buttons;
+  VRectangle background;//should be on parent class
+  private int selected;
+//vs should be on parent class, camera also
   public SimbadQueryTypeSelector(VirtualSpace vs){
     super(300, 150, vs);
     this.setType(Config.T_ASTRO_OBJ_SQTS);
@@ -77,7 +77,7 @@ public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
     }
 
   }
-
+//should be in parent class
   public VRectangle getBackground(){
     return background;
   }

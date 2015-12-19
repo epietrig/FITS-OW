@@ -12,13 +12,14 @@ import fr.inria.ilda.fitsow.Config;
 import java.awt.Color;
 
 public class SimbadFluxFilter extends SimbadQueryGlyph{
-  private SimbadCriteria parent;
-  private VSegment l1, l2;
-  VRectangle[] squares = null;
-  VRectangle[] qsquares = null;
-  VText[]type;
-  VText[]range;
+  private SimbadCriteria parent;//this shouldn't be here.
+  private VSegment l1, l2; //this should be off and I should add a backgorund
+  private VRectangle[] squares = null;
+  private VRectangle[] qsquares = null;
+  private VText[]type;
+  private VText[]range;
   private String[] rangeStr;
+  //this doesn't really need a father
   public SimbadFluxFilter(SimbadCriteria parent, double top, double left, double right){
     super(right-left, 2*Config.OFFSET+Config.TEXT_SIZE*13, parent.getVS());
     this.parent = parent;
@@ -50,14 +51,14 @@ public class SimbadFluxFilter extends SimbadQueryGlyph{
     }
     qsquares = parent.qualitySelector(this, left+Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*12);
   }
-
+//this should be on parent class
   public boolean coordInsideComponent(double x, double y){
     double[] bckgBounds = parent.getBackground().getBounds();
     double left = bckgBounds[0];
     double right = bckgBounds[2];
     return x < right && x > left && y < l1.getLocation().getY() && y > l2.getLocation().getY();
   }
-
+//this should be on parent class
   public int getItemSelected(double x,  double y, Camera sqCamera){
     for(int i = 0; i < squares.length; i++){
       if(squares[i].coordInsideV(x,y,sqCamera) || type[i].coordInsideV(x,y,sqCamera)) return i*2;
@@ -68,7 +69,7 @@ public class SimbadFluxFilter extends SimbadQueryGlyph{
     }
     return -1;
   }
-
+//this should be in parent class
   public void select(int i, String str){
     if(i >= 0 && i<25){
       if(i%2 == 0){
@@ -101,7 +102,7 @@ public class SimbadFluxFilter extends SimbadQueryGlyph{
   public String[] getRangeStrs(){
     return rangeStr;
   }
-
+// this should be on parent class 
   public int[] getQualitiesSelected(){
     int[] retval = new int[5];
     for(int i = 0; i < qsquares.length; i++){

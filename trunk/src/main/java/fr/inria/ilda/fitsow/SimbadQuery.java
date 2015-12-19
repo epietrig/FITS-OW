@@ -103,7 +103,7 @@ public class SimbadQuery {
                 try{
 
                   System.out.println("querying...");
-                    objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin, app.eh);
+                    objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
                     ioe.printStackTrace();
                 } finally {
