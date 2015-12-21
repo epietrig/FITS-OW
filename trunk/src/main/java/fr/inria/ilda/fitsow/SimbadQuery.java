@@ -43,7 +43,7 @@ public class SimbadQuery {
 
     AnimationManager am = VirtualSpaceManager.INSTANCE.getAnimationManager();
     JSkyFitsImage centerImg, onCircleImg;
-
+    String queryIdentifier = null;
     Point2D.Double queryRegionCenter;
     VCircle queryRegionG = new VCircle(0, 0, Config.Z_QUERY_REGION, 1,
                                        Color.BLACK, Config.QUERY_REGION_COLOR, Config.QUERY_REGION_ALPHA);
@@ -80,7 +80,8 @@ public class SimbadQuery {
 
     void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
-        if (centerImg == null || onCircleImg == null){return;}
+        if (centerImg == null) return;
+        else if(onCircleImg == null && queryIdentifier != null){return;}
         Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
         if (centerWCS == null || onCircleWCS == null){
@@ -169,7 +170,6 @@ public class SimbadQuery {
           app.sqSpace.removeGlyph(siTobeRemoved.getMeasurements());
           app.sqSpace.removeGlyph(siTobeRemoved);
       }
-
     }
 
     void fadeOutQueryRegion(){

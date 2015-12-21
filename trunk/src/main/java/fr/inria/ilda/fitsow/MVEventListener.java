@@ -50,6 +50,7 @@ import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
 import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
+import fr.inria.ilda.simbad.SimbadQueryGlyph;
 import fr.inria.ilda.simbad.Tabs;
 
 public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
@@ -78,6 +79,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadResults = false;
     boolean draggingSimbadInfo = false;
     boolean draggingSimbadCriteria = false;
+    boolean draggingSimbadQTS = false;
 
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
@@ -94,30 +96,46 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         lastJPX = jpx;
         lastJPY = jpy;
 
-        if (querying && !insideSimbadCriteria(jpx, jpy)){
-            sq = new SimbadQuery(app);
-            if (ciFITSImage != null){
-                sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
-            }
-            else {
-                sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
-                             (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
-            }
+        if (querying && !insideSimbadCriteria(jpx, jpy) && !insideSimbadQueryTypeSelector(jpx,jpy)){
+            SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+            if(sqts.getSelected() == 0){
+              sq = new SimbadQuery(app);
+              if (ciFITSImage != null){
+                  sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+              }
+              else {
+                  sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
+                               (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+              }
+          }
         }
         else if(insideSimbadResults(jpx, jpy)){
           draggingSimbadResults = true;
           draggingFITS = false;
+          draggingSimbadQTS = false;
+          draggingSimbadInfo = false;
+          draggingSimbadCriteria = false;
         }
         else if(insideSimbadInfo(jpx, jpy)){
           draggingSimbadInfo = true;
           draggingFITS = false;
           draggingSimbadResults = false;
+          draggingSimbadQTS = false;
+          draggingSimbadCriteria = false;
         }
         else if(insideSimbadCriteria(jpx, jpy)){
           draggingSimbadCriteria = true;
           draggingSimbadInfo = false;
           draggingFITS = false;
           draggingSimbadResults = false;
+          draggingSimbadQTS = false;
+        }
+        else if(insideSimbadQueryTypeSelector(jpx, jpy)){
+          draggingSimbadCriteria = false;
+          draggingSimbadInfo = false;
+          draggingFITS = false;
+          draggingSimbadResults = false;
+          draggingSimbadQTS = true;
         }
         else {
             lge = app.dSpacePicker.lastGlyphEntered();
@@ -135,6 +153,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
+        if(draggingSimbadQTS){
+          draggingSimbadQTS = false;
+        }
         if(draggingSimbadResults){
           draggingSimbadResults = false;
         }
@@ -148,128 +169,28 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             app.dSpacePicker.unstickLastGlyph();
             draggingFITS = false;
         }
-        if (querying && !insideSimbadCriteria(jpx, jpy)){
+        if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
+          SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+          if(sqts.getSelected() == 0){
             exitQueryMode();
             if (sq != null){
-                if (ciFITSImage != null){
+                if (ciFITSImage != null)
                     sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
-                }
-                else {
+                else
                     sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
                                    (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
-                }
                 sq = null;
             }
+          }
         }
-
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-      if(insideSimbadResults(jpx, jpy)){
+        updateSimbadQueryTypeSelector(jpx, jpy);
+        updateSimbadCriteriaTabs(jpx, jpy); //if I'm clicking tabs, update them
+        updateSimbadCriteria(jpx, jpy);
         updateSimbadResults(jpx, jpy);
-      }
-      if(insideSimbadCriteria(jpx, jpy)){
-        SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
-        Tabs tabs = criteria.getTabs();
-        Point2D.Double coords = new Point2D.Double();
-        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-        double x = coords.getX();
-        double y = coords.getY();
-        if(tabs.getTabSelected().equals(tabs.getMeasurementsStr())){
-          criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x, y, app.sqCamera));
-        }
-        else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
-          if(criteria.getObjectTypeFilter().coordInsideComponent(x, y)){
-          criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x, y, app.sqCamera));
-          }
-          else if(criteria.getPMFilter().coordInsideComponent(x, y)){
-            int angle = criteria.getPMFilter().getItemSelected(x, y, app.sqCamera);
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            String inputValue ="";
-            if(angle == 0){
-              optionPane = new JOptionPane("right ascension of proper motion (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value");
-            }else if(angle ==1){
-              optionPane = new JOptionPane("declination of proper motion (mas) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value");
-            }
-            criteria.getPMFilter().select(angle, inputValue);
-          }
-          else if(criteria.getParallaxFiler().coordInsideComponent(x,y)){
-            int parallax = criteria.getParallaxFiler().getItemSelected(x, y, app.sqCamera);
-            String inputValue ="";
-            if(parallax == 0){
-              JFrame parent = new JFrame();
-              JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
-            }
-            criteria.getParallaxFiler().select(parallax, inputValue);
-          }
-          else if(criteria.getRVFilter().coordInsideComponent(x,y)){
-            int value = criteria.getRVFilter().getItemSelected(x,y,app.sqCamera);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value == 0){
-              optionPane = new JOptionPane("Radial velocity (km/s) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value");
-            }
-            else if(value == 1){
-              optionPane = new JOptionPane("Redshift ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value");
-            }
-            else if(value ==2){
-              optionPane = new JOptionPane("cz ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter cz in the format:\n >=/<=/=/!= numrical-value");
-            }
-            criteria.getRVFilter().select(value,inputValue);
-          }
-          else if(criteria.getSTFilter().coordInsideComponent(x,y)){
-            int value = criteria.getSTFilter().getItemSelected(x,y,app.sqCamera);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value == 0){
-              optionPane = new JOptionPane("Spectral type ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter spectral type in the format:\n >=/<=/>/</!=/= value ");
-            }
-            else if(value == 1){
-              optionPane = new JOptionPane("Luminosity class ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter luminosity value in the format:\n >=/<=/>/</!=/= value ");
-            }
-            else if(value ==2){
-              optionPane = new JOptionPane("Peculiarities ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter Peculiarities in the format:\n =/!= numrical-value");
-            }
-            criteria.getSTFilter().select(value,inputValue);
-          }
-          else if(criteria.getFluxFilter().coordInsideComponent(x,y)){
-            int value = criteria.getFluxFilter().getItemSelected(x,y,app.sqCamera);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value%2!=0 && value<25 && value >0){
-              optionPane = new JOptionPane(Config.FLUX_TYPES[value/2]+" Range", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter range of "+Config.FLUX_TYPES[value/2]+" magnitude in the format:\n =/!= value");
-            }
-            criteria.getFluxFilter().select(value, inputValue);
-          }
-        }
-      }
-      if(insideSimbadQueryTypeSelector(jpx,jpy)){
-        SimbadQueryTypeSelector sqts = getCurrentSimbadQueryTypeSelector();
-        int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);
-        sqts.select(selectedButtonIndex);
-        if(selectedButtonIndex == 0 | selectedButtonIndex == 1){
-          SimbadCriteria sc = new SimbadCriteria(sqts.getWidth()/2,0,app.sqSpace);
-          app.sqSpace.addGlyph(sc);
-          app.sqSpace.addGlyph(sc.getBasicData());
-        }
-
-      }
-      updateSimbadInfoTabs(jpx, jpy);
-      updateSimbadCriteriaTabs(jpx, jpy); //if I'm clicking tabs, update them
+        updateSimbadInfoTabs(jpx, jpy);
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -321,13 +242,19 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             lastJPY = jpy;
         }
         else if(draggingSimbadResults){
-          SimbadResults list = getCurrentSimbadResults();
+          SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
           list.move(jpx-lastJPX, lastJPY-jpy);
           lastJPX = jpx;
           lastJPY = jpy;
         }
+        else if(draggingSimbadQTS){
+          SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+          qts.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
         else if(draggingSimbadInfo){
-          SimbadInfo info = getCurrentSimbadInfo();
+          SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
           info.move(jpx-lastJPX, lastJPY-jpy);
           info.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
           info.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
@@ -336,7 +263,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           lastJPY = jpy;
         }
         else if(draggingSimbadCriteria){
-          SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
+          SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
           criteria.move(jpx-lastJPX, lastJPY-jpy);
           criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
           criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
@@ -460,22 +387,50 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void exitQueryMode(){
-        SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
-        SimbadCriteria.lastSimbadCriteria = criteria;
-        app.sqSpace.removeGlyph(criteria.getBasicData());
-        app.sqSpace.removeGlyph(criteria.getMeasurements());
-        app.sqSpace.removeGlyph(criteria);
-        app.scene.setStatusBarMessage(null);
-        querying = false;
+      SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      app.sqSpace.removeGlyph(qts);
+      SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+      SimbadCriteria.lastSimbadCriteria = criteria;
+      app.sqSpace.removeGlyph(criteria.getBasicData());
+      app.sqSpace.removeGlyph(criteria.getMeasurements());
+      app.sqSpace.removeGlyph(criteria);
+      app.scene.setStatusBarMessage(null);
+      querying = false;
     }
 
+    void updateSimbadQueryTypeSelector(int jpx, int jpy){
+      SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
+        int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);
+        sqts.select(selectedButtonIndex);
+        SimbadCriteria current = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+        if(current!=null){
+          if(current.getBasicData()!= null) app.sqSpace.removeGlyph(current.getBasicData());
+          if(current.getMeasurements()!= null) app.sqSpace.removeGlyph(current.getMeasurements());
+          app.sqSpace.removeGlyph(current);
+        }
+        if(selectedButtonIndex == 0 | selectedButtonIndex == 1){
+          SimbadCriteria sc = new SimbadCriteria(150+455,0);
+          app.sqSpace.addGlyph(sc);
+          app.sqSpace.addGlyph(sc.getBasicData());
+          SimbadCriteria.lastSimbadCriteria = sc;
+        }
+        else{
+          JFrame parent = new JFrame();
+          JOptionPane optionPane = new JOptionPane("Query by script", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+          String inputValue = JOptionPane.showInputDialog("Enter script for query:");
+        }
+      }
+    }
     void updateSimbadResults(int jpx, int jpy){
-      SimbadResults list = getCurrentSimbadResults();
-      Point2D.Double coords = new Point2D.Double();
-      app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-      Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-      updateSimbadInfo(coords.getX(),coords.getY(), list);
-      list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
+      SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+      if(list!=null && list.coordInsideItem(jpx, jpy)){
+        Point2D.Double coords = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+        Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
+        updateSimbadInfo(coords.getX(),coords.getY(), list);
+        list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
+      }
     }
 
     void updateSimbadInfo(double x, double y, SimbadResults list){
@@ -498,7 +453,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void updateSimbadInfoTabs(int jpx, int jpy){
-      SimbadInfo info = getCurrentSimbadInfo();
+      SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
       if(info != null){
         Tabs tabs = info.getTabs();
         if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
@@ -511,7 +466,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void updateSimbadCriteriaTabs(int jpx, int jpy){
-      SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
+      SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
       if(criteria!= null){
         Tabs tabs = criteria.getTabs();
         if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
@@ -523,66 +478,123 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
     }
 
+    void updateSimbadCriteria(int jpx, int jpy){
+      // SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
+      SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+      if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
+        Tabs tabs = criteria.getTabs();
+        Point2D.Double coords = new Point2D.Double();
+        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+        double x = coords.getX();
+        double y = coords.getY();
+        if(tabs.getTabSelected().equals(tabs.getMeasurementsStr())){
+          criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x,y),"");
+        }
+        else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
+          if(criteria.getObjectTypeFilter().coordInsideItem(jpx, jpy)){
+          criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x,y),"");
+          }
+          else if(criteria.getPMFilter().coordInsideItem(jpx, jpy)){
+            int angle = criteria.getPMFilter().getItemSelected(x,y);
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            String inputValue ="";
+            if(angle == 0){
+              optionPane = new JOptionPane("right ascension of proper motion (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value");
+            }else if(angle ==1){
+              optionPane = new JOptionPane("declination of proper motion (mas) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value");
+            }
+            criteria.getPMFilter().select(angle, inputValue);
+          }
+          else if(criteria.getParallaxFiler().coordInsideItem(jpx,jpy)){
+            int parallax = criteria.getParallaxFiler().getItemSelected(x,y);
+            String inputValue ="";
+            if(parallax == 0){
+              JFrame parent = new JFrame();
+              JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
+            }
+            criteria.getParallaxFiler().select(parallax, inputValue);
+          }
+          else if(criteria.getRVFilter().coordInsideItem(jpx,jpy)){
+            int value = criteria.getRVFilter().getItemSelected(x,y);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value == 0){
+              optionPane = new JOptionPane("Radial velocity (km/s) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value");
+            }
+            else if(value == 1){
+              optionPane = new JOptionPane("Redshift ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value");
+            }
+            else if(value ==2){
+              optionPane = new JOptionPane("cz ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter cz in the format:\n >=/<=/=/!= numrical-value");
+            }
+            criteria.getRVFilter().select(value,inputValue);
+          }
+          else if(criteria.getSTFilter().coordInsideItem(jpx,jpy)){
+            int value = criteria.getSTFilter().getItemSelected(x,y);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value == 0){
+              optionPane = new JOptionPane("Spectral type ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter spectral type in the format:\n >=/<=/>/</!=/= value ");
+            }
+            else if(value == 1){
+              optionPane = new JOptionPane("Luminosity class ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter luminosity value in the format:\n >=/<=/>/</!=/= value ");
+            }
+            else if(value ==2){
+              optionPane = new JOptionPane("Peculiarities ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter Peculiarities in the format:\n =/!= numrical-value");
+            }
+            criteria.getSTFilter().select(value,inputValue);
+          }
+          else if(criteria.getFluxFilter().coordInsideItem(jpx,jpy)){
+            int value = criteria.getFluxFilter().getItemSelected(x,y);
+            String inputValue="";
+            JFrame parent = new JFrame();
+            JOptionPane optionPane;
+            if(value%2!=0 && value<25 && value >0){
+              optionPane = new JOptionPane(Config.FLUX_TYPES[value/2]+" Range", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+              inputValue = JOptionPane.showInputDialog("Enter range of "+Config.FLUX_TYPES[value/2]+" magnitude in the format:\n =/!= value");
+            }
+            criteria.getFluxFilter().select(value, inputValue);
+          }
+        }
+      }
+    }
+
     boolean insideSimbadResults(int jpx, int jpy){
-      SimbadResults list = getCurrentSimbadResults();
+      SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
       if(list!= null) return list.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
     }
 
     boolean insideSimbadInfo(int jpx, int jpy){
-      SimbadInfo info = getCurrentSimbadInfo();
+      SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
       if(info != null)
-        return info.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+        return info.coordInsideItem(jpx, jpy);
       return false;
     }
 
     boolean insideSimbadCriteria(int jpx, int jpy){
-      SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
+      SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
       if(criteria != null)
-        return criteria.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+        return criteria.coordInsideItem(jpx, jpy);
       return false;
     }
 
     boolean insideSimbadQueryTypeSelector(int jpx, int jpy){
-      SimbadQueryTypeSelector ts = getCurrentSimbadQueryTypeSelector();
+      SimbadQueryTypeSelector ts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
       if(ts != null)
-        return ts.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+        return ts.coordInsideItem(jpx, jpy);
       return false;
     }
-
-    SimbadResults getCurrentSimbadResults(){
-      Vector <Glyph> simbadResults = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SR);
-      if(simbadResults.size()>0){
-        SimbadResults list = (SimbadResults) simbadResults.get(0);
-        return list;
-      }
-      return null;
-    }
-    SimbadInfo getCurrentSimbadInfo(){
-      Vector <Glyph> simbadInfo = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_BINFO);
-      if(simbadInfo.size()>0){
-        SimbadInfo info = (SimbadInfo) simbadInfo.get(0);
-        return info;
-      }
-      return null;
-    }
-    // public SimbadCriteria getCurrentSimbadCriteria(){
-    //   Vector<Glyph> simbadCriteria = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SC);
-    //   if(simbadCriteria.size()>0){
-    //     SimbadCriteria criteria = (SimbadCriteria) simbadCriteria.get(0);
-    //     return criteria;
-    //   }
-    //   return null;
-    // }
-    public SimbadQueryTypeSelector getCurrentSimbadQueryTypeSelector(){
-      Vector<Glyph> simbadQueryTypeSelector = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SQTS);
-      if(simbadQueryTypeSelector.size()>0){
-        SimbadQueryTypeSelector queryTypeSelector = (SimbadQueryTypeSelector) simbadQueryTypeSelector.get(0);
-        return queryTypeSelector;
-      }
-      return null;
-    }
-    // public SimbadCriteria getLastSimbadCriteria(){
-    //   return lastSimbadCriteria;
-    // }
 }

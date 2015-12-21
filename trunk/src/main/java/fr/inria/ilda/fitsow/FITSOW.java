@@ -59,6 +59,8 @@ import fr.inria.zvtm.engine.VirtualSpaceManager;
 import fr.inria.zuist.engine.SceneObserver;
 import fr.inria.zuist.engine.ViewSceneObserver;
 
+import fr.inria.ilda.simbad.SimbadQueryGlyph;
+
 /**
  * @author Emmanuel Pietriga
  */
@@ -224,6 +226,8 @@ public class FITSOW {
         updatePanelSize();
         mView.getPanel().getComponent().addComponentListener(eh);
         mView.setActiveLayer(DATA_LAYER);
+        SimbadQueryGlyph.setVirtualSpace(sqSpace);
+        SimbadQueryGlyph.setCamera(sqCamera);
     }
 
     void windowLayout(){

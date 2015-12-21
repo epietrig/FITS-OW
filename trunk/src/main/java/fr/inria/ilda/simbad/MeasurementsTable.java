@@ -21,7 +21,7 @@ public class MeasurementsTable extends SimbadQueryGlyph{
   private final static int OFFSET = 5;
 
   public MeasurementsTable(Measurement measurement, double x, double y, double topOffset, VirtualSpace vs){
-    super(0, 0, vs);
+    super(0, 0);
     String[][] measurements = measurement.getTable();
     String name = measurement.getName();
     this.setType(Config.T_ASTRO_OBJ_MT);

@@ -14,14 +14,13 @@ import java.awt.Color;
 
 public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
   private VRectangle[] buttons;
-  VRectangle background;//should be on parent class
-  private int selected;
+  private int selected = -1;
 //vs should be on parent class, camera also
   public SimbadQueryTypeSelector(VirtualSpace vs){
-    super(300, 150, vs);
+    super(300, 150);
     this.setType(Config.T_ASTRO_OBJ_SQTS);
     selected = -1;
-    background = new VRectangle (0, 0, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle (0, 0, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
@@ -80,6 +79,10 @@ public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
 //should be in parent class
   public VRectangle getBackground(){
     return background;
+  }
+
+  public int getSelected(){
+    return selected;
   }
 
 }

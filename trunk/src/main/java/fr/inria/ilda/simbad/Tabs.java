@@ -16,21 +16,20 @@ public class Tabs extends SimbadQueryGlyph{
   private SimbadQueryGlyph parent;//doesnt really need it
   private double width2, height2;
 
-  public Tabs(double top, double left, SimbadQueryGlyph parent, double height2, double width2){
-    super(parent.getWidth(), parent.getHeight(), parent.getVS());
-    this.parent = parent;
+  public Tabs(double top, double left, double height2, double width2, SimbadQueryGlyph parent){
+    super(parent.getWidth(),parent.getHeight());
     this.width2 = width2;
     this.height2 = height2;
-    basicDataTab = new VRectangle(left+width/4, top-Config.OFFSET, Z, width/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*2,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
+    basicDataTab = new VRectangle(left+width/4, top-Config.TEXT_SIZE/2, Z, width/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
+    basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*3,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     tabSelected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     notBold = basicDataTabStr.getFont();
     basicDataTabStr.setFont(bold);
 
-    measurementsTab = new VRectangle(left+width/4+width/2, top-Config.OFFSET, Z, width/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    measurementsTabStr = new VText(left+width/2+2*Config.OFFSET,top-Config.OFFSET*2,Z,Config.TEXT_COLOR,measurementsStr);
+    measurementsTab = new VRectangle(left+width/4+width/2, top-Config.TEXT_SIZE/2, Z, width/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
+    measurementsTabStr = new VText(left+width/2+2*Config.OFFSET,top-Config.OFFSET*3,Z,Config.TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
 
     this.addChild(basicDataTab);
@@ -70,8 +69,8 @@ public class Tabs extends SimbadQueryGlyph{
         background.setHeight(height);
         background.move(0,(height2+basicDataTab.getHeight()+20-height)/2);
       }
-      vs.removeGlyph(measurements);
-      vs.addGlyph(basicData);
+      SQ_VIRTUAL_SPACE.removeGlyph(measurements);
+      SQ_VIRTUAL_SPACE.addGlyph(basicData);
     }
   }
 
@@ -94,11 +93,14 @@ public class Tabs extends SimbadQueryGlyph{
         measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
       }
       if(height2 > height){
+        System.out.println("h: "+height);
+          System.out.println("h2: "+height2);
+        System.out.println("no debería entrar");
         background.setHeight(height2+basicDataTab.getHeight()+20);
         background.move(0,-(height2+basicDataTab.getHeight()+20-height)/2);
       }
-      vs.removeGlyph(basicData);
-      vs.addGlyph(measurements);
+      SQ_VIRTUAL_SPACE.removeGlyph(basicData);
+      SQ_VIRTUAL_SPACE.addGlyph(measurements);
     }
   }
 
