@@ -81,7 +81,7 @@ public class SimbadQuery {
     void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
-        else if(onCircleImg == null && queryIdentifier != null){return;}
+        else if(onCircleImg == null){System.out.println("lalala"); return;}
         Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
         if (centerWCS == null || onCircleWCS == null){

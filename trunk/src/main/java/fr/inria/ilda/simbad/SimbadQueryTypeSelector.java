@@ -15,11 +15,13 @@ import java.awt.Color;
 public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
   private VRectangle[] buttons;
   private int selected = -1;
+  public static int BY_COORDINATES = 0;
+  public static int BY_ID = 1;
+  public static int BY_SCRIPT = 2;
 //vs should be on parent class, camera also
   public SimbadQueryTypeSelector(VirtualSpace vs){
     super(300, 150);
     this.setType(Config.T_ASTRO_OBJ_SQTS);
-    selected = -1;
     this.background = new VRectangle (0, 0, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
     double[] bounds = background.getBounds();
     double left = bounds[0];

@@ -410,7 +410,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           app.sqSpace.removeGlyph(current);
         }
         if(selectedButtonIndex == 0 | selectedButtonIndex == 1){
-          SimbadCriteria sc = new SimbadCriteria(150+455,0);
+          SimbadCriteria sc = new SimbadCriteria(150+455,0,sqts);
           app.sqSpace.addGlyph(sc);
           app.sqSpace.addGlyph(sc.getBasicData());
           SimbadCriteria.lastSimbadCriteria = sc;
