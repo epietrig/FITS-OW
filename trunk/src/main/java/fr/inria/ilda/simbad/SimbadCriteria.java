@@ -26,23 +26,23 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private SimbadSTFilter spectralTypeFilter;
   private SimbadFluxFilter fluxesFilter;
   private Tabs tabs;
-  private Font bold;//idem
   private Vector<VSegment> bsplits;
-  private SimbadQueryTypeSelector parent;//shouldnt exist, going to change
+  private SimbadQueryTypeSelector parent;
   VText coordinates, frame;
   VText id;
   String coordinatesStr = null;
   String frameStr = null;
   String idStr = null;
   VRectangle execute;
-  // private double width2, height2;//should be on tabs
+  protected static double W = 900;
+  protected static double H = 600;
 
   public static SimbadCriteria lastSimbadCriteria;
   public SimbadCriteria(double x, double y, SimbadQueryTypeSelector parent){
-    super(900, 600);
+    super(W, H);
     this.parent = parent;
     this.setType(Config.T_ASTRO_OBJ_SC);
-    this.background = new VRectangle (x, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle (x, y, Z, width, height, BACKGROUND_COLOR);
     this.addChild(background);
     double[] bounds = background.getBounds();
     double left = bounds[0];
@@ -53,54 +53,54 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     this.queryType = queryType(top, left, right);
     basicData.addChild(queryType);
 
-    double yOffset = 5*Config.TEXT_SIZE;
-    this.objectTypeFilter = new SimbadOTypeFilter(top-yOffset, left, left+300);
+    double yOffset = 5*TEXT_SIZE;
+    this.objectTypeFilter = new SimbadOTypeFilter(top-yOffset, left, left+W/3);
     basicData.addChild(objectTypeFilter);
 
-    this.fluxesFilter = new SimbadFluxFilter(top-yOffset, left+300, left+600);
+    this.fluxesFilter = new SimbadFluxFilter(top-yOffset, left+W/3, left+2*W/3);
     basicData.addChild(fluxesFilter);
 
-    this.spectralTypeFilter = new SimbadSTFilter(top-yOffset, left+600, left+900);
+    this.spectralTypeFilter = new SimbadSTFilter(top-yOffset, left+2*W/3, left+W);
     basicData.addChild(spectralTypeFilter);
 
-    this.radialVelocityFilter = new SimbadRVFilter(top-yOffset-300, left, left+300);
+    this.radialVelocityFilter = new SimbadRVFilter(top-yOffset-H/2, left, left+W/3);
     basicData.addChild(radialVelocityFilter);
 
-    this.properMotionFilter = new SimbadPMFilter(top-yOffset-300, left+300, left+600);
+    this.properMotionFilter = new SimbadPMFilter(top-yOffset-H/2, left+W/3, left+2*W/3);
     basicData.addChild(properMotionFilter);
 
-    this.parallaxesFilter = new SimbadParallaxFilter(top-yOffset-300, left+600, left+900);
+    this.parallaxesFilter = new SimbadParallaxFilter(top-yOffset-H/2, left+2*W/3, left+W);
     basicData.addChild(parallaxesFilter);
 
-    this.measurements = new SimbadMFilter(top-Config.TEXT_SIZE, left, right, this);
+    this.measurements = new SimbadMFilter(top-TEXT_SIZE, left, right, this);
 
-    this.tabs = new Tabs(top, left, 600, 900, this);
+    this.tabs = new Tabs(top, left, H, W, this);
     this.addChild(tabs);
   }
   public Composite queryType(double top, double left, double right){
     Composite c = new Composite();
     int type = parent.getSelected();
     if(type == SimbadQueryTypeSelector.BY_ID){
-      id = new VText(left + 2*Config.OFFSET, top-2*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "Enter Identifier:");
+      id = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Enter Identifier:");
       id.setScale(1.3f);
       c.addChild(id);
     }
     else if(type == SimbadQueryTypeSelector.BY_COORDINATES){
-      coordinates = new VText(left + 2*Config.OFFSET, top-2*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "Coordinates:");
+      coordinates = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Coordinates:");
       coordinates.setScale(1.3f);
       c.addChild(coordinates);
-      frame = new VText(left + 300, top-2*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "Frame:");
+      frame = new VText(left + W/3, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Frame:");
       frame.setScale(1.3f);
       c.addChild(frame);
-      VText explanation = new VText(left + 2*Config.OFFSET, top-3*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "(click in text to enter coordinates numerical value or select region in image)");
+      VText explanation = new VText(left + 2*OFFSET, top-3*TEXT_SIZE-OFFSET,Z, TEXT_COLOR, "(click in text to enter coordinates numerical value or select region in image)");
       c.addChild(explanation);
     }
-    execute = new VRectangle(right - 120, top-2*Config.TEXT_SIZE, Z, 110, Config.TEXT_SIZE, Color.red);
-    VText executeQuery = new VText(right - 120 - 45, top-2*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "Execute Query");
+    execute = new VRectangle(right - 120, top-2*TEXT_SIZE, Z, 110, TEXT_SIZE, SELECTED_COLOR);
+    VText executeQuery = new VText(right - 120 - 45, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Execute Query");
     executeQuery.setScale(1.3f);
     c.addChild(execute);
     c.addChild(executeQuery);
-    VText optionalFilters = new VText(left + 2*Config.OFFSET, top-4*Config.TEXT_SIZE-Config.OFFSET, Z, Config.SELECTED_TEXT_COLOR, "Select optional filters:");
+    VText optionalFilters = new VText(left + 2*OFFSET, top-4*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Select optional filters:");
     c.addChild(optionalFilters);
     return c;
   }
@@ -131,7 +131,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public SimbadPMFilter getPMFilter(){
     return properMotionFilter;
   }
-  public SimbadParallaxFilter getParallaxFiler(){
+  public SimbadParallaxFilter getParallaxFilter(){
     return parallaxesFilter;
   }
   public SimbadRVFilter getRVFilter(){

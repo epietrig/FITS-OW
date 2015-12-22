@@ -38,14 +38,6 @@ public class AstroObject {
       retval.basicData = new HashMap<String, String>();
 
       String[] elems = simRowStr.split("\\|");
-      // if(elems.length < 3){
-        // System.out.println("object of size:"+elems.length);
-        // for(String e : elems){
-          // System.out.println("e: "+e );
-        // }
-        // this does not look like a valid row
-        // return null;
-      // }
       retval.identifier = elems[0];
       retval.coords = new Coordinates(Double.parseDouble(elems[1]),
                 Double.parseDouble(elems[2]));
@@ -56,12 +48,6 @@ public class AstroObject {
           retval.basicData.put(keys[i-3], elems[i]);
         } //element is not empty
       }
-      // System.out.println("obj:");
-      // for(String el : elems){
-      //   System.out.println(el);
-      //
-      // }
-      // System.out.println("retval: "+retval);
       return retval;
     }
 

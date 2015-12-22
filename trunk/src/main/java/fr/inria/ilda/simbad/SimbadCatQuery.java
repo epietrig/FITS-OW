@@ -62,8 +62,10 @@ public class SimbadCatQuery {
                     queryOptionalFilters(criteria)+
                     "query sample region(%s%s,%sm)"
                     + queryOptionalCriteria(criteria),
-                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin));
-            System.out.println("url: ");
+                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
+                    );
+            // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
+            System.out.println(Config.ARCMIN_FORMATTER.format(radMin));
             return makeSimbadScriptQueryUrl(script);
 
         } catch (MalformedURLException ex){
@@ -112,14 +114,16 @@ public class SimbadCatQuery {
       String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
 
       String objectTypeQuery = SimbadQueryConstructor.objectTypeSelector(criteria.getObjectTypeFilter().getOTSelected());
-      if(!objectTypeQuery.equals("")) objectTypeQuery = "&"+objectTypeQuery;
+      if(!objectTypeQuery.equals("")) objectTypeQuery =
+      //"&"+
+      objectTypeQuery;
 
       String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
         criteria.getPMFilter().getDecStr(),criteria.getPMFilter().getQualitiesSelected());
       if(!properMotionQuery.equals("")) properMotionQuery = "& "+ properMotionQuery;
 
-      String parallaxQuery = SimbadQueryConstructor.parallaxSelector(criteria.getParallaxFiler().getParallaxStr(),
-        criteria.getParallaxFiler().getQualitiesSelected());
+      String parallaxQuery = SimbadQueryConstructor.parallaxSelector(criteria.getParallaxFilter().getParallaxStr(),
+        criteria.getParallaxFilter().getQualitiesSelected());
       if(!parallaxQuery.equals("")) parallaxQuery = "& "+parallaxQuery;
 
       SimbadRVFilter rvFilter = criteria.getRVFilter();
@@ -145,7 +149,11 @@ public class SimbadCatQuery {
       String fluxRangeQuery = SimbadQueryConstructor.fluxRangeSelector(rangeStrs, qf);
       if(!fluxRangeQuery.equals("")) fluxRangeQuery = " & "+  fluxRangeQuery;
       String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
-      return objectTypeQuery+properMotionQuery+parallaxQuery+radialVelocityQuery+spectralTypeQuery+fluxRangeQuery+"\n";
+
+
+      return objectTypeQuery+properMotionQuery+parallaxQuery+
+      radialVelocityQuery+spectralTypeQuery+fluxRangeQuery
+      +"\n";
     }
 
 }

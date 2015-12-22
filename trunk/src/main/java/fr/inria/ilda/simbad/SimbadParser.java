@@ -18,6 +18,8 @@ public class SimbadParser{
 
   public static List<String> splitURLIntoStrings(URL url)throws IOException{
     List<String> result = new ArrayList<String>();
+    long start_time = System.nanoTime();
+
     try{
       URLConnection uc = url.openConnection();
       BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -37,11 +39,15 @@ public class SimbadParser{
         }
       }
       in.close();
+      long end_time = System.nanoTime();
+      double difference = (end_time - start_time)/1e6;
+      System.out.println("time in ms it took to execute query: "+difference);
       return result;
     }catch(Exception e){
       e.printStackTrace();
     }
-      return result;
+
+    return result;
   }
 
   public static List<AstroObject> stringsToAstroObjects(List<String> strs){

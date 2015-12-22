@@ -27,12 +27,6 @@ public class SimbadResults extends SimbadQueryGlyph{
 
   private int selected, glyphSelected;
   private List<AstroObject> results;
-  private static final int OFFSET = 5;
-  private static final int TEXT_SIZE = 20;
-  private static final Color SEGMENT_COLOR = Color.black;
-  private static final Color BACKGROUND_COLOR = Color.gray;
-  private static final Color TEXT_SELECTED_COLOR = Color.black;
-  private static final Color TEXT_UNSELECTED_COLOR = Color.white;
   private static final Color GLYPH_SELECTED_COLOR = Color.green;
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
 //vs should be on parent class
@@ -42,7 +36,7 @@ public class SimbadResults extends SimbadQueryGlyph{
     this.setType(Config.T_ASTRO_OBJ_SR);
     selected = -1;
     glyphSelected = -1;
-    this.background = new VRectangle (x, y, Z, width, height, BACKGROUND_COLOR);
+    this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR);
     background.setVisible(true);
     this.addChild(background);
     double[] bounds = background.getBounds();
@@ -53,10 +47,10 @@ public class SimbadResults extends SimbadQueryGlyph{
     ids = new VText[size];
     splits = new VSegment[size];
     for(int i = 0; i <size; i++){
-      ids[i] = new VText(left+OFFSET, top-TEXT_SIZE*(i+1), 0, TEXT_UNSELECTED_COLOR, results.get(i).getIdentifier());
+      ids[i] = new VText(left+OFFSET, top-TEXT_SIZE*(i+1), 0, TEXT_COLOR, results.get(i).getIdentifier());
       ids[i].setVisible(true);
       this.addChild(ids[i]);
-      splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, SEGMENT_COLOR);
+      splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, TEXT_COLOR);
       this.addChild(splits[i]);
     }
     vs.addGlyph(this);
@@ -81,13 +75,13 @@ public class SimbadResults extends SimbadQueryGlyph{
   }
   public boolean highlight(int i){
     if(selected !=  i){
-      if(selected >= 0)ids[selected].setColor(TEXT_UNSELECTED_COLOR);
-      ids[i].setColor(TEXT_SELECTED_COLOR);
+      if(selected >= 0)ids[selected].setColor(TEXT_COLOR);
+      ids[i].setColor(TEXT_COLOR_2);
       selected = i;
       return true;
     }
     else{
-      ids[i].setColor(TEXT_UNSELECTED_COLOR);
+      ids[i].setColor(TEXT_COLOR);
       selected = -1;
       return false;
     }
@@ -109,7 +103,7 @@ public class SimbadResults extends SimbadQueryGlyph{
   public void highlightCorrespondingGlyph(Vector<Glyph> gs, int i){
     if(i != glyphSelected){
       if(glyphSelected >= 0){
-        gs.get(glyphSelected).setColor(TEXT_UNSELECTED_COLOR);
+        gs.get(glyphSelected).setColor(TEXT_COLOR_2);
         gs.get(glyphSelected+1).setColor(GLYPH_UNSELECTED_COLOR);
       }
       gs.get(i).setColor(GLYPH_SELECTED_COLOR);
@@ -117,7 +111,7 @@ public class SimbadResults extends SimbadQueryGlyph{
       glyphSelected = i;
     }
     else{
-      gs.get(i).setColor(TEXT_UNSELECTED_COLOR);
+      gs.get(i).setColor(TEXT_COLOR_2);
       gs.get(i+1).setColor(GLYPH_UNSELECTED_COLOR);
       glyphSelected = -1;
     }

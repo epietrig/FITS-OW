@@ -101,7 +101,6 @@ public class SimbadMFilter extends SimbadFilter{
           retval[i-1] = 1;
         }
         else retval[i-1] = 0;
-        System.out.println(i);
       }
       if(count == 0) retval = null;
       return retval;

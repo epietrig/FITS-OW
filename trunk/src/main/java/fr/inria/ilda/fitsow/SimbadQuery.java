@@ -81,7 +81,7 @@ public class SimbadQuery {
     void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
-        else if(onCircleImg == null){System.out.println("lalala"); return;}
+        else if(onCircleImg == null){return;}
         Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
         if (centerWCS == null || onCircleWCS == null){
@@ -98,6 +98,8 @@ public class SimbadQuery {
         String queryInfo = "Querying Simbad at " + wc + " with a radius of " + Config.ARCMIN_FORMATTER.format(distArcMin) + " arcminutes";
         app.scene.setStatusBarMessage(queryInfo);
         // symbolSpace.removeAllGlyphs();
+        long start_time = System.nanoTime();
+
         new SwingWorker(){
             @Override public List<AstroObject> construct(){
                 List<AstroObject> objs = null;
@@ -117,12 +119,16 @@ public class SimbadQuery {
                 fadeOutQueryRegion();
             }
         }.start();
+    long end_time = System.nanoTime();
+    double difference = (end_time - start_time)/1e6;
+    System.out.println("time in ms it took to construct query, query and display results: "+difference);
+
     }
 
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
       try{
         clearQueryResults();
-        System.out.println("displaying...");
+        System.out.println("displaying..."+objs.size());
         for(AstroObject obj: objs){
           Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
           VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,

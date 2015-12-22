@@ -26,10 +26,10 @@ public class SimbadInfo extends SimbadQueryGlyph{
     super(0,0);
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
-    this.height = (info.length+2)*Config.TEXT_SIZE+Config.OFFSET;
+    this.height = (info.length+2)*TEXT_SIZE+OFFSET;
     this.width = calculateWidth(info);
     double bx = x+width/2+parent.getWidth();
-    this.background = new VRectangle(bx, y, Z, width, height, Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(bx, y, Z, width, height, CONTAINER_COLOR);
     this.addChild(background);
 
     double[] bounds = background.getBounds();
@@ -45,14 +45,14 @@ public class SimbadInfo extends SimbadQueryGlyph{
 
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
-    VText identifier = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE*2,Z,Config.SELECTED_TEXT_COLOR,obj.getIdentifier());
-    notBold = identifier.getFont();
-    bold = identifier.getFont().deriveFont(Font.BOLD);
-    identifier.setFont(bold);
+    VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,TEXT_COLOR,obj.getIdentifier());
+    // notBold = identifier.getFont();
+    // bold = identifier.getFont().deriveFont(Font.BOLD);
+    identifier.setFont(BOLD);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
     for(int i = 0; i < info.length; i++){
-      VText text = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE*(i+3),Z,Config.SELECTED_TEXT_COLOR,info[i]);
+      VText text = new VText(left+OFFSET,top-TEXT_SIZE*(i+3),Z,TEXT_COLOR,info[i]);
       basicInfo.addChild(text);
     }
     return basicInfo;
@@ -68,7 +68,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
     if(vmeasurements.size() > 0){
       for (Measurement m : vmeasurements){
         if(m.equals(vmeasurements.firstElement()))
-          table = new MeasurementsTable(m, left, top-Config.TEXT_SIZE, 25, vs);
+          table = new MeasurementsTable(m, left, top-TEXT_SIZE, 25, vs);
         else
           table = new MeasurementsTable(m, left, top, 5, vs);
         top = table.getBackground().getBounds()[3]-Config.TEXT_SIZE;
@@ -77,7 +77,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
         if(aux > maxWidth) maxWidth = aux;
         cMeasurements.addChild(table);
       }
-    maxHeight = maxHeight + (Config.OFFSET+Config.TEXT_SIZE)*vmeasurements.size();
+    maxHeight = maxHeight + (OFFSET+Config.TEXT_SIZE)*vmeasurements.size();
     tabs.setWidth2(maxWidth);
     tabs.setHeight2(maxHeight);
     }

@@ -508,15 +508,15 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             }
             criteria.getPMFilter().select(angle, inputValue);
           }
-          else if(criteria.getParallaxFiler().coordInsideItem(jpx,jpy)){
-            int parallax = criteria.getParallaxFiler().getItemSelected(x,y);
+          else if(criteria.getParallaxFilter().coordInsideItem(jpx,jpy)){
+            int parallax = criteria.getParallaxFilter().getItemSelected(x,y);
             String inputValue ="";
             if(parallax == 0){
               JFrame parent = new JFrame();
               JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
               inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
             }
-            criteria.getParallaxFiler().select(parallax, inputValue);
+            criteria.getParallaxFilter().select(parallax, inputValue);
           }
           else if(criteria.getRVFilter().coordInsideItem(jpx,jpy)){
             int value = criteria.getRVFilter().getItemSelected(x,y);
