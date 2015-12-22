@@ -54,6 +54,9 @@ public class SimbadCatQuery {
 
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
             double radMin){
+              String fix_ra = "18 18 52.56";
+              String fix_dec = "-13 49 41.6";
+              String fix_radius = "150";
         try{
             Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
@@ -62,10 +65,13 @@ public class SimbadCatQuery {
                     queryOptionalFilters(criteria)+
                     "query sample region(%s%s,%sm)"
                     + queryOptionalCriteria(criteria),
-                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
+                    fix_ra,fix_dec,fix_radius
+                    //coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
                     );
             // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
-            System.out.println(Config.ARCMIN_FORMATTER.format(radMin));
+            System.out.println("radius: "+fix_radius);
+            // System.out.println("ra: "+coords.raToString());
+            // System.out.println("dec: "+coords.decToString());
             return makeSimbadScriptQueryUrl(script);
 
         } catch (MalformedURLException ex){

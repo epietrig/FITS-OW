@@ -40,7 +40,8 @@ import jsky.coords.WorldCoords;
 public class SimbadQuery {
 
     FITSOW app;
-
+    long end_time, start_time;
+    double difference;
     AnimationManager am = VirtualSpaceManager.INSTANCE.getAnimationManager();
     JSkyFitsImage centerImg, onCircleImg;
     String queryIdentifier = null;
@@ -98,7 +99,6 @@ public class SimbadQuery {
         String queryInfo = "Querying Simbad at " + wc + " with a radius of " + Config.ARCMIN_FORMATTER.format(distArcMin) + " arcminutes";
         app.scene.setStatusBarMessage(queryInfo);
         // symbolSpace.removeAllGlyphs();
-        long start_time = System.nanoTime();
 
         new SwingWorker(){
             @Override public List<AstroObject> construct(){
@@ -106,6 +106,7 @@ public class SimbadQuery {
                 try{
 
                   System.out.println("querying...");
+                  start_time = System.nanoTime();
                     objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
                     ioe.printStackTrace();
@@ -116,12 +117,11 @@ public class SimbadQuery {
             @Override public void finished(){
                 List<AstroObject> objs = (List<AstroObject>)get();
                 displayQueryResults(objs, centerImg);
+
                 fadeOutQueryRegion();
             }
         }.start();
-    long end_time = System.nanoTime();
-    double difference = (end_time - start_time)/1e6;
-    System.out.println("time in ms it took to construct query, query and display results: "+difference);
+
 
     }
 
@@ -153,6 +153,9 @@ public class SimbadQuery {
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
         SimbadResults results = new SimbadResults(objs, 200, 200, app.sqSpace);
+        end_time = System.nanoTime();
+        difference = (end_time - start_time)/1e6;
+        System.out.println("time in ms it took to construct query, query and display results: "+difference);
       }
       }catch(NullPointerException e){
         e.printStackTrace();
