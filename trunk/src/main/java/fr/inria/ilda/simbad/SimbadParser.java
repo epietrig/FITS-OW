@@ -40,8 +40,9 @@ public class SimbadParser{
       }
       in.close();
       long end_time = System.nanoTime();
-      double difference = (end_time - start_time)/1e6;
-      System.out.println("time in ms it took to execute query: "+difference);
+      // double difference = (end_time - start_time)/1e6;
+      // double difference2 = (end_time - start_time)/1e6;
+      // System.out.println("time in ms it took to execute query: "+difference);
       return result;
     }catch(Exception e){
       e.printStackTrace();

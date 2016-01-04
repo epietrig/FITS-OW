@@ -75,6 +75,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     boolean panning = false;
     boolean querying = false;
+    boolean queryingByCoordinates = false;
     boolean draggingFITS = false;
     boolean draggingSimbadResults = false;
     boolean draggingSimbadInfo = false;
@@ -390,10 +391,12 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
       app.sqSpace.removeGlyph(qts);
       SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
-      SimbadCriteria.lastSimbadCriteria = criteria;
-      app.sqSpace.removeGlyph(criteria.getBasicData());
-      app.sqSpace.removeGlyph(criteria.getMeasurements());
-      app.sqSpace.removeGlyph(criteria);
+      if(criteria != null){
+        SimbadCriteria.lastSimbadCriteria = criteria;
+        app.sqSpace.removeGlyph(criteria.getBasicData());
+        app.sqSpace.removeGlyph(criteria.getMeasurements());
+        app.sqSpace.removeGlyph(criteria);
+      }
       app.scene.setStatusBarMessage(null);
       querying = false;
     }
@@ -419,6 +422,11 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           JFrame parent = new JFrame();
           JOptionPane optionPane = new JOptionPane("Query by script", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
           String inputValue = JOptionPane.showInputDialog("Enter script for query:");
+          sq = new SimbadQuery(app);
+          exitQueryMode();
+          sq.querySimbadbyScript(inputValue, ciFITSImage);
+          sq = null;
+
         }
       }
     }
@@ -491,6 +499,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x,y),"");
         }
         else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
+
           if(criteria.getObjectTypeFilter().coordInsideItem(jpx, jpy)){
           criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x,y),"");
           }

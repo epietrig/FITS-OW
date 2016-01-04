@@ -38,6 +38,26 @@ public class SimbadCatQuery {
       "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
       "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#";
 
+    private static String formatString2 = "output console=off script=off\n" +
+        "format object \"%IDLIST(1)#%COO(d;A)#%COO(d;D)"+
+        "$%OTYPE(V)#"+
+        "%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"+
+        "%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"+
+        "%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"+
+        "%COO(A,D,(W),Q,[E],B;GAL;J2000)#"+
+        "%PM(A,D,Q,E)#%RV(V,Z,W,Q,E)#%SP(S,Q)#%PLX(V,Q,E)#%MT(M,Q)#"+
+        "#%FLUXLIST(; N = F (Q) B,)$"+
+        "#%MEASLIST(cel;AH)#%MEASLIST(cl.g;AH)#%MEASLIST(diameter;AH)"+
+        "#%MEASLIST(distance;AH)#%MEASLIST(einstein;AH)#%MEASLIST(fe_h;AH)"+
+        "#%MEASLIST(gcrv;AH)#%MEASLIST(gen;AH)#%MEASLIST(gj;AH)#%MEASLIST(hbet;AH)"+
+        "#%MEASLIST(hbet1;AH)#%MEASLIST(herschel;AH)#%MEASLIST(hgam;AH)"+
+        "#%MEASLIST(iras;AH)#%MEASLIST(irc;AH)#%MEASLIST(iso;AH)#%MEASLIST(iue;AH)"+
+        "#%MEASLIST(jp11;AH)#%MEASLIST(mk;AH)#%MEASLIST(orv;AH)#%MEASLIST(plx;AH)"+
+        "#%MEASLIST(pm;AH)#%MEASLIST(pos;AH)#%MEASLIST(posa;AH)#%MEASLIST(rot;AH)"+
+        "#%MEASLIST(rvel;AH)#%MEASLIST(sao;AH)#%MEASLIST(td1;AH)#%MEASLIST(ubv;AH)"+
+        "#%MEASLIST(uvby;AH)#%MEASLIST(uvby1;AH)#%MEASLIST(v*;AH)#%MEASLIST(velocities;AH)"+
+        "#%MEASLIST(xmm;AH)#%MEASLIST(z;AH)#%MEASLIST(ze;AH)#$$ \"\n";
+
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
         List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
@@ -52,11 +72,20 @@ public class SimbadCatQuery {
         return astroObjs;
     }
 
+    public static List<AstroObject> makeSimbadScriptQuery(String script) throws IOException{
+        String query = formatString2 +script+"\n";
+        System.out.println("format+scritp:"+query);
+        URL queryUrl = makeSimbadScriptQueryUrl(query);
+        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        return astroObjs;
+    }
+
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
             double radMin){
-              String fix_ra = "18 18 52.56";
-              String fix_dec = "-13 49 41.6";
-              String fix_radius = "150";
+              // String fix_ra = "18 18 52.56";
+              // String fix_dec = "-13 49 41.6";
+              // String fix_radius = "150";
         try{
             Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
@@ -65,13 +94,14 @@ public class SimbadCatQuery {
                     queryOptionalFilters(criteria)+
                     "query sample region(%s%s,%sm)"
                     + queryOptionalCriteria(criteria),
-                    fix_ra,fix_dec,fix_radius
-                    //coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
+                    // fix_ra,fix_dec,fix_radius
+                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
                     );
             // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
-            System.out.println("radius: "+fix_radius);
+            // System.out.println("radius: "+fix_radius);
             // System.out.println("ra: "+coords.raToString());
             // System.out.println("dec: "+coords.decToString());
+            System.out.println("script: "+script);
             return makeSimbadScriptQueryUrl(script);
 
         } catch (MalformedURLException ex){

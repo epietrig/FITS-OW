@@ -79,6 +79,33 @@ public class SimbadQuery {
         // queryRegionLb.moveTo(queryRegionG.vx, queryRegionG.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
     }
 
+    void querySimbadbyScript(final String script, final JSkyFitsImage cImg){
+      app.scene.setStatusBarMessage("Querying Simbad by script...");
+      this.centerImg = cImg;
+      System.out.println(script);
+      new SwingWorker(){
+          @Override public List<AstroObject> construct(){
+              List<AstroObject> objs = null;
+              try{
+                System.out.println("querying...");
+                start_time = System.nanoTime();
+                  objs = SimbadCatQuery.makeSimbadScriptQuery(script);
+              } catch(IOException ioe){
+                  ioe.printStackTrace();
+              } finally {
+                  return objs;
+              }
+          }
+          @Override public void finished(){
+              List<AstroObject> objs = (List<AstroObject>)get();
+
+              displayQueryResults(objs, centerImg);
+
+              fadeOutQueryRegion();
+          }
+      }.start();
+    }
+
     void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
@@ -121,8 +148,6 @@ public class SimbadQuery {
                 fadeOutQueryRegion();
             }
         }.start();
-
-
     }
 
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
