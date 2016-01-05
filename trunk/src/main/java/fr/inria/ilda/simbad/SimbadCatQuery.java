@@ -115,8 +115,16 @@ public class SimbadCatQuery {
         try{
             // Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script = formatString+ queryOptionalFilters(criteria)+
-                    "query sample cat "+ id + queryOptionalCriteria(criteria);
+            String script =
+            String.format(formatString+
+                    queryOptionalFilters(criteria)+
+                    "query sample region(%s)"
+                    + queryOptionalCriteria(criteria),
+                    // fix_ra,fix_dec,fix_radius
+                    id
+                    );
+
+                    System.out.println("script: "+script);
             return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...

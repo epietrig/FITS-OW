@@ -35,6 +35,7 @@ import fr.inria.zvtm.engine.Utils;
 
 import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VCircle;
+import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 
 import fr.inria.zvtm.event.ViewListener;
@@ -412,7 +413,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           if(current.getMeasurements()!= null) app.sqSpace.removeGlyph(current.getMeasurements());
           app.sqSpace.removeGlyph(current);
         }
-        if(selectedButtonIndex == 0 | selectedButtonIndex == 1){
+        if(selectedButtonIndex == sqts.BY_COORDINATES || selectedButtonIndex == sqts.BY_ID){
           SimbadCriteria sc = new SimbadCriteria(150+455,0,sqts);
           app.sqSpace.addGlyph(sc);
           app.sqSpace.addGlyph(sc.getBasicData());
@@ -487,7 +488,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void updateSimbadCriteria(int jpx, int jpy){
-      // SimbadCriteria criteria = SimbadCriteria.getCurrentSimbadCriteria(app.sqSpace);
       SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
       if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
         Tabs tabs = criteria.getTabs();
@@ -499,13 +499,23 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x,y),"");
         }
         else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
+          criteria.updateQueryParameters(x, y);
+          if(criteria.getExecuteButton().coordInsideP(jpx,jpy,app.sqCamera)){
+            SimbadQueryTypeSelector ts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+            if(ts.getSelected() == ts.BY_ID){
+              sq = new SimbadQuery(app);
+              exitQueryMode();
+              sq.querySimbadbyId(criteria.getIdStr(), ciFITSImage);
+              sq = null;
+              return;
+            }
+          }
 
           if(criteria.getObjectTypeFilter().coordInsideItem(jpx, jpy)){
           criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x,y),"");
           }
           else if(criteria.getPMFilter().coordInsideItem(jpx, jpy)){
             int angle = criteria.getPMFilter().getItemSelected(x,y);
-            JFrame parent = new JFrame();
             JOptionPane optionPane;
             String inputValue ="";
             if(angle == 0){

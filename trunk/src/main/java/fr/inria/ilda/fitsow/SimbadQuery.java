@@ -106,6 +106,33 @@ public class SimbadQuery {
       }.start();
     }
 
+    void querySimbadbyId(final String id, final JSkyFitsImage cImg){
+      app.scene.setStatusBarMessage("Querying Simbad by identifier...");
+      this.centerImg = cImg;
+      System.out.println(id);
+      new SwingWorker(){
+          @Override public List<AstroObject> construct(){
+              List<AstroObject> objs = null;
+              try{
+                System.out.println("querying...");
+                // start_time = System.nanoTime();
+                  objs = SimbadCatQuery.makeSimbadIdQuery(id);
+              } catch(IOException ioe){
+                  ioe.printStackTrace();
+              } finally {
+                  return objs;
+              }
+          }
+          @Override public void finished(){
+              List<AstroObject> objs = (List<AstroObject>)get();
+
+              displayQueryResults(objs, centerImg);
+
+              fadeOutQueryRegion();
+          }
+      }.start();
+    }
+
     void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
@@ -133,7 +160,7 @@ public class SimbadQuery {
                 try{
 
                   System.out.println("querying...");
-                  start_time = System.nanoTime();
+                  // start_time = System.nanoTime();
                     objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
                     ioe.printStackTrace();
@@ -178,9 +205,9 @@ public class SimbadQuery {
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
         SimbadResults results = new SimbadResults(objs, 200, 200, app.sqSpace);
-        end_time = System.nanoTime();
-        difference = (end_time - start_time)/1e6;
-        System.out.println("time in ms it took to construct query, query and display results: "+difference);
+        // end_time = System.nanoTime();
+        // difference = (end_time - start_time)/1e6;
+        // System.out.println("time in ms it took to construct query, query and display results: "+difference);
       }
       }catch(NullPointerException e){
         e.printStackTrace();

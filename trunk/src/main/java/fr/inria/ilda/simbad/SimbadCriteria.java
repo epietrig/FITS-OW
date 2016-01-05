@@ -10,6 +10,8 @@ import fr.inria.zvtm.engine.VirtualSpace;
 
 import fr.inria.ilda.fitsow.Config;
 
+import javax.swing.JOptionPane;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -18,6 +20,7 @@ import java.util.Vector;
 public class SimbadCriteria extends SimbadQueryGlyph{
   private Composite basicData = null;
   private Composite queryType;
+
   private SimbadMFilter measurements = null;
   private SimbadOTypeFilter objectTypeFilter;
   private SimbadPMFilter properMotionFilter;
@@ -25,15 +28,21 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private SimbadRVFilter radialVelocityFilter;
   private SimbadSTFilter spectralTypeFilter;
   private SimbadFluxFilter fluxesFilter;
+
   private Tabs tabs;
+
   private Vector<VSegment> bsplits;
+
   private SimbadQueryTypeSelector parent;
-  VText coordinates, frame;
-  VText id;
+
+  VText coordinates = null;
+  VText frame = null;
+  VText id = null;
   String coordinatesStr = null;
   String frameStr = null;
   String idStr = null;
   VRectangle execute;
+
   protected static double W = 900;
   protected static double H = 600;
 
@@ -104,9 +113,26 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     c.addChild(optionalFilters);
     return c;
   }
-  public void setQueryParameters(String parameters){
 
+  public void updateQueryParameters(double x, double y){
+    JOptionPane optionPane;
+    if(coordinates != null && coordinates.coordInsideV(x, y, SQ_CAMERA)){
+      optionPane = new JOptionPane("Query coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      coordinatesStr = JOptionPane.showInputDialog("Enter query coordinates in the format: ra, dec, radius(m)");
+      coordinates.setText("Coordinates: "+coordinatesStr);
+    }
+    if(frame != null && frame.coordInsideV(x, y, SQ_CAMERA)){
+      optionPane = new JOptionPane("Query frame for coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      frameStr = JOptionPane.showInputDialog("Enter query frame. If none is entered, J200 is used by default:");
+      frame.setText("Frame: "+frameStr);
+    }
+    if(id != null && id.coordInsideV(x, y, SQ_CAMERA)){
+      optionPane = new JOptionPane("Query identifier", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      idStr = JOptionPane.showInputDialog("Enter object identifier:");
+      id.setText("Identifier: "+idStr);
+    }
   }
+
   public String fromRegionToString(){
     //acá se supone que tome el circulo y lo convirta en string que desplegar
     return "";
@@ -118,7 +144,6 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public VRectangle getBackground(){
     return background;
   }
-
   public Composite getBasicData(){
     return basicData;
   }
@@ -148,5 +173,8 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public VRectangle getExecuteButton(){
     return execute;
+  }
+  public String getIdStr(){
+    return idStr;
   }
 }
