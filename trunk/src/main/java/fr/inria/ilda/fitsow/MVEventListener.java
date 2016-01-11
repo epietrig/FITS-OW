@@ -66,7 +66,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     //remember last mouse coords to compute translation  (dragging)
     int lastJPX,lastJPY;
     double lastVX, lastVY;
-
+    Point2D.Double circleCoords;
     int currentJPX, currentJPY;
 
     FITSOW app;
@@ -85,6 +85,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
+    JSkyFitsImage img = null;
 
     SimbadQuery sq;
 
@@ -174,15 +175,22 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
           SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
           if(sqts.getSelected() == 0){
-            exitQueryMode();
-            if (sq != null){
-                if (ciFITSImage != null)
-                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
-                else
-                    sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
-                                   (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
-                sq = null;
-            }
+          //   exitQueryMode();
+          //   if (sq != null){
+                if (ciFITSImage != null){
+                  System.out.println("x: "+v.getVCursor().getVSCoordinates(app.dCamera).getX());
+                  System.out.println("y: "+v.getVCursor().getVSCoordinates(app.dCamera).getY());
+                  circleCoords = v.getVCursor().getVSCoordinates(app.dCamera);
+                }
+          //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+                else{
+                  circleCoords = v.getVCursor().getVSCoordinates(app.zfCamera);
+                  img = (JSkyFitsImage) app.zfSpacePicker.lastGlyphEntered();
+                }
+          //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
+          //                          (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+          //       sq = null;
+          //   }
           }
         }
     }
@@ -275,10 +283,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         }
         else if (querying && sq != null){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-
-            sq.setRadius(v.getVCursor().getVSCoordinates((ciFITSImage != null) ? app.dCamera : app.zfCamera));
-            updateZUISTSpacePicker(jpx, jpy);
-            updateDataSpacePicker(jpx, jpy);
+          sq.setRadius(v.getVCursor().getVSCoordinates((ciFITSImage != null) ? app.dCamera : app.zfCamera));
+          updateZUISTSpacePicker(jpx, jpy);
+          updateDataSpacePicker(jpx, jpy);
         }
         else if(!draggingSimbadResults){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
@@ -508,6 +515,16 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
               sq.querySimbadbyId(criteria.getIdStr(), ciFITSImage);
               sq = null;
               return;
+            }
+            else if(ts.getSelected() == ts.BY_COORDINATES){
+              exitQueryMode();
+              if (sq != null && circleCoords!= null){
+                if (ciFITSImage != null){
+                    sq.querySimbad(circleCoords, ciFITSImage);}
+                else
+                    sq.querySimbad(circleCoords, img);
+                sq = null;
+              }
             }
           }
 
