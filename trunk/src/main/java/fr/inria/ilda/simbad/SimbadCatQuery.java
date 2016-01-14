@@ -64,7 +64,12 @@ public class SimbadCatQuery {
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
     }
-
+    public static List<AstroObject> makeSimbadCoordQuery(String ra, String dec, String radmin) throws IOException{
+        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
+        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        return astroObjs;
+    }
     public static List<AstroObject> makeSimbadIdQuery(String id) throws IOException{
         URL queryUrl = makeSimbadIdQueryUrl(id);
         List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
@@ -109,7 +114,34 @@ public class SimbadCatQuery {
             throw new Error(ex);
         }
     }
+    private static URL makeSimbadCoordQueryUrl(String ra, String dec,
+            String radMin){
+              // String fix_ra = "18 18 52.56";
+              // String fix_dec = "-13 49 41.6";
+              // String fix_radius = "150";
+        try{
+            // Coordinates coords = new Coordinates(ra, dec);
+            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
+            String script =
+            String.format(formatString+
+                    queryOptionalFilters(criteria)+
+                    "query sample region(%s%s,%s)"
+                    + queryOptionalCriteria(criteria),
+                    // fix_ra,fix_dec,fix_radius
+                    ra,dec,radMin
+                    );
+            // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
+            // System.out.println("radius: "+fix_radius);
+            // System.out.println("ra: "+coords.raToString());
+            // System.out.println("dec: "+coords.decToString());
+            System.out.println("script: "+script);
+            return makeSimbadScriptQueryUrl(script);
 
+        } catch (MalformedURLException ex){
+            //we are supposed to create well-formed URLs here...
+            throw new Error(ex);
+        }
+    }
 
     private static URL makeSimbadIdQueryUrl(String id){
         try{

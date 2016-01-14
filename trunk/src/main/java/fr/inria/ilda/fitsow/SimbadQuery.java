@@ -106,6 +106,38 @@ public class SimbadQuery {
       }.start();
     }
 
+        void querySimbadbyCoordinates(final String coords, final JSkyFitsImage cImg){
+          app.scene.setStatusBarMessage("Querying Simbad by coordinates...");
+          this.centerImg = cImg;
+          System.out.println(coords);
+          try{
+            final String[] coord = coords.split(",");
+            new SwingWorker(){
+                @Override public List<AstroObject> construct(){
+                    List<AstroObject> objs = null;
+                    try{
+                      System.out.println("querying...");
+                      // start_time = System.nanoTime();
+                        objs = SimbadCatQuery.makeSimbadCoordQuery(coord[0], coord[1], coord[2]);
+                    } catch(IOException ioe){
+                        ioe.printStackTrace();
+                    } finally {
+                        return objs;
+                    }
+                }
+                @Override public void finished(){
+                    List<AstroObject> objs = (List<AstroObject>)get();
+
+                    displayQueryResults(objs, centerImg);
+
+                    fadeOutQueryRegion();
+                }
+            }.start();
+          }catch(Exception e){
+            System.out.println("error in coordinates syntax");
+          }
+        }
+
     void querySimbadbyId(final String id, final JSkyFitsImage cImg){
       app.scene.setStatusBarMessage("Querying Simbad by identifier...");
       this.centerImg = cImg;
@@ -232,7 +264,9 @@ public class SimbadQuery {
           app.sqSpace.removeGlyph(siTobeRemoved);
       }
     }
-
+    public VCircle getQueryRegion(){
+      return queryRegionG;
+    }
     void fadeOutQueryRegion(){
         Animation a = am.getAnimationFactory().createTranslucencyAnim(1000,
                             queryRegionG, 0f, false, IdentityInterpolator.getInstance(),

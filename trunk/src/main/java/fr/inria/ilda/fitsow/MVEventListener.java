@@ -178,14 +178,16 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           //   exitQueryMode();
           //   if (sq != null){
                 if (ciFITSImage != null){
-                  System.out.println("x: "+v.getVCursor().getVSCoordinates(app.dCamera).getX());
-                  System.out.println("y: "+v.getVCursor().getVSCoordinates(app.dCamera).getY());
                   circleCoords = v.getVCursor().getVSCoordinates(app.dCamera);
                 }
           //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
                 else{
                   circleCoords = v.getVCursor().getVSCoordinates(app.zfCamera);
                   img = (JSkyFitsImage) app.zfSpacePicker.lastGlyphEntered();
+                }
+                SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+                if(criteria.getCoordinatesStr() != null){
+                  criteria.cleanParameters();
                 }
           //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.zfCamera),
           //                          (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
@@ -507,6 +509,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         }
         else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
           criteria.updateQueryParameters(x, y);
+          if(criteria.getCoordinatesStr() != null){
+            if(sq!=null){
+              app.dSpace.removeGlyph(sq.getQueryRegion());
+            }
+            circleCoords = null;
+            sq = null;
+          }
+
           if(criteria.getExecuteButton().coordInsideP(jpx,jpy,app.sqCamera)){
             SimbadQueryTypeSelector ts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
             if(ts.getSelected() == ts.BY_ID){
@@ -524,6 +534,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
                 else
                     sq.querySimbad(circleCoords, img);
                 sq = null;
+                return;
+              }
+              else if(sq == null && ciFITSImage!=null){
+                sq = new SimbadQuery(app);
+                sq.querySimbadbyCoordinates(criteria.getCoordinatesStr(), ciFITSImage);
+                sq = null;
+                return;
               }
             }
           }

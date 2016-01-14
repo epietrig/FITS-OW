@@ -120,6 +120,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
       optionPane = new JOptionPane("Query coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
       coordinatesStr = JOptionPane.showInputDialog("Enter query coordinates in the format: ra, dec, radius(m)");
       coordinates.setText("Coordinates: "+coordinatesStr);
+      //do some checking here, maybe use paser?
     }
     if(frame != null && frame.coordInsideV(x, y, SQ_CAMERA)){
       optionPane = new JOptionPane("Query frame for coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
@@ -131,6 +132,11 @@ public class SimbadCriteria extends SimbadQueryGlyph{
       idStr = JOptionPane.showInputDialog("Enter object identifier:");
       id.setText("Identifier: "+idStr);
     }
+  }
+
+  public void cleanParameters(){
+    coordinatesStr = null;
+    coordinates.setText("Coordinates: ");
   }
 
   public String fromRegionToString(){
@@ -176,5 +182,8 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public String getIdStr(){
     return idStr;
+  }
+  public String getCoordinatesStr(){
+    return coordinatesStr;
   }
 }
