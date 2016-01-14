@@ -47,6 +47,14 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   protected static double H = 600;
 
   public static SimbadCriteria lastSimbadCriteria;
+
+  private static String queryByIdLabel ="Identifier: ";
+  private static String queryByCoordLabel="Coordinates: ";
+  private static String executeLabel="Execute";
+  private static String explanationLabel = "(click in text to enter coordinates numerical value or select region in image)";
+  private static String optionalFiltersLabel = "Select optional filters:";
+  private static String frameLabel = "Frame: ";
+
   public SimbadCriteria(double x, double y, SimbadQueryTypeSelector parent){
     super(W, H);
     this.parent = parent;
@@ -90,26 +98,26 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     Composite c = new Composite();
     int type = parent.getSelected();
     if(type == SimbadQueryTypeSelector.BY_ID){
-      id = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Enter Identifier:");
+      id = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, queryByIdLabel);
       id.setScale(1.3f);
       c.addChild(id);
     }
     else if(type == SimbadQueryTypeSelector.BY_COORDINATES){
-      coordinates = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Coordinates:");
+      coordinates = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, queryByCoordLabel);
       coordinates.setScale(1.3f);
       c.addChild(coordinates);
-      frame = new VText(left + W/3, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Frame:");
+      frame = new VText(left + W/3, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, frameLabel);
       frame.setScale(1.3f);
       c.addChild(frame);
-      VText explanation = new VText(left + 2*OFFSET, top-3*TEXT_SIZE-OFFSET,Z, TEXT_COLOR, "(click in text to enter coordinates numerical value or select region in image)");
+      VText explanation = new VText(left + 2*OFFSET, top-3*TEXT_SIZE-OFFSET,Z, TEXT_COLOR, explanationLabel);
       c.addChild(explanation);
     }
     execute = new VRectangle(right - 120, top-2*TEXT_SIZE, Z, 110, TEXT_SIZE, SELECTED_COLOR);
-    VText executeQuery = new VText(right - 120 - 45, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Execute Query");
+    VText executeQuery = new VText(right - 120 - 45, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, executeLabel);
     executeQuery.setScale(1.3f);
     c.addChild(execute);
     c.addChild(executeQuery);
-    VText optionalFilters = new VText(left + 2*OFFSET, top-4*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, "Select optional filters:");
+    VText optionalFilters = new VText(left + 2*OFFSET, top-4*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, optionalFiltersLabel);
     c.addChild(optionalFilters);
     return c;
   }
@@ -119,24 +127,24 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     if(coordinates != null && coordinates.coordInsideV(x, y, SQ_CAMERA)){
       optionPane = new JOptionPane("Query coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
       coordinatesStr = JOptionPane.showInputDialog("Enter query coordinates in the format: ra, dec, radius(m)");
-      coordinates.setText("Coordinates: "+coordinatesStr);
+      coordinates.setText(queryByCoordLabel+coordinatesStr);
       //do some checking here, maybe use paser?
     }
     if(frame != null && frame.coordInsideV(x, y, SQ_CAMERA)){
       optionPane = new JOptionPane("Query frame for coordinates", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
       frameStr = JOptionPane.showInputDialog("Enter query frame. If none is entered, J200 is used by default:");
-      frame.setText("Frame: "+frameStr);
+      frame.setText(frameLabel+frameStr);
     }
     if(id != null && id.coordInsideV(x, y, SQ_CAMERA)){
       optionPane = new JOptionPane("Query identifier", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
       idStr = JOptionPane.showInputDialog("Enter object identifier:");
-      id.setText("Identifier: "+idStr);
+      id.setText(queryByIdLabel+idStr);
     }
   }
 
   public void cleanParameters(){
     coordinatesStr = null;
-    coordinates.setText("Coordinates: ");
+    coordinates.setText(queryByCoordLabel);
   }
 
   public String fromRegionToString(){

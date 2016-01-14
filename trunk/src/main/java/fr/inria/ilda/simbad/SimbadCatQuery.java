@@ -88,9 +88,6 @@ public class SimbadCatQuery {
 
     private static URL makeSimbadCoordQueryUrl(double ra, double dec,
             double radMin){
-              // String fix_ra = "18 18 52.56";
-              // String fix_dec = "-13 49 41.6";
-              // String fix_radius = "150";
         try{
             Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
@@ -99,13 +96,9 @@ public class SimbadCatQuery {
                     queryOptionalFilters(criteria)+
                     "query sample region(%s%s,%sm)"
                     + queryOptionalCriteria(criteria),
-                    // fix_ra,fix_dec,fix_radius
                     coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
                     );
-            // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
-            // System.out.println("radius: "+fix_radius);
-            // System.out.println("ra: "+coords.raToString());
-            // System.out.println("dec: "+coords.decToString());
+
             System.out.println("script: "+script);
             return makeSimbadScriptQueryUrl(script);
 
@@ -116,24 +109,15 @@ public class SimbadCatQuery {
     }
     private static URL makeSimbadCoordQueryUrl(String ra, String dec,
             String radMin){
-              // String fix_ra = "18 18 52.56";
-              // String fix_dec = "-13 49 41.6";
-              // String fix_radius = "150";
         try{
-            // Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
             String script =
             String.format(formatString+
                     queryOptionalFilters(criteria)+
                     "query sample region(%s%s,%s)"
                     + queryOptionalCriteria(criteria),
-                    // fix_ra,fix_dec,fix_radius
                     ra,dec,radMin
                     );
-            // formatString+queryOptionalFilters(criteria)+"query sample "+ queryOptionalCriteria(criteria);
-            // System.out.println("radius: "+fix_radius);
-            // System.out.println("ra: "+coords.raToString());
-            // System.out.println("dec: "+coords.decToString());
             System.out.println("script: "+script);
             return makeSimbadScriptQueryUrl(script);
 
@@ -145,14 +129,12 @@ public class SimbadCatQuery {
 
     private static URL makeSimbadIdQueryUrl(String id){
         try{
-            // Coordinates coords = new Coordinates(ra, dec);
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
             String script =
             String.format(formatString+
                     queryOptionalFilters(criteria)+
                     "query sample region(%s)"
                     + queryOptionalCriteria(criteria),
-                    // fix_ra,fix_dec,fix_radius
                     id
                     );
 

@@ -322,9 +322,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             if (insideOtherFITS.length > 0){
                 ciFITSImage = (JSkyFitsImage)insideOtherFITS[insideOtherFITS.length-1];
             }
-            else {
-                ciFITSImage = null;
-            }
+            // else {
+            //     ciFITSImage = null;
+            // }
         }
     }
 
@@ -422,13 +422,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           if(current.getMeasurements()!= null) app.sqSpace.removeGlyph(current.getMeasurements());
           app.sqSpace.removeGlyph(current);
         }
-        if(selectedButtonIndex == sqts.BY_COORDINATES || selectedButtonIndex == sqts.BY_ID){
+        if(sqts.getSelected() == sqts.BY_COORDINATES || sqts.getSelected() == sqts.BY_ID){
           SimbadCriteria sc = new SimbadCriteria(150+455,0,sqts);
           app.sqSpace.addGlyph(sc);
           app.sqSpace.addGlyph(sc.getBasicData());
           SimbadCriteria.lastSimbadCriteria = sc;
         }
-        else{
+        else if(sqts.getSelected() == sqts.BY_SCRIPT){
           JFrame parent = new JFrame();
           JOptionPane optionPane = new JOptionPane("Query by script", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
           String inputValue = JOptionPane.showInputDialog("Enter script for query:");
