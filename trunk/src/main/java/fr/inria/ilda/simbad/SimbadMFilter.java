@@ -70,22 +70,12 @@ public class SimbadMFilter extends SimbadFilter{
   }
 
   public int getItemSelected(double x, double y){
-    // double top = parent.getBackground().getBounds()[1];
-    // if(x < parent.getBackground().getLocation().getX()){
-    //   for(int i = 0; i < msplits.length; i++){
-    //     if(y < top && y > msplits[i].getLocation().getY()){
-    //       return i;
-    //     }
-    //     top = msplits[i].getLocation().getY();
-    //   }
-    // }
-    // return -1;
     for(int i = 0; i < msquares.length; i++){
       if(msquares[i].coordInsideV(x, y, SQ_CAMERA) || mnames[i].coordInsideV(x, y, SQ_CAMERA)) return i;
     }
     return -1;
   }
-//rename to getMeasurementsSelected()
+
   public int[] getMeasurementsSelected(){
     int count = 0;
     if(msquares[0].getColor().equals(Color.red)){
@@ -106,13 +96,5 @@ public class SimbadMFilter extends SimbadFilter{
       return retval;
     }
   }
-// public boolean coordInsideComponent(double x, double y){
-//   return true;
-// }
-// public void setl1(VSegment l1){
-//   this.l1 = l1;
-// }
-// public void setl2(VSegment l2){
-//   this.l2 = l2;
-// }
+
 }

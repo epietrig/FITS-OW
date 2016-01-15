@@ -57,5 +57,8 @@ public abstract class SimbadQueryGlyph extends Composite{
   public static void setCamera(Camera c){
     SQ_CAMERA = c;
   }
+  public void setHeight(double h){
+    this.height = h;
+  }
 
 }

@@ -29,34 +29,50 @@ public class SimbadResults extends SimbadQueryGlyph{
   private List<AstroObject> results;
   private static final Color GLYPH_SELECTED_COLOR = Color.green;
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
+  double x;
+  double y;
 //vs should be on parent class
-  public SimbadResults(List<AstroObject> results, double x, double y, VirtualSpace vs){
-    super(200, results.size()*TEXT_SIZE+OFFSET);
-    this.results = results;
+
+
+
+  public SimbadResults(double x, double y){
+    super(200, 0*TEXT_SIZE+OFFSET);
+    this.x = x;
+    this.y = y;
     this.setType(Config.T_ASTRO_OBJ_SR);
     selected = -1;
     glyphSelected = -1;
-    this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR);
-    background.setVisible(true);
-    this.addChild(background);
-    double[] bounds = background.getBounds();
-    double top = bounds[1];
-    double left = bounds[0];
-    double right = bounds[2];
-    int size = results.size();
-    ids = new VText[size];
-    splits = new VSegment[size];
-    for(int i = 0; i <size; i++){
-      ids[i] = new VText(left+OFFSET, top-TEXT_SIZE*(i+1), 0, TEXT_COLOR, results.get(i).getIdentifier());
-      ids[i].setVisible(true);
-      this.addChild(ids[i]);
-      splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, TEXT_COLOR);
-      this.addChild(splits[i]);
-    }
-    vs.addGlyph(this);
 
-    this.setVisible(true);
+    // if(vs != null)
+      // vs.addGlyph(this);
+
+    // this.setVisible(true);
   }
+
+  public void setResults(List<AstroObject> results){
+    if(results!=null){
+      this.results = results;
+      this.setHeight(results.size()*TEXT_SIZE+OFFSET);
+      this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR);
+      background.setVisible(true);
+      this.addChild(background);
+      double[] bounds = background.getBounds();
+      double top = bounds[1];
+      double left = bounds[0];
+      double right = bounds[2];
+      int size = results.size();
+      ids = new VText[size];
+      splits = new VSegment[size];
+      for(int i = 0; i <size; i++){
+        ids[i] = new VText(left+OFFSET, top-TEXT_SIZE*(i+1), 0, TEXT_COLOR, results.get(i).getIdentifier());
+        ids[i].setVisible(true);
+        this.addChild(ids[i]);
+        splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, TEXT_COLOR);
+        this.addChild(splits[i]);
+      }
+    }
+  }
+
   public VRectangle getBackground(){
     return background;
   }//should be on parent class
@@ -73,6 +89,7 @@ public class SimbadResults extends SimbadQueryGlyph{
     }
     return -1;
   }
+
   public boolean highlight(int i){
     if(selected !=  i){
       if(selected >= 0)ids[selected].setColor(TEXT_COLOR);
@@ -123,5 +140,24 @@ public class SimbadResults extends SimbadQueryGlyph{
     return new SimbadInfo(obj, location.getX(), location.getY(), this);
   }
 
+  public VText[] getIds(){
+    return ids;
+  }
 
+  public int getSelected(){
+    return selected;
+  }
+
+  public int getGlyphSelected(){
+    return glyphSelected;
+  }
+  public List<AstroObject> getResults(){
+    return results;
+  }
+
+  public void addToVs(VirtualSpace vs){
+    if( vs != null){
+      vs.addGlyph(this);
+    }
+  }
 }

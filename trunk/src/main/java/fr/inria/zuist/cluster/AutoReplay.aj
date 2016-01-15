@@ -17,6 +17,23 @@ import fr.inria.zuist.engine.SceneManager;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zuist.od.JSkyFitsImageDescription;
 
+import fr.inria.ilda.simbad.SimbadCriteria;
+import fr.inria.ilda.simbad.SimbadFluxFilter;
+import fr.inria.ilda.simbad.SimbadMFilter;
+import fr.inria.ilda.simbad.SimbadOTypeFilter;
+import fr.inria.ilda.simbad.SimbadParallaxFilter;
+import fr.inria.ilda.simbad.SimbadPMFilter;
+import fr.inria.ilda.simbad.SimbadRVFilter;
+import fr.inria.ilda.simbad.SimbadSTFilter;
+import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
+import fr.inria.ilda.simbad.SimbadResults;
+import fr.inria.ilda.simbad.Tabs;
+
+import fr.inria.zvtm.glyphs.Glyph;
+import fr.inria.zvtm.glyphs.Composite;
+import fr.inria.zvtm.glyphs.VRectangle;
+
+
 import java.net.URL;
 
 /**

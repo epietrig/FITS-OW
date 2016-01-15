@@ -71,18 +71,6 @@ public class MeasurementsTable extends SimbadQueryGlyph{
       xPosition = 0;
     }
   }
-  // private double maxElementSize(String[][] m){
-  //   double retval = 0;
-  //   double size = 0;
-  //   for(int i = 0; i < nRows; i++){
-  //     for(int j = 0; j < nCols; j++){
-  //       size = m[i][j].trim().length();
-  //       if(size > retval) retval = size;
-  //     }
-  //   }
-  //   return retval*6;
-  // }
-
   private double[] sizeOfColumns(String[][] m){
     double[] retval = new double[nCols];
     double colSize = 0;

@@ -27,14 +27,6 @@ public class SimbadParallaxFilter extends SimbadFilter{
     this.addChild(parallax);
     this.qsquares = qualitySelector(this, left+2*Config.OFFSET, top-Config.TEXT_SIZE*9);
   }
-
-  // public boolean coordInsideComponent(double x, double y){
-  //   double[] bckgBounds = parent.getBackground().getBounds();
-  //   double left = bckgBounds[0];
-  //   double right = bckgBounds[2];
-  //   return x < right && x > left && y < l1.getLocation().getY() && y > l2.getLocation().getY();
-  // }
-
   public int getItemSelected(double x,  double y){
     if(parallax.coordInsideV(x,y,SQ_CAMERA)) return 0;
     for(int i = 0; i < qsquares.length; i++){
@@ -54,26 +46,9 @@ public class SimbadParallaxFilter extends SimbadFilter{
       else qsquares[i-1].setColor(Color.red);
     }
   }
-  //
-  // public int[] getQualitiesSelected(){
-  //   int[] retval = new int[qsquares.length];
-  //   for(int i = 0; i<qsquares.length; i++){
-  //     if(qsquares[i].getColor().equals(Color.red))
-  //       retval[i] = 1;
-  //     else
-  //       retval[i] = 0;
-  //   }
-  //   return retval;
-  // }
+
   public String getParallaxStr(){
     return parallaxStr;
   }
 
-  // public void setl1(VSegment l1){
-  //   this.l1 = l1;
-  // }
-  //
-  // public void setl2(VSegment l2){
-  //   this.l2 = l2;
-  // }
 }

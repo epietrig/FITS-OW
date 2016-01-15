@@ -236,7 +236,10 @@ public class SimbadQuery {
       }
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
-        SimbadResults results = new SimbadResults(objs, 200, 200, app.sqSpace);
+        SimbadResults results = new SimbadResults(200, 200);
+        results.setResults(objs);
+        // results.addToVs(app.sqSpace);
+        app.sqSpace.addGlyph(results);
         // end_time = System.nanoTime();
         // difference = (end_time - start_time)/1e6;
         // System.out.println("time in ms it took to construct query, query and display results: "+difference);
