@@ -93,9 +93,6 @@ public class Tabs extends SimbadQueryGlyph{
         measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
       }
       if(height2 > height){
-        System.out.println("h: "+height);
-          System.out.println("h2: "+height2);
-        System.out.println("no debería entrar");
         background.setHeight(height2+basicDataTab.getHeight()+20);
         background.move(0,-(height2+basicDataTab.getHeight()+20-height)/2);
       }

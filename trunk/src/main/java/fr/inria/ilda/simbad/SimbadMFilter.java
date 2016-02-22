@@ -71,7 +71,8 @@ public class SimbadMFilter extends SimbadFilter{
 
   public int getItemSelected(double x, double y){
     for(int i = 0; i < msquares.length; i++){
-      if(msquares[i].coordInsideV(x, y, SQ_CAMERA) || mnames[i].coordInsideV(x, y, SQ_CAMERA)) return i;
+      if(msquares[i]!= null && mnames[i]!=null &&
+      (msquares[i].coordInsideV(x, y, SQ_CAMERA) || mnames[i].coordInsideV(x, y, SQ_CAMERA))) return i;
     }
     return -1;
   }

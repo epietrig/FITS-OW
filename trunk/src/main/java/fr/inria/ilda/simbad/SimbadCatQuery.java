@@ -58,6 +58,17 @@ public class SimbadCatQuery {
         "#%MEASLIST(uvby;AH)#%MEASLIST(uvby1;AH)#%MEASLIST(v*;AH)#%MEASLIST(velocities;AH)"+
         "#%MEASLIST(xmm;AH)#%MEASLIST(z;AH)#%MEASLIST(ze;AH)#$$ \"\n";
 
+    private static String measurements = "%%MEASLIST(cel;AH)#%%MEASLIST(cl.g;AH)#%%MEASLIST(diameter;AH)"+
+    "#%%MEASLIST(distance;AH)#%%MEASLIST(einstein;AH)#%%MEASLIST(fe_h;AH)"+
+    "#%%MEASLIST(gcrv;AH)#%%MEASLIST(gen;AH)#%%MEASLIST(gj;AH)#%%MEASLIST(hbet;AH)"+
+    "#%%MEASLIST(hbet1;AH)#%%MEASLIST(herschel;AH)#%%MEASLIST(hgam;AH)"+
+    "#%%MEASLIST(iras;AH)#%%MEASLIST(irc;AH)#%%MEASLIST(iso;AH)#%%MEASLIST(iue;AH)"+
+    "#%%MEASLIST(jp11;AH)#%%MEASLIST(mk;AH)#%%MEASLIST(orv;AH)#%%MEASLIST(plx;AH)"+
+    "#%%MEASLIST(pm;AH)#%%MEASLIST(pos;AH)#%%MEASLIST(posa;AH)#%%MEASLIST(rot;AH)"+
+    "#%%MEASLIST(rvel;AH)#%%MEASLIST(sao;AH)#%%MEASLIST(td1;AH)#%%MEASLIST(ubv;AH)"+
+    "#%%MEASLIST(uvby;AH)#%%MEASLIST(uvby1;AH)#%%MEASLIST(v*;AH)#%%MEASLIST(velocities;AH)"+
+    "#%%MEASLIST(xmm;AH)#%%MEASLIST(z;AH)#%%MEASLIST(ze;AH)#";
+
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
         List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
@@ -165,15 +176,16 @@ public class SimbadCatQuery {
       SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
       int[] fluxes = fluxFilter.getFluxesSelected();
       String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
-      return "%%"+fluxQuery+"$#"+measurementsQuery +"$$ \"\n";
+      return "%%"+fluxQuery+"$#"+measurements +"$$ \"\n";
     }
 
     private static String queryOptionalCriteria(SimbadCriteria criteria){
       String measurementsQuery = SimbadQueryConstructor.measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
+      if(!measurementsQuery.equals("")) measurementsQuery ="&"+measurementsQuery;
 
       String objectTypeQuery = SimbadQueryConstructor.objectTypeSelector(criteria.getObjectTypeFilter().getOTSelected());
       if(!objectTypeQuery.equals("")) objectTypeQuery =
-      //"&"+
+      "&"+
       objectTypeQuery;
 
       String properMotionQuery = SimbadQueryConstructor.properMotionSelector(criteria.getPMFilter().getRaStr(),
@@ -210,7 +222,7 @@ public class SimbadCatQuery {
 
 
       return objectTypeQuery+properMotionQuery+parallaxQuery+
-      radialVelocityQuery+spectralTypeQuery+fluxRangeQuery
+      radialVelocityQuery+spectralTypeQuery+fluxRangeQuery+measurementsQuery
       +"\n";
     }
 

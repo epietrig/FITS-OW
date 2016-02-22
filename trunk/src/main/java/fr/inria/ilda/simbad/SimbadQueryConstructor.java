@@ -9,17 +9,25 @@ it checks at which positions 1 is stored, and it maps those positions to a
 cataog name. It then constructus the part of the query string that concerns
 measurements*/
   public static String measurementSelector(int[] mIndex){
-    String retval = "";
-    if(mIndex==null||(mIndex.length == 1 && mIndex[0] == 1)){
-      for(int i = 0; i < Config.CATALOGS.length; i++){
-        retval = retval + "%%MEASLIST("+Config.CATALOGS[i]+";AH)#";
-      }
-    }
-    else if(mIndex.length > 0){
+    // String retval = "mes='rot'";
+    String retval ="";
+    // if(mIndex==null||(mIndex.length == 1 && mIndex[0] == 1)){
+      // for(int i = 0; i < Config.CATALOGS.length; i++){
+        // retval = retval + "%%MEASLIST("+Config.CATALOGS[i]+";AH)#";
+      // }
+    // }
+    // else
+
+    // if(mI)System.out.println(mIndex.length);
+    if(mIndex!=null && mIndex.length > 1){
       for(int i = 0; i < mIndex.length; i++){
         if(mIndex[i] == 1)
-          retval = retval + "%%MEASLIST("+Config.CATALOGS[i]+";AH)#";
+          // retval = retval + "%%MEASLIST("+Config.CATALOGS[i]+";AH)#";
+          retval = retval+"mes='"+Config.CATALOGS[i+1].toLowerCase()+"' |";
       }
+      retval.trim();
+      retval = retval.substring(0, retval.length()-1);
+      retval.trim();
     }
     return retval;
   }
