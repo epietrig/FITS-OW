@@ -1,4 +1,10 @@
-package fr.inria.ilda.simbad;
+/*  (c) COPYRIGHT INRIA (Institut National de Recherche en Informatique et en Automatique) and INRIA Chile, 2015-2016.
+ *  Licensed under the GNU LGPL. For full terms see the file COPYING.
+ *
+ * $Id:  $
+ */
+
+ package fr.inria.ilda.simbad;
 
 import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.ilda.fitsow.Config;
