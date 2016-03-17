@@ -1,2 +1,0 @@
-\select@language {spanish}
-\contentsline {chapter}{\numberline {}Introducción}{1}{chapter*.4}
