@@ -394,11 +394,12 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         SimbadQueryTypeSelector ts = new SimbadQueryTypeSelector(app.sqSpace);
         app.sqSpace.addGlyph(ts);
         app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-        app.scene.setStatusBarMessage("Select region to query:");
+        app.scene.setStatusBarMessage("Select query parameters");
     }
 
     void exitQueryMode(){
       SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      app.scene.setStatusBarMessage("");
       app.sqSpace.removeGlyph(qts);
       SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
       if(criteria != null){
