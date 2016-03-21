@@ -168,7 +168,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>aspectj-maven-plugin</artifactId>
-                    <version>1.7</version>
+                    <version>1.8</version>
                     <configuration>
                       <weaveDependencies>
                         <weaveDependency>
@@ -208,7 +208,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
                         <dependency>
                             <groupId>org.aspectj</groupId>
                             <artifactId>aspectjtools</artifactId>
-                            <version>1.8.6</version>
+                            <version>1.8.9</version>
                         </dependency>
                     </dependencies>
                 </plugin>

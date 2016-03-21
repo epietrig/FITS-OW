@@ -77,8 +77,8 @@ echo "LIP: " $LIP
 
 JARS="target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
-JARS=$JARS":target/aspectjrt-1.8.6.jar"
-JARS=$JARS":target/jgroups-3.6.6.Final.jar"
+JARS=$JARS":target/aspectjrt-1.8.9.jar"
+JARS=$JARS":target/jgroups-3.6.8.Final.jar"
 JARS=$JARS":target/log4j-1.2.17.jar"
 JARS=$JARS":target/slf4j-api-1.7.10.jar"
 JARS=$JARS":target/slf4j-log4j12-1.7.10.jar"
@@ -136,8 +136,8 @@ done
 
 
 sleep 3
-JARS="target/aspectjrt-1.8.6.jar"
-JARS=$JARS":target/jgroups-3.6.6.Final.jar"
+JARS="target/aspectjrt-1.8.9.jar"
+JARS=$JARS":target/jgroups-3.6.8.Final.jar"
 JARS=$JARS":target/log4j-1.2.17.jar"
 JARS=$JARS":target/slf4j-api-1.7.10.jar"
 JARS=$JARS":target/slf4j-log4j12-1.7.10.jar"
