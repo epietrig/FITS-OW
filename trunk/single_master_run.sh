@@ -1,9 +1,11 @@
 #!/bin/bash
 
-IP="192.168.2.47"
+#IP="192.168.6.90"
+IP="129.175.5.15"
 
-JARS="target/aspectjrt-1.8.6.jar"
-JARS=$JARS":target/jgroups-2.7.0.GA.jar"
+
+JARS="target/aspectjrt-1.8.9.jar"
+JARS=$JARS":target/jgroups-3.6.8.Final.jar"
 JARS=$JARS":target/log4j-1.2.17.jar"
 JARS=$JARS":target/slf4j-api-1.7.10.jar"
 JARS=$JARS":target/slf4j-log4j12-1.7.10.jar"
@@ -16,4 +18,4 @@ JARS=$JARS":target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
 
-java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=$IP -Dcom.sun.media.jai.disableMediaLib=true -Xmx1g -cp .:$JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"
+java -server -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=$IP -Dcom.sun.media.jai.disableMediaLib=true -Xmx1g -cp .:$JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"
