@@ -375,7 +375,7 @@ class WEGlassPane extends JComponent implements ProgressListener {
     static FontMetrics TITLE_FONT_FM = null;
     static int TITLE_WIDTH = 0;
 
-    static final String CONTRIBUTORS = "Contributors: Emmanuel Pietriga, Fernando del Campo, Caroline Appert, Olivier Chapuis, Roberto Muñoz, Romain Primet";
+    static final String CONTRIBUTORS = "Contributors: Emmanuel Pietriga, Fernando del Campo, Amanda Ibsen, Caroline Appert, Olivier Chapuis, Roberto Muñoz, Romain Primet";
     static final Font CONTRIBUTORS_FONT = new Font("Arial", Font.PLAIN, 10);
     static FontMetrics CONTRIBUTORS_FONT_FM = null;
     static int CONTRIBUTORS_WIDTH = 0;
