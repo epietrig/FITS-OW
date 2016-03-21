@@ -68,6 +68,8 @@ class SmartiesManager implements Observer {
 
         //sw2 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Scale Menu", 9, 1, 4, 1);
         //sw.handler = new ColorMenuHandler();
+    SmartiesWidget sw3 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Query Menu", 9,2,4,1);
+		sw3.handler = new QueryMenuHandler();
 
 	    smarties.addObserver(this);
 	    smarties.setRawTouchEventsConf(true);
@@ -322,7 +324,7 @@ class SmartiesManager implements Observer {
             System.out.println("SMARTIE_EVENTS_TYPE_END_MFPINCH");
             break;
         }
-        
+
         case SmartiesEvent.SMARTIES_EVENTS_TYPE_LONGPRESS:{
             System.out.println("SMARTIES_EVENTS_TYPE_LONGPRESS");
             if (se.p != null && se.num_fingers == 1){
@@ -330,7 +332,7 @@ class SmartiesManager implements Observer {
 			}
             break;
         }
-        
+
         default:{
              //System.out.println("OTHER: " + se.type);
              break;
@@ -353,6 +355,15 @@ class SmartiesManager implements Observer {
             return true;
         }
     }
+
+		class QueryMenuHandler implements SmartiesWidgetHandler{
+				public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+					System.out.println("Query Menu");
+					application.eh.enterQueryMode();
+					return true;
+				}
+		}
+
 	class EventGlobalView implements SmartiesWidgetHandler{
 		public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
 			System.out.println("GlobalView");

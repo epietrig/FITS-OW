@@ -37,9 +37,6 @@ public class SimbadResults extends SimbadQueryGlyph{
   private static final Color GLYPH_UNSELECTED_COLOR = Color.red;
   double x;
   double y;
-//vs should be on parent class
-
-
 
   public SimbadResults(double x, double y){
     super(200, 0*TEXT_SIZE+OFFSET);
@@ -48,11 +45,6 @@ public class SimbadResults extends SimbadQueryGlyph{
     this.setType(Config.T_ASTRO_OBJ_SR);
     selected = -1;
     glyphSelected = -1;
-
-    // if(vs != null)
-      // vs.addGlyph(this);
-
-    // this.setVisible(true);
   }
 
   public void setResults(List<AstroObject> results){
@@ -81,7 +73,8 @@ public class SimbadResults extends SimbadQueryGlyph{
 
   public VRectangle getBackground(){
     return background;
-  }//should be on parent class
+  }
+
   public int insideWhichObject(double x, double y){
     double start = background.getBounds()[1];
     double locationY = start;
@@ -109,6 +102,7 @@ public class SimbadResults extends SimbadQueryGlyph{
       return false;
     }
   }
+
   public int getCorrespondingGlyph(Vector<Glyph> gs){
     try{
       String selectedLabel = ids[selected].getText();
@@ -123,6 +117,7 @@ public class SimbadResults extends SimbadQueryGlyph{
       return glyphSelected;
     }
   }
+
   public void highlightCorrespondingGlyph(Vector<Glyph> gs, int i){
     if(i != glyphSelected){
       if(glyphSelected >= 0){
