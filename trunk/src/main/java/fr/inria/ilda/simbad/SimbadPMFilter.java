@@ -55,7 +55,7 @@ public class SimbadPMFilter extends SimbadFilter{
       dec.setText("Declination angle: "+str);
       decStr = str;
     }
-    else if(qsquares != null){
+    else if(qsquares != null && i >= 2){
       if(qsquares[i-2].getColor().equals(Color.red))
           qsquares[i-2].setColor(Color.white);
       else if(qsquares[i-2].getColor().equals(Color.white))

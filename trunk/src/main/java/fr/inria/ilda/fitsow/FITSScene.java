@@ -321,7 +321,8 @@ public class FITSScene implements Java2DPainter, PickerListener {
     void updateWCSCoordinates(double vx, double vy, JSkyFitsImage img){
         if (img != null){
             Point2D.Double wcs = img.vs2wcs(vx, vy);
-            wcsStr = wcs.x + " " + wcs.y;
+            if (wcs != null) wcsStr = wcs.x + " " + wcs.y;
+            else wcsStr = "";
             app.mView.repaint();
         }
         else {

@@ -65,7 +65,7 @@ public class SimbadRVFilter extends SimbadFilter{
       cz.setText("cz :"+str);
       czStr = str;
     }
-    else if(qsquares != null){
+    else if(qsquares != null && i >= 3){
       if(qsquares[i-3].getColor().equals(Color.red))
           qsquares[i-3].setColor(Color.white);
       else if(qsquares[i-3].getColor().equals(Color.white))
