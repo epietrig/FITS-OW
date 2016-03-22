@@ -55,16 +55,6 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
   <!-- Dependencies -->
   <dependencies>
     <dependency>
-      <groupId>fr.inria.zvtm</groupId>
-      <artifactId>zuist-core</artifactId>
-      <version>0.5.0-SNAPSHOT</version>
-     </dependency>
-     <dependency>
-         <groupId>fr.inria.zvtm</groupId>
-         <artifactId>zvtm-fits</artifactId>
-         <version>0.2.0-SNAPSHOT</version>
-     </dependency>
-    <dependency>
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
       <version>2.0.29</version>
@@ -117,6 +107,18 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
         <activation>
           <activeByDefault>true</activeByDefault>
         </activation>
+    <dependencies>
+        <dependency>
+          <groupId>fr.inria.zvtm</groupId>
+          <artifactId>zuist-core</artifactId>
+          <version>0.5.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+             <groupId>fr.inria.zvtm</groupId>
+             <artifactId>zvtm-fits</artifactId>
+             <version>0.2.0-SNAPSHOT</version>
+         </dependency>
+     </dependencies>
         <build>
             <plugins>
               <plugin>
@@ -157,6 +159,28 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
         <!-- mvn -P wall ... -->
         <id>wall</id>
         <dependencies>
+            <dependency>
+              <groupId>fr.inria.zvtm</groupId>
+              <artifactId>zuist-core</artifactId>
+              <version>0.5.0-SNAPSHOT</version>
+              <exclusions>
+                <exclusion>
+                  <groupId>fr.inria.zvtm</groupId>
+                  <artifactId>zvtm-core</artifactId>
+                </exclusion>
+              </exclusions>
+             </dependency>
+             <dependency>
+                 <groupId>fr.inria.zvtm</groupId>
+                 <artifactId>zvtm-fits</artifactId>
+                 <version>0.2.0-SNAPSHOT</version>
+                 <exclusions>
+                   <exclusion>
+                     <groupId>fr.inria.zvtm</groupId>
+                     <artifactId>zvtm-core</artifactId>
+                   </exclusion>
+                 </exclusions>
+             </dependency>
           <dependency>
             <groupId>fr.inria.zvtm</groupId>
             <artifactId>zvtm-cluster</artifactId>
