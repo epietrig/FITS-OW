@@ -162,6 +162,14 @@ public class FITSScene implements Java2DPainter, PickerListener {
         addImage(img);
     }
 
+    void loadImages(String fitsFileNames){
+        // expects a String of file names, comma-separated
+        String[] ffns = fitsFileNames.split(",");
+        for (String ffn:ffns){
+            loadImage(ffn);
+        }
+    }
+
     void loadImage(String fitsFileName){
         // assumes that the file is in the FITS dir served with NanoHTTPD
         String urlS = "http://" + Config.HTTPD_IP + ":" + Config.HTTPD_PORT + "/" + fitsFileName;

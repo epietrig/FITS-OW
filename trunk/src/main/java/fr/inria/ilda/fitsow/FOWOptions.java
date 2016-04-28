@@ -38,8 +38,8 @@ public class FOWOptions {
     @Option(name = "-noaa", usage = "disable anti-aliasing")
     public boolean noaa = false;
 
-    @Option(name = "-fits", aliases = {"--fits-file"}, usage = "FITS file")
-    public String fits_file_name = null;
+    @Option(name = "-fits", aliases = {"--fits-files"}, usage = "FITS file")
+    public String fits_file_names = null;
 
     @Option(name = "-zfits", aliases = {"--zuist-fits-file"}, usage = "ZUIST FITS file")
     public String path_to_zuist_fits = null;

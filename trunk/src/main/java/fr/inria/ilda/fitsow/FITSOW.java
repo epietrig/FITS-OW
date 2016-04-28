@@ -135,8 +135,8 @@ public class FITSOW {
             File xmlSceneFile = new File(options.path_to_zuist_fits);
             loadFITSScene(xmlSceneFile);
 		}
-        if (options.fits_file_name != null){
-            scene.loadImage(options.fits_file_name);
+        if (options.fits_file_names != null){
+            scene.loadImages(options.fits_file_names);
         }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);
