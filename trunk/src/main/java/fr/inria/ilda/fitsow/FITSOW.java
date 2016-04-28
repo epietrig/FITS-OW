@@ -84,6 +84,7 @@ public class FITSOW {
     static final short CURSOR_LAYER = 4;
 
     FITSScene scene;
+    PDFLoader pdfL;
 
     double[] sceneBounds = null;
     double sceneWidth = 0, sceneHeight= 0;
@@ -128,7 +129,7 @@ public class FITSOW {
         sm = new SceneManager(observers, new HashMap<String,String>(1,1));
         sm.setResourceHandler(JSkyFitsResourceHandler.RESOURCE_TYPE_FITS,
                               new JSkyFitsResourceHandler());
-        scene = new FITSScene(this, options.path_to_fits_dir, options.httpdIP, options.httpdPort);
+        scene = new FITSScene(this, options.path_to_data_dir, options.httpdIP, options.httpdPort);
         mView.setJava2DPainter(scene, Java2DPainter.FOREGROUND);
         zfSpacePicker.setListener(scene);
         if (options.path_to_zuist_fits != null){
@@ -137,6 +138,10 @@ public class FITSOW {
 		}
         if (options.fits_file_names != null){
             scene.loadImages(options.fits_file_names);
+        }
+        pdfL = new PDFLoader(this);
+        if (options.pdf_file_name != null){
+            pdfL.loadPDF(options.pdf_file_name);
         }
         gp.setVisible(false);
         gp.setLabel(WEGlassPane.EMPTY_STRING);

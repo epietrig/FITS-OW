@@ -26,6 +26,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
   </scm>
 
   <properties>
+    <icepdfVersion>4.2.0</icepdfVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -96,6 +97,25 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
 		<artifactId>nanohttpd-webserver</artifactId>
 		<version>2.1.1</version>
 	</dependency>
+    <!-- ICEpdf Pro 4.2 (if available) -->
+  <!--
+
+    ICEpdf Pro is not available in any Maven repository for now.
+    Get icepdf-pro*.jar from http://www.icepdf.org/downloads.html
+    Install the JAR files in your local repository using the following command line:
+          mvn install:install-file -Dfile=icepdf-pro.jar -DgroupId=org.icepdf -DartifactId=icepdf-pro -Dversion=4.2.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=icepdf-pro-intl.jar -DgroupId=org.icepdf -DartifactId=icepdf-pro-intl -Dversion=4.2.0 -Dpackaging=jar
+  -->
+    <dependency>
+        <groupId>org.icepdf</groupId>
+        <artifactId>icepdf-pro</artifactId>
+        <version>${icepdfVersion}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.icepdf</groupId>
+        <artifactId>icepdf-pro-intl</artifactId>
+        <version>${icepdfVersion}</version>
+    </dependency>
   </dependencies>
 
   <!-- Build -->
@@ -117,6 +137,11 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
              <groupId>fr.inria.zvtm</groupId>
              <artifactId>zvtm-fits</artifactId>
              <version>0.2.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+             <groupId>fr.inria.zvtm</groupId>
+             <artifactId>zvtm-pdf</artifactId>
+             <version>0.3.1-SNAPSHOT</version>
          </dependency>
      </dependencies>
         <build>
@@ -159,28 +184,39 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
         <!-- mvn -P wall ... -->
         <id>wall</id>
         <dependencies>
-            <dependency>
-              <groupId>fr.inria.zvtm</groupId>
-              <artifactId>zuist-core</artifactId>
-              <version>0.5.0-SNAPSHOT</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>fr.inria.zvtm</groupId>
-                  <artifactId>zvtm-core</artifactId>
-                </exclusion>
-              </exclusions>
-             </dependency>
-             <dependency>
-                 <groupId>fr.inria.zvtm</groupId>
-                 <artifactId>zvtm-fits</artifactId>
-                 <version>0.2.0-SNAPSHOT</version>
-                 <exclusions>
-                   <exclusion>
-                     <groupId>fr.inria.zvtm</groupId>
-                     <artifactId>zvtm-core</artifactId>
-                   </exclusion>
-                 </exclusions>
-             </dependency>
+          <dependency>
+            <groupId>fr.inria.zvtm</groupId>
+            <artifactId>zuist-core</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
+            <exclusions>
+              <exclusion>
+                <groupId>fr.inria.zvtm</groupId>
+                <artifactId>zvtm-core</artifactId>
+              </exclusion>
+            </exclusions>
+           </dependency>
+           <dependency>
+               <groupId>fr.inria.zvtm</groupId>
+               <artifactId>zvtm-fits</artifactId>
+               <version>0.2.0-SNAPSHOT</version>
+               <exclusions>
+                 <exclusion>
+                   <groupId>fr.inria.zvtm</groupId>
+                   <artifactId>zvtm-core</artifactId>
+                 </exclusion>
+               </exclusions>
+           </dependency>
+           <dependency>
+               <groupId>fr.inria.zvtm</groupId>
+               <artifactId>zvtm-pdf</artifactId>
+               <version>0.3.1-SNAPSHOT</version>
+               <exclusions>
+                 <exclusion>
+                   <groupId>fr.inria.zvtm</groupId>
+                   <artifactId>zvtm-core</artifactId>
+                 </exclusion>
+               </exclusions>
+           </dependency>
           <dependency>
             <groupId>fr.inria.zvtm</groupId>
             <artifactId>zvtm-cluster</artifactId>

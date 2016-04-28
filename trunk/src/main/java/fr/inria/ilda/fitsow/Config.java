@@ -75,6 +75,8 @@ public class Config {
 
     public static final Color FITS_IMG_BORDER_COLOR = Color.GRAY;
     public static final Color FITS_IMG_BORDER_COLOR_CI = Color.LIGHT_GRAY;
+    public static final Color PDF_BORDER_COLOR = Color.BLACK;
+    public static final Color PDF_BORDER_COLOR_CI = Color.LIGHT_GRAY;
 
     public static boolean MASTER_ANTIALIASING = true;
     public static boolean CLUSTER_ANTIALIASING = true;
@@ -124,6 +126,7 @@ public class Config {
     public static final String T_SPMISc = T_SPMI + "sc";
 
     public static final String T_FITS = "fits";
+    public static final String T_PDF = "pdf";
 
     public static final String T_CLT_BTN = "clt";
 

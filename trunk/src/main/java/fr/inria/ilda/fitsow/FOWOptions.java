@@ -38,8 +38,11 @@ public class FOWOptions {
     @Option(name = "-noaa", usage = "disable anti-aliasing")
     public boolean noaa = false;
 
-    @Option(name = "-fits", aliases = {"--fits-files"}, usage = "FITS file")
+    @Option(name = "-fits", aliases = {"--fits-files"}, usage = "FITS files")
     public String fits_file_names = null;
+
+    @Option(name = "-pdf", aliases = {"--pdf-file"}, usage = "PDF file")
+    public String pdf_file_name = null;
 
     @Option(name = "-zfits", aliases = {"--zuist-fits-file"}, usage = "ZUIST FITS file")
     public String path_to_zuist_fits = null;
@@ -47,13 +50,13 @@ public class FOWOptions {
     @Option(name = "-smarties", usage = "enable smarties")
     public boolean smarties = false;
 
-    @Option(name = "-fitsDir", aliases = {"--fits-dir"}, usage = "FITS download directory")
-    public String path_to_fits_dir = "/tmp";
+    @Option(name = "-ldDir", aliases = {"--local-data-dir"}, usage = "FITS/PDF/... download directory")
+    public String path_to_data_dir = "/tmp";
 
-    @Option(name = "-IP", aliases = {"--fits-http-ip"}, usage = "IP of NanoHTTPD server providing FITS images")
+    @Option(name = "-IP", aliases = {"--local-http-ip"}, usage = "IP of NanoHTTPD server used to share downloaded FITS/PDF/... data")
     public String httpdIP = Config.HTTPD_IP;
 
-    @Option(name = "-port", aliases = {"--fits-http-port"}, usage = "port of NanoHTTPD server providing FITS images")
+    @Option(name = "-port", aliases = {"--local-http-port"}, usage = "port of NanoHTTPD server used to share downloaded FITS/PDF/... data")
     public int httpdPort = Config.HTTPD_PORT;
 
     @Argument

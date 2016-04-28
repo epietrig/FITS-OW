@@ -171,7 +171,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
     }
 
     void loadImage(String fitsFileName){
-        // assumes that the file is in the FITS dir served with NanoHTTPD
+        // assumes that the file is in the local data dir served with NanoHTTPD
         String urlS = "http://" + Config.HTTPD_IP + ":" + Config.HTTPD_PORT + "/" + fitsFileName;
         try {
             URL fitsURL = new URL(urlS);
