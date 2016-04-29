@@ -118,6 +118,7 @@ public class Config {
     public static final int Z_ASTRO_OBJ_CR = 100;
     public static final int Z_ASTRO_OBJ_LB = 99;
     public static final int Z_FITS_IMG = 10;
+    public static final int Z_PDF_DOC = 10;
 
     /* ------------ Glyph types ---------- */
 

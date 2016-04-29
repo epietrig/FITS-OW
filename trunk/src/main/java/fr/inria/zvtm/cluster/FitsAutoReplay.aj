@@ -25,6 +25,8 @@ import fr.inria.ilda.simbad.Tabs;
 import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.Composite;
 import fr.inria.zvtm.glyphs.VRectangle;
+import fr.inria.zvtm.glyphs.IcePDFPageImg;
+import fr.inria.zvtm.glyphs.BrowsableDocument;
 
 import java.util.Vector;
 import java.util.List;
@@ -48,8 +50,9 @@ aspect FitsAutoReplay extends AbstractAutoReplay {
          execution(public void JSkyFitsImage.updateDisplayedImage()) ||
          execution(public void JSkyFitsImage.setTranslucencyValue(float) ) ||
          execution(public void JSkyFitsImage.setVisible(boolean) ) ||
-         execution(public void JSkyFitsImage.moveTo(double, double) ) ||
-         execution(public void JSkyFitsImage.orientTo(double) ) ||
+         execution(public void IcePDFPageImg.setInterpolationMethod(Object) ) ||
+         execution(public void IcePDFPageImg.flush() ) ||
+         execution(public void BrowsableDocument.setPage(int) ) ||
          execution(public void SimbadCriteria.updateQueryParameters(double, double) ) ||
          execution(public void SimbadCriteria.cleanQueryParameters() ) ||
          execution(public void SimbadFluxFilter.select(int, String) ) ||

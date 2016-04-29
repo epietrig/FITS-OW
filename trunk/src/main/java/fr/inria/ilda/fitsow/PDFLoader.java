@@ -6,6 +6,8 @@
 
 package fr.inria.ilda.fitsow;
 
+import java.awt.RenderingHints;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -15,8 +17,7 @@ import org.icepdf.core.pobjects.Page;
 import org.icepdf.core.exceptions.PDFException;
 import org.icepdf.core.exceptions.PDFSecurityException;
 
-import fr.inria.zvtm.glyphs.IcePDFPageImg;
-import fr.inria.zvtm.glyphs.ZPDFPage;
+import fr.inria.zvtm.glyphs.BrowsableDocument;
 
 class PDFLoader {
 
@@ -39,32 +40,28 @@ class PDFLoader {
     }
 
     void loadPDF(URL url, double vx, double vy){
-        Document document = new Document();
-        try {
-            document.setUrl(url);
-        } catch (PDFException ex) {
-            System.out.println("Error parsing PDF document " + ex);
-            return;
-        } catch (PDFSecurityException ex) {
-            System.out.println("Error encryption not supported " + ex);
-            return;
-        } catch (IOException ex) {
-            System.out.println("Error handling PDF document " + ex);
-            return;
-        }
-        IcePDFPageImg page = new IcePDFPageImg(vx, vy, Config.Z_FITS_IMG,
-                                               document, 0, 2, 2);
+        BrowsableDocument page = new BrowsableDocument(vx, vy, Config.Z_PDF_DOC,
+                                                       url, 0, 2, 2);
         page.setType(Config.T_PDF);
         addPage(page);
     }
 
-    void addPage(ZPDFPage page){
+    void addPage(BrowsableDocument page){
         if (page != null){
             app.dSpace.addGlyph(page);
+            page.setInterpolationMethod(RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             page.setDrawBorder(true);
             page.setBorderColor(Config.PDF_BORDER_COLOR);
             page.setCursorInsideHighlightColor(Config.PDF_BORDER_COLOR_CI);
         }
+    }
+
+    void goToPreviousPage(BrowsableDocument doc){
+        doc.setPage(doc.getCurrentPageNumber()-1);
+    }
+
+    void goToNextPage(BrowsableDocument doc){
+        doc.setPage(doc.getCurrentPageNumber()+1);
     }
 
 }

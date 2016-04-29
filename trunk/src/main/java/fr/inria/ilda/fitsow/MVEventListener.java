@@ -37,6 +37,7 @@ import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.VCircle;
 import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
+import fr.inria.zvtm.glyphs.BrowsableDocument;
 
 import fr.inria.zvtm.event.ViewListener;
 import fr.inria.zvtm.event.CameraListener;
@@ -86,6 +87,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     // cursor inside FITS image
     JSkyFitsImage ciFITSImage = null;
     JSkyFitsImage img = null;
+
+    // cursor inside PDF page
+    BrowsableDocument ciPDF = null;
 
     SimbadQuery sq;
 
@@ -313,6 +317,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         if (g.getType().equals(Config.T_FITS)){
             ciFITSImage = (JSkyFitsImage)g;
         }
+        else if (g.getType().equals(Config.T_PDF)){
+            ciPDF = (BrowsableDocument)g;
+        }
     }
 
     public void exitGlyph(Glyph g){
@@ -326,11 +333,31 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             //     ciFITSImage = null;
             // }
         }
+        else if (g.getType().equals(Config.T_PDF)){
+            Glyph[] insideOtherPDF = app.dSpacePicker.getPickedGlyphList(Config.T_PDF);
+            if (insideOtherPDF.length > 0){
+                ciPDF = (BrowsableDocument)insideOtherPDF[insideOtherPDF.length-1];
+            }
+        }
     }
 
     public void Kpress(ViewPanel v,char c,int code,int mod, KeyEvent e){
-        if (code==KeyEvent.VK_PAGE_UP){app.nav.getHigherView();}
-        else if (code==KeyEvent.VK_PAGE_DOWN){app.nav.getLowerView();}
+        if (code==KeyEvent.VK_PAGE_UP){
+            if (ciPDF != null){
+                app.pdfL.goToPreviousPage(ciPDF);
+            }
+            else {
+                app.nav.getHigherView();
+            }
+        }
+        else if (code==KeyEvent.VK_PAGE_DOWN){
+            if (ciPDF != null){
+                app.pdfL.goToNextPage(ciPDF);
+            }
+            else {
+                app.nav.getLowerView();
+            }
+        }
         else if (code==KeyEvent.VK_HOME){app.nav.getGlobalView(null);}
         else if (code==KeyEvent.VK_UP){app.nav.translateView(Navigation.MOVE_UP);}
         else if (code==KeyEvent.VK_DOWN){app.nav.translateView(Navigation.MOVE_DOWN);}
