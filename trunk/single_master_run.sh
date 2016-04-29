@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #IP="192.168.6.90"
-IP="129.175.5.15"
+IP="192.168.1.10"
+#IP="129.175.5.15"
 
 
 JARS="target/aspectjrt-1.8.9.jar"
@@ -13,7 +14,7 @@ JARS=$JARS":target/timingframework-1.0.jar"
 JARS=$JARS":target/xercesImpl-2.8.1.jar"
 JARS=$JARS":target/xml-apis-1.3.03.jar"
 JARS=$JARS":target/xmlParserAPIs-2.6.2.jar"
-JARS=$JARS":target/zvtm-svg-0.2.1.jar"
+JARS=$JARS":target/zvtm-svg-0.2.2-SNAPSHOT.jar"
 JARS=$JARS":target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
