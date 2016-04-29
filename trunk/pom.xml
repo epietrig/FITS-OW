@@ -243,6 +243,10 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
                         <groupId>fr.inria.zvtm</groupId>
                         <artifactId>zvtm-fits</artifactId>
                       </weaveDependency>
+                      <weaveDependency>
+                        <groupId>fr.inria.zvtm</groupId>
+                        <artifactId>zvtm-pdf</artifactId>
+                      </weaveDependency>
                       </weaveDependencies>
                       <source>1.7</source>
                       <target>1.7</target>
