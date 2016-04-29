@@ -67,6 +67,10 @@ public class WallFITSOW extends FITSOW {
 
     void showLogosOnWall(){
         double x = (getDisplayWidth() - LOGOS.getWidth(null)) / 2;
+        if (x < 0){
+            // if display too small (rough estimate), don't show the logos
+            return;
+        }
         double y = (getDisplayHeight() - LOGOS.getHeight(null)) / 2;
         VImage logos = new VImage(x, y, 0, LOGOS, 1, .7f);
         logoSpace.addGlyph(logos);
