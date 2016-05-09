@@ -9,6 +9,7 @@ package fr.inria.ilda.fitsow;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import javax.swing.SwingUtilities;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -33,6 +34,8 @@ import fr.inria.zuist.engine.Level;
 import fr.inria.zuist.event.ProgressListener;
 import fr.inria.zvtm.event.PickerListener;
 
+import fr.inria.zvtm.fits.CoordConv;
+
 public class FITSScene implements Java2DPainter, PickerListener {
 
     File SCENE_FILE, SCENE_FILE_DIR;
@@ -45,6 +48,8 @@ public class FITSScene implements Java2DPainter, PickerListener {
     double[] globalMinMax = {0,0};
 
     FITSServer server;
+
+    static CoordConv cc;
 
     static final String EMPTY_STRING = "";
     String wcsStr = EMPTY_STRING;
@@ -59,9 +64,16 @@ public class FITSScene implements Java2DPainter, PickerListener {
     double thCumulatedWidth = 0;
     double thMaxHeight = 0;
 
+    JSkyFitsImage activeFITSimg = null;
+
     FITSScene(FITSOW app, String fitsDir, String ip, int port){
         this.app = app;
         this.sm = app.sm;
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                cc = new CoordConv();
+            }
+        });
         System.out.println("Initializing NanoHTTPD Server ("+ip+":"+port+")...");
         server = new FITSServer(app, fitsDir, ip, port);
         try {
@@ -324,11 +336,38 @@ public class FITSScene implements Java2DPainter, PickerListener {
         return Config.COLOR_MAPPING_LIST[ci];
     }
 
+    /* ----------------------- FITS image under cursor --------------------- */
+    // this is the image fed to astropy to compute WCS coordinates
+    // and conversely to plot simbad query result sets in VirtualSpace
+
+    void setActiveFITSImage(JSkyFitsImage img){
+        this.activeFITSimg = img;
+        if (this.activeFITSimg != null){
+            URL fitsURL = this.activeFITSimg.getFITSImageURL();
+            String fitsPath;
+            if (fitsURL.getProtocol().equals(FITSServer.HTTP_PROTOCOL)){
+                // image served by FITSOW's own NanoHTTPD
+                fitsPath = FITSServer.FITS_DIR + fitsURL.getFile();
+            }
+            else {
+                // assume file:// protocol
+                // a zuist fits tile
+                // System.out.println(fitsURL.getPath());
+                fitsPath = fitsURL.getPath();
+            }
+            cc.setFITSFile(this.activeFITSimg, fitsPath);
+        }
+    }
+
+    JSkyFitsImage getActiveFITSImage(){
+        return this.activeFITSimg;
+    }
+
     /* ----------------------- WCS coordinates --------------------- */
 
-    void updateWCSCoordinates(double vx, double vy, JSkyFitsImage img){
-        if (img != null){
-            Point2D.Double wcs = img.vs2wcs(vx, vy);
+    void updateWCSCoordinates(double vx, double vy){
+        if (activeFITSimg != null){
+            Point2D.Double wcs = cc.vs2wcs(vx, vy);
             if (wcs != null) wcsStr = wcs.x + " " + wcs.y;
             else wcsStr = "";
             app.mView.repaint();

@@ -169,8 +169,13 @@ public class SimbadQuery {
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
         else if(onCircleImg == null){return;}
-        Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
-        Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
+        //XXX for now pretending that centerImg and onCircleImg are the sqCamera
+        // but might be different tiles if doing the query on the zuist background
+        // have to handle this case
+        // Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
+        // Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
+        Point2D.Double centerWCS = FITSScene.cc.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
+        Point2D.Double onCircleWCS = FITSScene.cc.vs2wcs(onCircle.x, onCircle.y);
         if (centerWCS == null || onCircleWCS == null){
             String queryInfo = "Invalid query";
             app.scene.setStatusBarMessage(queryInfo);
@@ -214,7 +219,7 @@ public class SimbadQuery {
         clearQueryResults();
         System.out.println("displaying..."+objs.size());
         for(AstroObject obj: objs){
-          Point2D.Double p = img.wcs2vs(obj.getRa(), obj.getDec());
+          Point2D.Double p = FITSScene.cc.wcs2vs(obj.getRa(), obj.getDec());
           VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,
                                  Config.SIMBAD_AO_COLOR, Color.WHITE, .8f);
           VText lb = new VText(p.x+10, p.y+10, Config.Z_ASTRO_OBJ_LB,

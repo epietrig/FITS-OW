@@ -97,8 +97,25 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
 		<artifactId>nanohttpd-webserver</artifactId>
 		<version>2.1.1</version>
 	</dependency>
+    <!-- https://github.com/mrj0/jep/wiki/Getting-Started -->
+    <!--
+    	JEP is not available in any Maven repository for obvious reasons.
+    	Get it from https://github.com/mrj0/jep
+        * python setup.py install it
+
+        * link to it (LD_LIBRARY_PATH, or symbolic link like (on Mac OS X):
+          ln -sf libjep.so /Library/JavaExtensions/libjep.jnilib)
+
+    	* install the JAR files in your local repository using the following command line:
+            mvn install:install-file -Dfile=jep-3.5.2.jar -DgroupId=jep -DartifactId=jep -Dversion=3.5.2 -Dpackaging=jar
+    -->
+    <dependency>
+        <groupId>jep</groupId>
+        <artifactId>jep</artifactId>
+        <version>3.5.2</version>
+    </dependency>
     <!-- ICEpdf Pro 4.2 (if available) -->
-  <!--
+<!--
 
     ICEpdf Pro is not available in any Maven repository for now.
     Get icepdf-pro*.jar from http://www.icepdf.org/downloads.html
@@ -136,7 +153,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
          <dependency>
              <groupId>fr.inria.zvtm</groupId>
              <artifactId>zvtm-fits</artifactId>
-             <version>0.2.0-SNAPSHOT</version>
+             <version>0.2.1-SNAPSHOT</version>
          </dependency>
          <dependency>
              <groupId>fr.inria.zvtm</groupId>

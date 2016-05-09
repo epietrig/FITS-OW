@@ -19,4 +19,4 @@ JARS=$JARS":target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
 
-java -server -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=$IP -Dcom.sun.media.jai.disableMediaLib=true -Xmx1g -cp .:$JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"
+java -server -Djava.net.preferIPv4Stack=true -Djava.library.path=/Library/Python/2.7/site-packages/jep -Djgroups.bind_addr=$IP -Dcom.sun.media.jai.disableMediaLib=true -Xmx1g -cp .:$JARS fr.inria.ilda.fitsow.WallFITSOW -r 1 -c 1 -bw 800 -bh 600 "$@"

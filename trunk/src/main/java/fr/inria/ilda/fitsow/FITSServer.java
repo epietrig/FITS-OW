@@ -18,6 +18,7 @@ import fi.iki.elonen.NanoHTTPD;
 
 class FITSServer extends NanoHTTPD {
 
+    static final String HTTP_PROTOCOL = "http";
     static final String FITS_MIME_TYPE = "image/fits";
 
     static String FITS_DIR = "/tmp";

@@ -85,7 +85,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadQTS = false;
 
     // cursor inside FITS image
-    JSkyFitsImage ciFITSImage = null;
     JSkyFitsImage img = null;
 
     // cursor inside PDF page
@@ -107,8 +106,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
             if(sqts.getSelected() == 0){
               sq = new SimbadQuery(app);
-              if (ciFITSImage != null){
-                  sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+              if (app.scene.getActiveFITSImage() != null){
+                  sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), app.scene.getActiveFITSImage());
               }
               else {
                   sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
@@ -181,10 +180,10 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           if(sqts.getSelected() == 0){
           //   exitQueryMode();
           //   if (sq != null){
-                if (ciFITSImage != null){
+                if (app.scene.getActiveFITSImage() != null){
                   circleCoords = v.getVCursor().getVSCoordinates(app.dCamera);
                 }
-          //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), ciFITSImage);
+          //           sq.querySimbad(v.getVCursor().getVSCoordinates(app.dCamera), app.scene.getActiveFITSImage());
                 else{
                   circleCoords = v.getVCursor().getVSCoordinates(app.zfCamera);
                   img = (JSkyFitsImage) app.zfSpacePicker.lastGlyphEntered();
@@ -232,12 +231,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         lastVY = v.getVCursor().getVSYCoordinate();
         updateZUISTSpacePicker(jpx, jpy);
         updateDataSpacePicker(jpx, jpy);
-        if (ciFITSImage != null){
-            app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y, ciFITSImage);
+        if (app.scene.getActiveFITSImage() != null){
+            app.scene.updateWCSCoordinates(dvsCoords.x, dvsCoords.y);
         }
         else {
             try {
-                app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y, (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+                app.scene.updateWCSCoordinates(zvsCoords.x, zvsCoords.y);
+                //XXX have to make this one the active img: (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered()
             }
             catch (Exception ex){
                 // be silent about it, only happens at init time when getting
@@ -289,7 +289,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         }
         else if (querying && sq != null){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
-          sq.setRadius(v.getVCursor().getVSCoordinates((ciFITSImage != null) ? app.dCamera : app.zfCamera));
+          sq.setRadius(v.getVCursor().getVSCoordinates((app.scene.getActiveFITSImage() != null) ? app.dCamera : app.zfCamera));
           updateZUISTSpacePicker(jpx, jpy);
           updateDataSpacePicker(jpx, jpy);
         }
@@ -315,7 +315,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     public void enterGlyph(Glyph g){
         g.highlight(true, null);
         if (g.getType().equals(Config.T_FITS)){
-            ciFITSImage = (JSkyFitsImage)g;
+            app.scene.setActiveFITSImage((JSkyFitsImage)g);
         }
         else if (g.getType().equals(Config.T_PDF)){
             ciPDF = (BrowsableDocument)g;
@@ -327,10 +327,10 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         if (g.getType().equals(Config.T_FITS)){
             Glyph[] insideOtherFITS = app.dSpacePicker.getPickedGlyphList(Config.T_FITS);
             if (insideOtherFITS.length > 0){
-                ciFITSImage = (JSkyFitsImage)insideOtherFITS[insideOtherFITS.length-1];
+                app.scene.setActiveFITSImage((JSkyFitsImage)insideOtherFITS[insideOtherFITS.length-1]);
             }
             // else {
-            //     ciFITSImage = null;
+            //     app.scene.setActiveFITSImage(null);
             // }
         }
         else if (g.getType().equals(Config.T_PDF)){
@@ -462,7 +462,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           String inputValue = JOptionPane.showInputDialog("Enter script for query:");
           sq = new SimbadQuery(app);
           exitQueryMode();
-          sq.querySimbadbyScript(inputValue, ciFITSImage);
+          sq.querySimbadbyScript(inputValue, app.scene.getActiveFITSImage());
           sq = null;
 
         }
@@ -550,23 +550,23 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             if(ts.getSelected() == ts.BY_ID){
               sq = new SimbadQuery(app);
               exitQueryMode();
-              sq.querySimbadbyId(criteria.getIdStr(), ciFITSImage);
+              sq.querySimbadbyId(criteria.getIdStr(), app.scene.getActiveFITSImage());
               sq = null;
               return;
             }
             else if(ts.getSelected() == ts.BY_COORDINATES){
               exitQueryMode();
               if (sq != null && circleCoords!= null){
-                if (ciFITSImage != null){
-                    sq.querySimbad(circleCoords, ciFITSImage);}
+                if (app.scene.getActiveFITSImage() != null){
+                    sq.querySimbad(circleCoords, app.scene.getActiveFITSImage());}
                 else
                     sq.querySimbad(circleCoords, img);
                 sq = null;
                 return;
               }
-              else if(sq == null && ciFITSImage!=null){
+              else if(sq == null && app.scene.getActiveFITSImage()!=null){
                 sq = new SimbadQuery(app);
-                sq.querySimbadbyCoordinates(criteria.getCoordinatesStr(), ciFITSImage);
+                sq.querySimbadbyCoordinates(criteria.getCoordinatesStr(), app.scene.getActiveFITSImage());
                 sq = null;
                 return;
               }
