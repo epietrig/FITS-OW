@@ -466,6 +466,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           sq = null;
 
         }
+        else if(sqts.getSelected() == sqts.CANCEL){
+          exitQueryMode();
+        }
       }
     }
     void updateSimbadResults(int jpx, int jpy){
@@ -571,6 +574,10 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
                 return;
               }
             }
+          }
+
+          if(criteria.getCancelButton().coordInsideP(jpx,jpy,app.sqCamera)){
+            exitQueryMode();
           }
 
           if(criteria.getObjectTypeFilter().coordInsideItem(jpx, jpy)){

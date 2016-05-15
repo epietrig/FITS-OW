@@ -29,6 +29,7 @@ public abstract class SimbadQueryGlyph extends Composite{
   protected static Color TEXT_COLOR_2 = Color.white ;
   protected static Color UNSELECTED_COLOR = Color.white;
   protected static Color SELECTED_COLOR = new Color(134,197,67);
+  protected static Color CANCEL_COLOR = Color.red;
   protected static Font BOLD = new Font("bold", Font.BOLD, 12);
   protected static Font NOT_BOLD = new Font("plain", Font.PLAIN, 12);
   protected static final int Z = 0;

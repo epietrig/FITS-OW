@@ -48,6 +48,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   String frameStr = null;
   String idStr = null;
   VRectangle execute;
+  VRectangle cancel;
 
   protected static double W = 900;
   protected static double H = 600;
@@ -57,6 +58,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   private static String queryByIdLabel ="Identifier: ";
   private static String queryByCoordLabel="Coordinates: ";
   private static String executeLabel="Execute";
+  private static String cancelLabel="Cancel";
   private static String explanationLabel = "(click in text to enter coordinates numerical value or select region in image)";
   private static String optionalFiltersLabel = "Select optional filters:";
   private static String frameLabel = "Frame: ";
@@ -123,6 +125,13 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     executeQuery.setScale(1.3f);
     c.addChild(execute);
     c.addChild(executeQuery);
+
+    cancel = new VRectangle(right - 120, top-3*TEXT_SIZE-OFFSET, Z, 110, TEXT_SIZE, CANCEL_COLOR);
+    VText cancelQuery = new VText(right - 120 - 45, top-3*TEXT_SIZE-2*OFFSET, Z, TEXT_COLOR, cancelLabel);
+    cancelQuery.setScale(1.3f);
+    c.addChild(cancel);
+    c.addChild(cancelQuery);
+
     VText optionalFilters = new VText(left + 2*OFFSET, top-4*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, optionalFiltersLabel);
     c.addChild(optionalFilters);
     return c;
@@ -194,6 +203,11 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   public VRectangle getExecuteButton(){
     return execute;
   }
+
+  public VRectangle getCancelButton(){
+    return cancel;
+  }
+
   public String getIdStr(){
     return idStr;
   }
