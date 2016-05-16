@@ -29,7 +29,7 @@ public class SimbadFluxFilter extends SimbadFilter{
   public SimbadFluxFilter(double top, double left, double right){
     super(W, H);
     // this.parent = parent;
-    this.background = new VRectangle(left+150,top-150,Z,300,300,Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(left+150,top-150,Z,300,300,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
     squares = new VRectangle[13];
     type = new VText[13];
@@ -39,25 +39,25 @@ public class SimbadFluxFilter extends SimbadFilter{
     setFilterLayout("Flux:", top, left, right);
     for(int i = 0; i < Config.FLUX_TYPES.length*2; i=i+2){
       if( i < 10){
-        squares[i/2] =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE*(i+2), Z, 10, 10, Color.white);
-        type[i/2] = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+2), Z, Config.SELECTED_TEXT_COLOR, Config.FLUX_TYPES[i/2]);
-        range[i/2] = new VText(left+5*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+3), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+        squares[i/2] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE*(i+2), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        type[i/2] = new VText(left+5*OFFSET, top-OFFSET-TEXT_SIZE*(i+2), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        range[i/2] = new VText(left+5*OFFSET, top-OFFSET-TEXT_SIZE*(i+3), Z, TEXT_COLOR, "Range:");
       }
       else if(i<20){
-        squares[i/2] =  new VRectangle (left+2*Config.OFFSET+width/3, top-Config.TEXT_SIZE*(i+2-10), Z, 10, 10, Color.white);
-        type[i/2] = new VText(left+5*Config.OFFSET+width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-10), Z, Config.SELECTED_TEXT_COLOR, Config.FLUX_TYPES[i/2]);
-        range[i/2] = new VText(left+5*Config.OFFSET+width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-10), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+        squares[i/2] =  new VRectangle (left+2*OFFSET+width/3, top-TEXT_SIZE*(i+2-10), Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
+        type[i/2] = new VText(left+5*OFFSET+width/3, top-OFFSET-TEXT_SIZE*(i+2-10), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        range[i/2] = new VText(left+5*OFFSET+width/3, top-OFFSET-TEXT_SIZE*(i+3-10), Z, TEXT_COLOR, "Range:");
       }
       else{
-        squares[i/2] =  new VRectangle (left+2*Config.OFFSET+2*width/3, top-Config.TEXT_SIZE*(i+2-20), Z, 10, 10, Color.white);
-        type[i/2] = new VText(left+5*Config.OFFSET+2*width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+2-20), Z, Config.SELECTED_TEXT_COLOR, Config.FLUX_TYPES[i/2]);
-        range[i/2] = new VText(left+5*Config.OFFSET+2*width/3, top-Config.OFFSET-Config.TEXT_SIZE*(i+3-20), Z, Config.SELECTED_TEXT_COLOR, "Range:");
+        squares[i/2] =  new VRectangle (left+2*OFFSET+2*width/3, top-TEXT_SIZE*(i+2-20), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        type[i/2] = new VText(left+5*OFFSET+2*width/3, top-OFFSET-TEXT_SIZE*(i+2-20), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        range[i/2] = new VText(left+5*OFFSET+2*width/3, top-OFFSET-TEXT_SIZE*(i+3-20), Z, TEXT_COLOR, "Range:");
       }
       this.addChild(squares[i/2]);
       this.addChild(type[i/2]);
       this.addChild(range[i/2]);
     }
-    qsquares = qualitySelector(this, left+2*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*13);
+    qsquares = qualitySelector(this, left+2*OFFSET, top-OFFSET-TEXT_SIZE*13);
   }
 //this should be on parent class
   // public boolean coordInsideComponent(double x, double y){
@@ -82,9 +82,9 @@ public class SimbadFluxFilter extends SimbadFilter{
   public void select(int i, String str){
     if(i >= 0 && i<26){
       if(i%2 == 0){
-        if(squares[i/2].getColor().equals(Color.red))
-          squares[i/2].setColor(Color.white);
-        else squares[i/2].setColor(Color.red);
+        if(squares[i/2].getColor().equals(CANCEL_COLOR))
+          squares[i/2].setColor(BACKGROUND_COLOR);
+        else squares[i/2].setColor(CANCEL_COLOR);
       }
       else if(i%2 != 0){
         range[i/2].setText("Range: "+str);
@@ -92,17 +92,17 @@ public class SimbadFluxFilter extends SimbadFilter{
       }
     }
     else if(i >= 0 && qsquares!= null){
-      if(qsquares[i-26].getColor().equals(Color.red))
-          qsquares[i-26].setColor(Color.white);
-      else if(qsquares[i-26].getColor().equals(Color.white))
-        qsquares[i-26].setColor(Color.red);
+      if(qsquares[i-26].getColor().equals(CANCEL_COLOR))
+          qsquares[i-26].setColor(BACKGROUND_COLOR);
+      else if(qsquares[i-26].getColor().equals(BACKGROUND_COLOR))
+        qsquares[i-26].setColor(CANCEL_COLOR);
     }
   }
 
   public int[] getFluxesSelected(){
     int[] retval = new int[squares.length];
     for(int i = 0; i < squares.length; i++){
-      if(squares[i].getColor().equals(Color.red)) retval[i] = 1;
+      if(squares[i].getColor().equals(CANCEL_COLOR)) retval[i] = 1;
       else retval[i] = 0;
     }
     return retval;

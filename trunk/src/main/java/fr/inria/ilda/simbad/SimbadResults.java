@@ -39,7 +39,7 @@ public class SimbadResults extends SimbadQueryGlyph{
   double y;
 
   public SimbadResults(double x, double y){
-    super(200, 0*TEXT_SIZE+OFFSET);
+    super(300, 0*TEXT_SIZE+OFFSET);
     this.x = x;
     this.y = y;
     this.setType(Config.T_ASTRO_OBJ_SR);
@@ -51,7 +51,7 @@ public class SimbadResults extends SimbadQueryGlyph{
     if(results!=null){
       this.results = results;
       this.setHeight(results.size()*TEXT_SIZE+OFFSET);
-      this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR);
+      this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
       background.setVisible(true);
       this.addChild(background);
       double[] bounds = background.getBounds();
@@ -63,9 +63,10 @@ public class SimbadResults extends SimbadQueryGlyph{
       splits = new VSegment[size];
       for(int i = 0; i <size; i++){
         ids[i] = new VText(left+OFFSET, top-TEXT_SIZE*(i+1), 0, TEXT_COLOR, results.get(i).getIdentifier());
+        ids[i].setFont(NOT_BOLD);
         ids[i].setVisible(true);
         this.addChild(ids[i]);
-        splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, TEXT_COLOR);
+        splits[i] = new VSegment(left, top-TEXT_SIZE*(i+1)-OFFSET, right, top-TEXT_SIZE*(i+1)-OFFSET, 0, BORDER_COLOR);
         this.addChild(splits[i]);
       }
     }
@@ -91,13 +92,18 @@ public class SimbadResults extends SimbadQueryGlyph{
 
   public boolean highlight(int i){
     if(selected !=  i){
-      if(selected >= 0)ids[selected].setColor(TEXT_COLOR);
-      ids[i].setColor(TEXT_COLOR_2);
+      if(selected >= 0){
+        ids[selected].setColor(TEXT_COLOR);
+        ids[selected].setFont(NOT_BOLD);
+      }
+      ids[i].setColor(EXECUTE_COLOR);
+      ids[i].setFont(BOLD);
       selected = i;
       return true;
     }
     else{
       ids[i].setColor(TEXT_COLOR);
+      ids[i].setFont(NOT_BOLD);
       selected = -1;
       return false;
     }

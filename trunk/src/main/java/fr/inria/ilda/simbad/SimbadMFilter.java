@@ -29,49 +29,49 @@ public class SimbadMFilter extends SimbadFilter{
     msquares = new VRectangle[Config.CATALOGS.length+1];
     mnames = new VText[Config.CATALOGS.length+1];
     VSegment[] msplits = new VSegment[(Config.CATALOGS.length)/2+1];
-    msquares[0] =  new VRectangle (left+2*Config.OFFSET, top-Config.TEXT_SIZE, Z, 10, 10, Color.white);
-    mnames[0] = new VText(left+6*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE, Z, Config.SELECTED_TEXT_COLOR, "All");
+    msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, SELECTED_BACKGROUND_COLOR,BORDER_COLOR);
+    mnames[0] = new VText(left+6*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "All");
     // msplits[0] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
     this.addChild(msquares[0]);
     this.addChild(mnames[0]);
     // this.addChild(msplits[0]);
     for(int i = 1; i < Config.CATALOGS.length; i++){
       if(i <= (Config.CATALOGS.length)/2){
-        msquares[i] =  new VRectangle (left+3*Config.OFFSET, top-Config.TEXT_SIZE*(i+1)-i*10, Z, 10, 10, Color.white);
-        mnames[i] = new VText(left+7*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*(i+1)-i*10, Z, Config.SELECTED_TEXT_COLOR, Config.CATALOGS[i]);
-        msplits[i-1] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE*i-i*10, right, top-2*Config.OFFSET-Config.TEXT_SIZE*i-i*10 ,Z, Config.SELECTED_TEXT_COLOR);
+        msquares[i] =  new VRectangle (left+3*OFFSET, top-TEXT_SIZE*(i+1)-i*10, Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        mnames[i] = new VText(left+7*OFFSET, top-OFFSET-TEXT_SIZE*(i+1)-i*10, Z, TEXT_COLOR, Config.CATALOGS[i]);
+        msplits[i-1] = new VSegment(left, top-2*OFFSET-TEXT_SIZE*i-i*10, right, top-2*OFFSET-TEXT_SIZE*i-i*10 ,Z, BORDER_COLOR);
         this.addChild(msplits[i-1]);
       }
       else{
-        msquares[i] =  new VRectangle (left+3*Config.OFFSET+width/2, top-Config.TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, 10, 10, Color.white);
-        mnames[i] = new VText(left+7*Config.OFFSET+width/2, top-Config.OFFSET-Config.TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, Config.SELECTED_TEXT_COLOR, Config.CATALOGS[i]);
+        msquares[i] =  new VRectangle (left+3*OFFSET+width/2, top-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        mnames[i] = new VText(left+7*OFFSET+width/2, top-OFFSET-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, TEXT_COLOR, Config.CATALOGS[i]);
       }
       this.addChild(msquares[i]);
       this.addChild(mnames[i]);
     }
-    VSegment vertical = new VSegment(left+ width/2, msplits[0].getLocation().getY(), left+width/2, background.getBounds()[3],Z,Config.SELECTED_TEXT_COLOR);
+    VSegment vertical = new VSegment(left+ width/2, msplits[0].getLocation().getY(), left+width/2, background.getBounds()[3],Z,BORDER_COLOR);
     this.addChild(vertical);
   }
 
   public void select(int m, String str){
     if(m == 0){
-      if(msquares[0].getColor().equals(Color.red)){
+      if(msquares[0].getColor().equals(CANCEL_COLOR)){
         for(VRectangle square : msquares){
-          square.setColor(Color.white);
+          square.setColor(BACKGROUND_COLOR);
         }
       }
       else{
         for(VRectangle square : msquares){
-          square.setColor(Color.red);
+          square.setColor(CANCEL_COLOR);
         }
       }
     }
     else if(m > 0){
       VRectangle selectedSquare = msquares[m];
-      if(selectedSquare.getColor().equals(Color.red))
-        selectedSquare.setColor(Color.white);
+      if(selectedSquare.getColor().equals(CANCEL_COLOR))
+        selectedSquare.setColor(BACKGROUND_COLOR);
       else
-        selectedSquare.setColor(Color.red);
+        selectedSquare.setColor(CANCEL_COLOR);
     }
   }
 
@@ -85,7 +85,7 @@ public class SimbadMFilter extends SimbadFilter{
 
   public int[] getMeasurementsSelected(){
     int count = 0;
-    if(msquares[0].getColor().equals(Color.red)){
+    if(msquares[0].getColor().equals(CANCEL_COLOR)){
       int[] retval = new int[1];
       retval[0] = 1;
       return retval;
@@ -93,7 +93,7 @@ public class SimbadMFilter extends SimbadFilter{
     else{
       int[] retval = new int[Config.CATALOGS.length];
       for(int i = 1; i < msquares.length; i++){
-        if(msquares[i]!= null && msquares[i].getColor().equals(Color.red)){
+        if(msquares[i]!= null && msquares[i].getColor().equals(CANCEL_COLOR)){
           count++;
           retval[i-1] = 1;
         }

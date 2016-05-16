@@ -53,6 +53,7 @@ import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
 import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
 import fr.inria.ilda.simbad.SimbadQueryGlyph;
+import fr.inria.ilda.simbad.SimbadClearQuery;
 import fr.inria.ilda.simbad.Tabs;
 
 public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
@@ -83,6 +84,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadInfo = false;
     boolean draggingSimbadCriteria = false;
     boolean draggingSimbadQTS = false;
+  boolean draggingSimbadCQ = false;
 
     // cursor inside FITS image
     JSkyFitsImage img = null;
@@ -105,6 +107,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         if (querying && !insideSimbadCriteria(jpx, jpy) && !insideSimbadQueryTypeSelector(jpx,jpy)){
             SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
             if(sqts.getSelected() == 0){
+              if(sq != null)sq.clearQueryRegion();
               sq = new SimbadQuery(app);
               if (app.scene.getActiveFITSImage() != null){
                   sq.setCenter(v.getVCursor().getVSCoordinates(app.dCamera), app.scene.getActiveFITSImage());
@@ -115,12 +118,23 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
               }
           }
         }
+        else if(insideSimbadClearQuery(jpx, jpy)){
+          System.out.println("insideSimbadClearQuery");
+          draggingSimbadInfo = false;
+          draggingSimbadCQ = true;
+          draggingFITS = false;
+          draggingSimbadResults = false;
+          draggingSimbadQTS = false;
+          draggingSimbadCriteria = false;
+
+        }
         else if(insideSimbadResults(jpx, jpy)){
           draggingSimbadResults = true;
           draggingFITS = false;
           draggingSimbadQTS = false;
           draggingSimbadInfo = false;
           draggingSimbadCriteria = false;
+          draggingSimbadCQ = false;
         }
         else if(insideSimbadInfo(jpx, jpy)){
           draggingSimbadInfo = true;
@@ -128,6 +142,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           draggingSimbadResults = false;
           draggingSimbadQTS = false;
           draggingSimbadCriteria = false;
+          draggingSimbadCQ = false;
+
         }
         else if(insideSimbadCriteria(jpx, jpy)){
           draggingSimbadCriteria = true;
@@ -135,6 +151,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           draggingFITS = false;
           draggingSimbadResults = false;
           draggingSimbadQTS = false;
+          draggingSimbadCQ = false;
+
         }
         else if(insideSimbadQueryTypeSelector(jpx, jpy)){
           draggingSimbadCriteria = false;
@@ -142,6 +160,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           draggingFITS = false;
           draggingSimbadResults = false;
           draggingSimbadQTS = true;
+          draggingSimbadCQ = false;
+
         }
         else {
             lge = app.dSpacePicker.lastGlyphEntered();
@@ -175,6 +195,9 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             app.dSpacePicker.unstickLastGlyph();
             draggingFITS = false;
         }
+        if(draggingSimbadCQ){
+          draggingSimbadCQ = false;
+        }
         if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
           SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
           if(sqts.getSelected() == 0){
@@ -206,6 +229,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         updateSimbadCriteria(jpx, jpy);
         updateSimbadResults(jpx, jpy);
         updateSimbadInfoTabs(jpx, jpy);
+        updateSimbadClearQuery(jpx, jpy);
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -256,6 +280,12 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             app.nav.pan(app.zfCamera, lastJPX-jpx, jpy-lastJPY, 1);
             lastJPX = jpx;
             lastJPY = jpy;
+        }
+        else if(draggingSimbadCQ){
+          SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+          cq.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
         }
         else if(draggingSimbadResults){
           SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
@@ -437,6 +467,16 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
       app.scene.setStatusBarMessage(null);
       querying = false;
+      if(sq != null)sq.clearQueryRegion();
+    }
+
+    void updateSimbadClearQuery(int jpx, int jpy){
+      SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+      if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, app.sqCamera)){
+        sq = new SimbadQuery(app);
+        sq.clearQueryResults();
+        sq = null;
+      }
     }
 
     void updateSimbadQueryTypeSelector(int jpx, int jpy){
@@ -662,6 +702,12 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean insideSimbadResults(int jpx, int jpy){
       SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
       if(list!= null) return list.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
+      return false;
+    }
+
+    boolean insideSimbadClearQuery(int jpx, int jpy){
+      SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+      if(cq!= null) return cq.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
       return false;
     }
 

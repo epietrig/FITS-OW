@@ -25,16 +25,16 @@ public class SimbadSTFilter extends SimbadFilter{
 
   public SimbadSTFilter(double top, double left, double right){
     super(W, H);
-    this.background = new VRectangle(left+150,top-150,Z,300,300,Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(left+150,top-150,Z,300,300,SELECTED_BACKGROUND_COLOR,BORDER_COLOR);
     this.addChild(background);
     setFilterLayout("Spectral Type:", top, left, right);
-    st = new VText(left+2*Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Spectral type:");
-    lc = new VText(left+2*Config.OFFSET,top-5*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Luminosity class:");
-    pec = new VText(left+2*Config.OFFSET,top-7*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Peculiarities:");
+    st = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Spectral type:");
+    lc = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Luminosity class:");
+    pec = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"Peculiarities:");
     this.addChild(st);
     this.addChild(lc);
     this.addChild(pec);
-    qsquares = qualitySelector(this, left+2*Config.OFFSET, top-Config.OFFSET-Config.TEXT_SIZE*13);
+    qsquares = qualitySelector(this, left+2*OFFSET, top-OFFSET-TEXT_SIZE*13);
   }
 
   public int getItemSelected(double x, double y){
@@ -64,16 +64,16 @@ public class SimbadSTFilter extends SimbadFilter{
       pecStr = str;
     }
     else if(qsquares != null && i >=3){
-      if(qsquares[i-3].getColor().equals(Color.red))
-          qsquares[i-3].setColor(Color.white);
-      else if(qsquares[i-3].getColor().equals(Color.white))
-        qsquares[i-3].setColor(Color.red);
+      if(qsquares[i-3].getColor().equals(CANCEL_COLOR))
+          qsquares[i-3].setColor(BACKGROUND_COLOR);
+      else if(qsquares[i-3].getColor().equals(BACKGROUND_COLOR))
+        qsquares[i-3].setColor(CANCEL_COLOR);
     }
   }
   public int[] getQualitiesSelected(){
     int[] retval = new int[5];
     for(int i = 0; i < qsquares.length; i++){
-      if(qsquares[i].getColor().equals(Color.red)) retval[i] = 1;
+      if(qsquares[i].getColor().equals(CANCEL_COLOR)) retval[i] = 1;
       else retval[i] = 0;
     }
     return retval;

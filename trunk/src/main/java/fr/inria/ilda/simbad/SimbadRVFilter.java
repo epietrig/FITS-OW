@@ -28,16 +28,16 @@ public class SimbadRVFilter extends SimbadFilter{
 
   public SimbadRVFilter(double top, double left, double right){
     super(W,H-90);
-    this.background = new VRectangle(left+150,top-105,Z,300,210,Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
     setFilterLayout("Radial velocity:", top, left, right);
-    rv = new VText(left+2*Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Radial velocity (km/s):");
-    z  = new VText(left+2*Config.OFFSET,top-5*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Redshift (z):");
-    cz  = new VText(left+2*Config.OFFSET,top-7*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"cz:");
+    rv = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Radial velocity (km/s):");
+    z  = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Redshift (z):");
+    cz  = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"cz:");
     this.addChild(rv);
     this.addChild(z);
     this.addChild(cz);
-    qsquares = qualitySelector(this, left+2*Config.OFFSET, top-9*Config.TEXT_SIZE);
+    qsquares = qualitySelector(this, left+2*Config.OFFSET, top-9*TEXT_SIZE);
   }
   public int getItemSelected(double x,  double y){
     if(rv.coordInsideV(x,y,SQ_CAMERA)) return 0;
@@ -66,10 +66,10 @@ public class SimbadRVFilter extends SimbadFilter{
       czStr = str;
     }
     else if(qsquares != null && i >= 3){
-      if(qsquares[i-3].getColor().equals(Color.red))
-          qsquares[i-3].setColor(Color.white);
-      else if(qsquares[i-3].getColor().equals(Color.white))
-        qsquares[i-3].setColor(Color.red);
+      if(qsquares[i-3].getColor().equals(CANCEL_COLOR))
+          qsquares[i-3].setColor(BACKGROUND_COLOR);
+      else if(qsquares[i-3].getColor().equals(BACKGROUND_COLOR))
+        qsquares[i-3].setColor(CANCEL_COLOR);
     }
   }
   public String getRVStr(){

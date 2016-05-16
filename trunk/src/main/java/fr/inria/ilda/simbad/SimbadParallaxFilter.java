@@ -3,7 +3,7 @@
  *
  * $Id:  $
  */
- 
+
 package fr.inria.ilda.simbad;
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
@@ -26,12 +26,12 @@ public class SimbadParallaxFilter extends SimbadFilter{
 
   public SimbadParallaxFilter(double top, double left, double right){
     super(W, H-90);
-    this.background = new VRectangle(left+150,top-105,Z,300,210,Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
     setFilterLayout("Parallax:", top, left, right);
-    parallax = new VText(left+2*Config.OFFSET,top-3*Config.TEXT_SIZE-Config.OFFSET,Z,Config.SELECTED_TEXT_COLOR,"Parallax:");
+    parallax = new VText(left+2*OFFSET,top-3*TEXT_SIZE-OFFSET,Z,TEXT_COLOR,"Parallax:");
     this.addChild(parallax);
-    this.qsquares = qualitySelector(this, left+2*Config.OFFSET, top-Config.TEXT_SIZE*9);
+    this.qsquares = qualitySelector(this, left+2*OFFSET, top-TEXT_SIZE*9);
   }
   public int getItemSelected(double x,  double y){
     if(parallax.coordInsideV(x,y,SQ_CAMERA)) return 0;
@@ -47,9 +47,9 @@ public class SimbadParallaxFilter extends SimbadFilter{
       parallaxStr = str;
     }
     else if(qsquares!=null && i >= 0){
-      if(qsquares[i-1].getColor().equals(Color.red))
-        qsquares[i-1].setColor(Color.white);
-      else qsquares[i-1].setColor(Color.red);
+      if(qsquares[i-1].getColor().equals(CANCEL_COLOR))
+        qsquares[i-1].setColor(BACKGROUND_COLOR);
+      else qsquares[i-1].setColor(CANCEL_COLOR);
     }
   }
 

@@ -26,16 +26,16 @@ public class Tabs extends SimbadQueryGlyph{
     super(parent.getWidth(),parent.getHeight());
     this.width2 = width2;
     this.height2 = height2;
-    basicDataTab = new VRectangle(left+width/4, top-Config.TEXT_SIZE/2, Z, width/2, Config.TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR);
-    basicDataTabStr = new VText(left+Config.OFFSET,top-Config.OFFSET*3,Z,Config.SELECTED_TEXT_COLOR,basicDataStr);
+    basicDataTab = new VRectangle(left+width/4, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
+    basicDataTabStr = new VText(left+OFFSET,top-OFFSET*3,Z,TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
     tabSelected = basicDataStr;
     bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
     notBold = basicDataTabStr.getFont();
     basicDataTabStr.setFont(bold);
 
-    measurementsTab = new VRectangle(left+width/4+width/2, top-Config.TEXT_SIZE/2, Z, width/2, Config.TEXT_SIZE, Config.UNSELECTED_BACKGROUND_COLOR);
-    measurementsTabStr = new VText(left+width/2+2*Config.OFFSET,top-Config.OFFSET*3,Z,Config.TEXT_COLOR,measurementsStr);
+    measurementsTab = new VRectangle(left+width/4+width/2, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
+    measurementsTabStr = new VText(left+width/2+2*OFFSET,top-OFFSET*3,Z,TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
 
     this.addChild(basicDataTab);
@@ -56,8 +56,8 @@ public class Tabs extends SimbadQueryGlyph{
   public void activateBasicDataTab(VRectangle background, Composite measurements, Composite basicData){
     if(!tabSelected.equals(basicDataStr)){
       tabSelected = basicDataStr;
-      basicDataTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
+      basicDataTab.setColor(SELECTED_BACKGROUND_COLOR);
+      measurementsTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
       basicDataTabStr.setFont(bold);
       measurementsTabStr.setFont(notBold);
       if(width2 > width){
@@ -68,8 +68,8 @@ public class Tabs extends SimbadQueryGlyph{
         basicDataTab.move((width-width2-20)/4,0);
         double[] bounds = basicDataTab.getBounds();
         measurementsTab.moveTo(bounds[2]+width/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
+        basicDataTabStr.moveTo(bounds[0]+OFFSET,basicDataTabStr.getLocation().getY());
+        measurementsTabStr.moveTo(bounds[2]+OFFSET, measurementsTabStr.getLocation().getY());
       }
       if(height2 > height){
         background.setHeight(height);
@@ -83,8 +83,8 @@ public class Tabs extends SimbadQueryGlyph{
   public void activateMeasurementsTab(VRectangle background, Composite measurements, Composite basicData){
     if(!tabSelected.equals(measurementsStr)){
       tabSelected = measurementsStr;
-      basicDataTab.setColor(Config.UNSELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
+      basicDataTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
+      measurementsTab.setColor(SELECTED_BACKGROUND_COLOR);
       measurementsTabStr.setFont(bold);
       basicDataTabStr.setFont(notBold);
       if(width2 > width){
@@ -95,8 +95,8 @@ public class Tabs extends SimbadQueryGlyph{
         basicDataTab.move((width2+20-width)/4,0);
         double[] bounds = basicDataTab.getBounds();
         measurementsTab.moveTo(bounds[2]+(width2+20)/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+Config.OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+Config.OFFSET, measurementsTabStr.getLocation().getY());
+        basicDataTabStr.moveTo(bounds[0]+OFFSET,basicDataTabStr.getLocation().getY());
+        measurementsTabStr.moveTo(bounds[2]+OFFSET, measurementsTabStr.getLocation().getY());
       }
       if(height2 > height){
         background.setHeight(height2+basicDataTab.getHeight()+20);

@@ -367,10 +367,10 @@ public class FITSScene implements Java2DPainter, PickerListener {
 
     void updateWCSCoordinates(double vx, double vy){
         if (activeFITSimg != null){
-            // Point2D.Double wcs = cc.vs2wcs(vx, vy);
-            // if (wcs != null) wcsStr = wcs.x + " " + wcs.y;
-            // else wcsStr = "";
-            // app.mView.repaint();
+            Point2D.Double wcs = cc.vs2wcs(vx, vy);
+            if (wcs != null) wcsStr = wcs.x + " " + wcs.y;
+            else wcsStr = "";
+            app.mView.repaint();
         }
         else {
             wcsStr = EMPTY_STRING;

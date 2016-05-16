@@ -31,7 +31,7 @@ public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
   public SimbadQueryTypeSelector(VirtualSpace vs){
     super(W, H);
     this.setType(Config.T_ASTRO_OBJ_SQTS);
-    this.background = new VRectangle (0, 0, Z, width, height, CONTAINER_COLOR);
+    this.background = new VRectangle (0, 0, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
     double[] bounds = background.getBounds();
     double left = bounds[0];
     double top = bounds[1];
@@ -43,10 +43,10 @@ public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
     double y4 = y3 - buttonHeight - OFFSET;
     double tX = left + width/3;
     buttons = new VRectangle[4];
-    buttons[0] = new VRectangle (0, y1, Z, buttonWidth , buttonHeight - OFFSET, BACKGROUND_COLOR);
-    buttons[1] = new VRectangle (0, y2 , Z, buttonWidth, buttonHeight - OFFSET, BACKGROUND_COLOR);
-    buttons[2] = new VRectangle (0, y3 , Z, buttonWidth, buttonHeight - OFFSET, BACKGROUND_COLOR);
-    buttons[3] = new VRectangle (0, y4 , Z, buttonWidth, buttonHeight - OFFSET, BACKGROUND_COLOR);
+    buttons[0] = new VRectangle (0, y1, Z, buttonWidth , buttonHeight - OFFSET, BACKGROUND_COLOR, BORDER_COLOR);
+    buttons[1] = new VRectangle (0, y2 , Z, buttonWidth, buttonHeight - OFFSET, BACKGROUND_COLOR, BORDER_COLOR);
+    buttons[2] = new VRectangle (0, y3 , Z, buttonWidth, buttonHeight - OFFSET, BACKGROUND_COLOR, BORDER_COLOR);
+    buttons[3] = new VRectangle (0, y4 , Z, buttonWidth, buttonHeight - OFFSET, CANCEL_COLOR, CANCEL_BORDER_COLOR);
     VText options = new VText(left+2*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "Select query type:");
     options.setScale(1.3f);
     VText byCoordinates = new VText(tX, y1-OFFSET, Z, TEXT_COLOR, "by Coordinates");
@@ -55,7 +55,7 @@ public class SimbadQueryTypeSelector extends SimbadQueryGlyph{
     byIdentifier.setScale(1.2f);
     VText byScript = new VText(tX, y3-OFFSET, Z, TEXT_COLOR, "by Script");
     byScript.setScale(1.2f);
-    VText cancel = new VText(tX, y4-OFFSET, Z, TEXT_COLOR, "Cancel");
+    VText cancel = new VText(tX, y4-OFFSET, Z, TEXT_COLOR_2, "Cancel");
     cancel.setScale(1.2f);
     this.addChild(background);
     this.addChild(buttons[0]);

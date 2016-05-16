@@ -43,7 +43,7 @@ public class MeasurementsTable extends SimbadQueryGlyph{
     this.width = w;
     this.height =(nRows)*20;
 
-    background = new VRectangle (x+width/2+OFFSET, y-height/2-topOffset, Z, width, height, BACKGROUND_COLOR);
+    background = new VRectangle (x+width/2+OFFSET, y-height/2-topOffset, Z, width, height, BACKGROUND_COLOR, BORDER_COLOR);
     background.setVisible(true);
     double[] bounds = background.getBounds();
     double left = bounds[0];
@@ -52,7 +52,7 @@ public class MeasurementsTable extends SimbadQueryGlyph{
     double bottom = bounds[3];
 
     VText title = new VText(OFFSET+left, top+OFFSET, 0, TEXT_COLOR, name);
-    VSegment split = new VSegment(left, top-Config.TEXT_SIZE, right, top-Config.TEXT_SIZE,Z, Config.SELECTED_TEXT_COLOR);
+    VSegment split = new VSegment(left, top-TEXT_SIZE, right, top-TEXT_SIZE,Z, BORDER_COLOR);
     title.setScale(1.1f);
 
     this.addChild(background);
@@ -67,7 +67,7 @@ public class MeasurementsTable extends SimbadQueryGlyph{
         if(j==0){
           mText.setFont(mText.getFont().deriveFont(Font.BOLD));
           double xSplit = mText.getBounds()[0]-Config.OFFSET;
-          VSegment splits = new VSegment(xSplit,top,xSplit,bottom,Z,Color.gray);
+          VSegment splits = new VSegment(xSplit,top,xSplit,bottom,Z,BORDER_COLOR);
           this.addChild(splits);
         }
         xPosition = xPosition+sizeOfColumns[i];

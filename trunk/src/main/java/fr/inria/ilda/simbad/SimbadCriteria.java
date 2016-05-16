@@ -67,7 +67,7 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     super(W, H);
     this.parent = parent;
     this.setType(Config.T_ASTRO_OBJ_SC);
-    this.background = new VRectangle (x, y, Z, width, height, BACKGROUND_COLOR);
+    this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
     this.addChild(background);
     double[] bounds = background.getBounds();
     double left = bounds[0];
@@ -107,33 +107,36 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     int type = parent.getSelected();
     if(type == SimbadQueryTypeSelector.BY_ID){
       id = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, queryByIdLabel);
-      id.setScale(1.3f);
+      id.setFont(BOLD);
       c.addChild(id);
     }
     else if(type == SimbadQueryTypeSelector.BY_COORDINATES){
       coordinates = new VText(left + 2*OFFSET, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, queryByCoordLabel);
-      coordinates.setScale(1.3f);
+      coordinates.setFont(BOLD);
       c.addChild(coordinates);
       frame = new VText(left + W/3, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, frameLabel);
-      frame.setScale(1.3f);
+      frame.setFont(BOLD);
       c.addChild(frame);
       VText explanation = new VText(left + 2*OFFSET, top-3*TEXT_SIZE-OFFSET,Z, TEXT_COLOR, explanationLabel);
+      explanation.setScale(1.3f);
       c.addChild(explanation);
     }
-    execute = new VRectangle(right - 120, top-2*TEXT_SIZE, Z, 110, TEXT_SIZE, SELECTED_COLOR);
-    VText executeQuery = new VText(right - 120 - 45, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, executeLabel);
+    execute = new VRectangle(right - 120, top-2*TEXT_SIZE, Z, 110, TEXT_SIZE, EXECUTE_COLOR,EXECUTE_BORDER_COLOR);
+    VText executeQuery = new VText(right - 120 - 45, top-2*TEXT_SIZE-OFFSET, Z, TEXT_COLOR_2, executeLabel);
     executeQuery.setScale(1.3f);
     c.addChild(execute);
     c.addChild(executeQuery);
 
-    cancel = new VRectangle(right - 120, top-3*TEXT_SIZE-OFFSET, Z, 110, TEXT_SIZE, CANCEL_COLOR);
-    VText cancelQuery = new VText(right - 120 - 45, top-3*TEXT_SIZE-2*OFFSET, Z, TEXT_COLOR, cancelLabel);
+    cancel = new VRectangle(right - 120, top-3*TEXT_SIZE-OFFSET, Z, 110, TEXT_SIZE, CANCEL_COLOR, CANCEL_BORDER_COLOR);
+    VText cancelQuery = new VText(right - 120 - 45, top-3*TEXT_SIZE-2*OFFSET, Z, TEXT_COLOR_2, cancelLabel);
     cancelQuery.setScale(1.3f);
     c.addChild(cancel);
     c.addChild(cancelQuery);
 
     VText optionalFilters = new VText(left + 2*OFFSET, top-4*TEXT_SIZE-OFFSET, Z, TEXT_COLOR, optionalFiltersLabel);
     c.addChild(optionalFilters);
+    optionalFilters.setScale(1.3f);
+
     return c;
   }
 

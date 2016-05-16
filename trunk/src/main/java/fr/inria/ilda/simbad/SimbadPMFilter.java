@@ -24,14 +24,14 @@ public class SimbadPMFilter extends SimbadFilter{
 
   public SimbadPMFilter(double top, double left, double right){
     super(W, H-90);
-    this.background = new VRectangle(left+150,top-105,Z,300,210,Config.SELECTED_BACKGROUND_COLOR);
+    this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
     setFilterLayout("Proper Motion:", top, left, right);
-    ra = new VText(left+2*Config.OFFSET,top-3*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Right ascension angle:");
-    dec = new VText(left+2*Config.OFFSET,top-5*Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR,"Declination angle:");
+    ra = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Right ascension angle:");
+    dec = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Declination angle:");
     this.addChild(ra);
     this.addChild(dec);
-    qsquares = qualitySelector(this, left+2*Config.OFFSET, top-9*Config.TEXT_SIZE);
+    qsquares = qualitySelector(this, left+2*OFFSET, top-9*TEXT_SIZE);
   }
 
   public int getItemSelected(double x, double y){
@@ -56,10 +56,10 @@ public class SimbadPMFilter extends SimbadFilter{
       decStr = str;
     }
     else if(qsquares != null && i >= 2){
-      if(qsquares[i-2].getColor().equals(Color.red))
-          qsquares[i-2].setColor(Color.white);
-      else if(qsquares[i-2].getColor().equals(Color.white))
-        qsquares[i-2].setColor(Color.red);
+      if(qsquares[i-2].getColor().equals(CANCEL_COLOR))
+          qsquares[i-2].setColor(BACKGROUND_COLOR);
+      else if(qsquares[i-2].getColor().equals(BACKGROUND_COLOR))
+        qsquares[i-2].setColor(CANCEL_COLOR);
     }
   }
 

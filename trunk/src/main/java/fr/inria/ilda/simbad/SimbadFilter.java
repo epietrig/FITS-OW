@@ -23,10 +23,10 @@ public abstract class SimbadFilter extends SimbadQueryGlyph{
     super(width, height);
   }
     public void setFilterLayout(String titleStr, double top, double left, double right){
-      VText title = new VText(left+Config.OFFSET,top-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, titleStr);
+      VText title = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR, titleStr);
       title.setScale(1.1f);
       this.addChild(title);
-      VSegment split = new VSegment(left, top-Config.OFFSET-Config.TEXT_SIZE, right, top-Config.OFFSET-Config.TEXT_SIZE,Z, Config.SELECTED_TEXT_COLOR);
+      VSegment split = new VSegment(left, top-OFFSET-TEXT_SIZE, right, top-OFFSET-TEXT_SIZE,Z, BORDER_COLOR);
 
       // bsplits.add(split1);
       this.addChild(split);
@@ -35,12 +35,12 @@ public abstract class SimbadFilter extends SimbadQueryGlyph{
       // c.addChild(split2);
     }
     public VRectangle[] qualitySelector(Composite c, double x, double y){
-      VText quality = new VText(x,y,Z,Config.SELECTED_TEXT_COLOR,"Quality:");
+      VText quality = new VText(x,y,Z,TEXT_COLOR,"Quality:");
       c.addChild(quality);
       VRectangle[] qualities = new VRectangle[5];
       for(char alphabet = 'A'; alphabet <= 'E';alphabet++) {
-        VRectangle square =  new VRectangle (x+((int)alphabet-65)*2*Config.TEXT_SIZE+Config.OFFSET, y-Config.TEXT_SIZE+Config.OFFSET, Z, 10, 10, Color.white);
-        VText qualityStr = new VText(x+((int)alphabet-65)*2*Config.TEXT_SIZE+3*Config.OFFSET, y-Config.TEXT_SIZE,Z,Config.SELECTED_TEXT_COLOR, Character.toString(alphabet));
+        VRectangle square =  new VRectangle (x+((int)alphabet-65)*2*TEXT_SIZE+OFFSET, y-TEXT_SIZE+OFFSET, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
+        VText qualityStr = new VText(x+((int)alphabet-65)*2*TEXT_SIZE+3*OFFSET, y-TEXT_SIZE,Z,TEXT_COLOR, Character.toString(alphabet));
         qualities[(int)alphabet-65] = square;
         c.addChild(square);
         c.addChild(qualityStr);
@@ -50,7 +50,7 @@ public abstract class SimbadFilter extends SimbadQueryGlyph{
     public int[] getQualitiesSelected(){
       int[] retval = new int[qsquares.length];
       for(int i = 0; i<qsquares.length; i++){
-        if(qsquares[i].getColor().equals(Color.red))
+        if(qsquares[i].getColor().equals(CANCEL_COLOR))
           retval[i] = 1;
         else
           retval[i] = 0;

@@ -34,6 +34,7 @@ import fr.inria.ilda.simbad.SimbadCatQuery;
 import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.simbad.SimbadCriteria;
+import fr.inria.ilda.simbad.SimbadClearQuery;
 
 import jsky.coords.WorldCoords;
 
@@ -57,6 +58,7 @@ public class SimbadQuery {
 
 
     void setCenter(Point2D.Double p, JSkyFitsImage cImg){
+        // clearQueryRegion();
         if (cImg == null){return;}
         this.centerImg = cImg;
         app.dSpace.addGlyph(queryRegionG);
@@ -71,6 +73,10 @@ public class SimbadQuery {
         queryRegionG.setVisible(true);
         // queryRegionLb.setVisible(true);
 
+    }
+
+    void clearQueryRegion(){
+      app.dSpace.removeGlyph(queryRegionG);
     }
 
     void setRadius(Point2D.Double onCircle){
@@ -241,10 +247,12 @@ public class SimbadQuery {
       }
       Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
-        SimbadResults results = new SimbadResults(200, 200);
+        SimbadResults results = new SimbadResults(200,200);
         results.setResults(objs);
         // results.addToVs(app.sqSpace);
         app.sqSpace.addGlyph(results);
+        SimbadClearQuery clear = new SimbadClearQuery (-55,200);
+        app.sqSpace.addGlyph(clear);
         // end_time = System.nanoTime();
         // difference = (end_time - start_time)/1e6;
         // System.out.println("time in ms it took to construct query, query and display results: "+difference);
@@ -254,7 +262,7 @@ public class SimbadQuery {
       }
     }
 
-    void clearQueryResults(){
+    public void clearQueryResults(){
 
       Vector<Glyph> toBeRemoved = app.dSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_CR);
       Vector<Glyph> toBeRemoved2 = app.dSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_LB);
@@ -271,6 +279,9 @@ public class SimbadQuery {
           app.sqSpace.removeGlyph(siTobeRemoved.getMeasurements());
           app.sqSpace.removeGlyph(siTobeRemoved);
       }
+
+      Vector<Glyph> toBeRemoved5 = app.sqSpace.getGlyphsOfType(Config.T_ASTRO_OBJ_SCQ);
+      app.sqSpace.removeGlyphs(toBeRemoved5.toArray(new Glyph[toBeRemoved5.size()]));
     }
     public VCircle getQueryRegion(){
       return queryRegionG;

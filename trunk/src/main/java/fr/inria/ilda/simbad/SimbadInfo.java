@@ -35,7 +35,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
     this.height = (info.length+2)*TEXT_SIZE+OFFSET;
     this.width = calculateWidth(info);
     double bx = x+width/2+parent.getWidth();
-    this.background = new VRectangle(bx, y, Z, width, height, CONTAINER_COLOR);
+    this.background = new VRectangle(bx, y, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
     this.addChild(background);
 
     double[] bounds = background.getBounds();

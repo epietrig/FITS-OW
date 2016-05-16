@@ -32,15 +32,16 @@ import fr.inria.zvtm.glyphs.ClosedShape;
 import fr.inria.zvtm.glyphs.JSkyFitsImage;
 import fr.inria.zvtm.widgets.PieMenuFactory;
 import fr.inria.zvtm.widgets.PieMenu;
+import java.awt.Font;
 
 import fr.inria.zvtm.fits.Utils;
 
 public class MenuEventListener implements ViewListener, PickerListener {
 
-    static final String MPM_GLOBAL_VIEW = "Global View";
-    static final String MPM_QUERY = "Query...";
-    static final String MPM_COLOR = "Color...";
-    static final String MPM_SCALE = "Scale...";
+    static final String MPM_GLOBAL_VIEW = "Global";
+    static final String MPM_QUERY = "Query";
+    static final String MPM_COLOR = "Color";
+    static final String MPM_SCALE = "Scale";
     static final String[] MPM_COMMANDS = {MPM_COLOR, MPM_SCALE, MPM_QUERY, MPM_GLOBAL_VIEW};
     static final Point2D.Double[] MPM_OFFSETS = {new Point2D.Double(0,0), new Point2D.Double(-10,0),
                                                  new Point2D.Double(0,-10), new Point2D.Double(10,0)};
@@ -219,8 +220,11 @@ public class MenuEventListener implements ViewListener, PickerListener {
         PieMenuFactory.setSensitivityRadius(0.6);
         PieMenuFactory.setRadius(app.getDisplayHeight()/10);
         PieMenuFactory.setTranslucency(0.7f);
+        Font NOT_BOLD = new Font("plain", Font.PLAIN, 12);
+        PieMenuFactory.setFont(NOT_BOLD);
         mainPieMenu = PieMenuFactory.createPieMenu(MPM_COMMANDS, MPM_OFFSETS, 0,
                                                    app.mnSpace, coords);
+
         Glyph[] items = mainPieMenu.getItems();
         for (Glyph item:items){
             item.setType(Config.T_MPMI);
