@@ -41,27 +41,27 @@ public class Navigation {
     }
 
     /* Higher view */
-    void getHigherView(){
-        Float alt = new Float(app.zfCamera.getAltitude() + app.zfCamera.getFocal());
+    void getHigherView(Camera c){
+        Float alt = new Float(c.getAltitude() + c.getFocal());
         Animation a = vsm.getAnimationManager().getAnimationFactory().createCameraAltAnim(
-                        Navigation.ANIM_MOVE_DURATION, app.zfCamera, alt, true,
+                        Navigation.ANIM_MOVE_DURATION, c, alt, true,
                         SlowInSlowOutInterpolator.getInstance(), null);
         vsm.getAnimationManager().startAnimation(a, false);
     }
 
     /* Lower view */
-    void getLowerView(){
-        Float alt = new Float(-(app.zfCamera.getAltitude() + app.zfCamera.getFocal())/2.0f);
+    void getLowerView(Camera c){
+        Float alt = new Float(-(c.getAltitude() + c.getFocal())/2.0f);
         Animation a = vsm.getAnimationManager().getAnimationFactory().createCameraAltAnim(
-                        Navigation.ANIM_MOVE_DURATION, app.zfCamera, alt, true,
+                        Navigation.ANIM_MOVE_DURATION, c, alt, true,
                         SlowInSlowOutInterpolator.getInstance(), null);
         vsm.getAnimationManager().startAnimation(a, false);
     }
 
     /* Direction should be one of WorldExplorer.MOVE_* */
-    void translateView(short direction){
+    void translateView(Camera c, short direction){
         Point2D.Double trans;
-        double[] rb = app.mView.getVisibleRegion(app.zfCamera);
+        double[] rb = c.getOwningView().getVisibleRegion(c);
         if (direction==MOVE_UP){
             double qt = (rb[1]-rb[3])/4.0;
             trans = new Point2D.Double(0,qt);
@@ -79,8 +79,9 @@ public class Navigation {
             double qt = (rb[0]-rb[2])/4.0;
             trans = new Point2D.Double(qt,0);
         }
+        System.out.println(trans);
         Animation a = vsm.getAnimationManager().getAnimationFactory().createCameraTranslation(
-                            Navigation.ANIM_MOVE_DURATION, app.zfCamera, trans, true,
+                            Navigation.ANIM_MOVE_DURATION, c, trans, true,
                             SlowInSlowOutInterpolator.getInstance(), null);
         vsm.getAnimationManager().startAnimation(a, false);
     }
@@ -128,31 +129,31 @@ public class Navigation {
     }
 
     // -----------------------------------------------------------
-    // from zraildr
+    // from zraildar
 
     /* x,y in (X Window) display coordinate */
-    public void directTranslate(double x, double y){
-        double a = (app.zfCamera.focal+Math.abs(app.zfCamera.altitude)) / app.zfCamera.focal;
-        Location l = app.zfCamera.getLocation();
+    public void directTranslate(Camera c, double x, double y){
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        Location l = c.getLocation();
         double newx = l.getX() + a*x;
         double newy = l.getY() + a*y;
-        app.zfCamera.setLocation(new Location(newx, newy, l.getAltitude()));
+        c.setLocation(new Location(newx, newy, l.getAltitude()));
     }
 
-    void centeredZoom(double f, double x, double y){
-        Location l = app.zfCamera.getLocation();
-        double a = (app.zfCamera.focal+Math.abs(app.zfCamera.altitude)) / app.zfCamera.focal;
-        double newz = app.zfCamera.focal * a * f - app.zfCamera.focal;
+    void centeredZoom(Camera c, double f, double x, double y){
+        Location l = c.getLocation();
+        double a = (c.focal+Math.abs(c.altitude)) / c.focal;
+        double newz = c.focal * a * f - c.focal;
         if (newz < 0){
             newz = 0;
-            f = app.zfCamera.focal / (a*app.zfCamera.focal);
+            f = c.focal / (a*c.focal);
         }
-        double[] r = windowToViewCoordinates(x, y, app.zfCamera);
+        double[] r = windowToViewCoordinates(x, y, c);
         double dx = l.getX() - r[0];
         double dy = l.getY() - r[1];
         double newx = l.getX() + (f*dx - dx); // *a/(zfCamera.altitude+ zfCamera.focal));
         double newy = l.getY() + (f*dy - dy);
-        app.zfCamera.setLocation(new Location(newx, newy, newz));
+        c.setLocation(new Location(newx, newy, newz));
     }
 
     public double[] windowToViewCoordinates(double x, double y, Camera c){

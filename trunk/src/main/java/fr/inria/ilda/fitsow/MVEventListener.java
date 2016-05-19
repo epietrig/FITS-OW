@@ -377,7 +377,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
                 app.pdfL.goToPreviousPage(ciPDF);
             }
             else {
-                app.nav.getHigherView();
+                app.nav.getHigherView(app.zfCamera);
             }
         }
         else if (code==KeyEvent.VK_PAGE_DOWN){
@@ -385,14 +385,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
                 app.pdfL.goToNextPage(ciPDF);
             }
             else {
-                app.nav.getLowerView();
+                app.nav.getLowerView(app.zfCamera);
             }
         }
         else if (code==KeyEvent.VK_HOME){app.nav.getGlobalView(null);}
-        else if (code==KeyEvent.VK_UP){app.nav.translateView(Navigation.MOVE_UP);}
-        else if (code==KeyEvent.VK_DOWN){app.nav.translateView(Navigation.MOVE_DOWN);}
-        else if (code==KeyEvent.VK_LEFT){app.nav.translateView(Navigation.MOVE_LEFT);}
-        else if (code==KeyEvent.VK_RIGHT){app.nav.translateView(Navigation.MOVE_RIGHT);}
+        else if (code==KeyEvent.VK_UP){app.nav.translateView(app.zfCamera, Navigation.MOVE_UP);}
+        else if (code==KeyEvent.VK_DOWN){app.nav.translateView(app.zfCamera, Navigation.MOVE_DOWN);}
+        else if (code==KeyEvent.VK_LEFT){app.nav.translateView(app.zfCamera, Navigation.MOVE_LEFT);}
+        else if (code==KeyEvent.VK_RIGHT){app.nav.translateView(app.zfCamera, Navigation.MOVE_RIGHT);}
         else if (code==KeyEvent.VK_F1){
             app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
             app.scene.selectPrevColorMapping(app.meh.selectedFITSImage);

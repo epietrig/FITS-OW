@@ -225,7 +225,9 @@ public class CursorManager {
 		 		return;
 		 	}
 		}
-		nav.directTranslate(speedFac*dx*app.getDisplayWidth(),speedFac*dy*app.getDisplayHeight());
+		nav.directTranslate(app.zfCamera,
+		                    speedFac*dx*app.getDisplayWidth(),
+							speedFac*dy*app.getDisplayHeight());
 	}
 
 	public void endDrag(Object obj, int id){
@@ -347,7 +349,7 @@ public class CursorManager {
 	}
 
 	private void zoom(double f, double x, double y){
-		nav.centeredZoom(f, x*app.getDisplayWidth(), y*app.getDisplayHeight());
+		nav.centeredZoom(app.zfCamera, f, x*app.getDisplayWidth(), y*app.getDisplayHeight());
 	}
 
 	public void endZoom(Object obj, int id){
