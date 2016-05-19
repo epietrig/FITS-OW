@@ -58,14 +58,10 @@ public class SimbadQuery {
 
 
     void setCenter(Point2D.Double p, JSkyFitsImage cImg){
-        // clearQueryRegion();
         if (cImg == null){return;}
         this.centerImg = cImg;
         app.dSpace.addGlyph(queryRegionG);
-        // app.dSpace.addGlyph(queryRegionLb);
         queryRegionG.setVisible(false);
-        // queryRegionLb.setVisible(false);
-        // queryRegionLb.setScaleIndependent(true);
         queryRegionG.sizeTo(1);
         queryRegionCenter = p;
         queryRegionG.moveTo(queryRegionCenter.x, queryRegionCenter.y);
@@ -245,7 +241,6 @@ public class SimbadQuery {
           cr.setType(Config.T_ASTRO_OBJ_CR);
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
-      Vector<Glyph> gs = app.dSpace.getAllGlyphs();
       if(!objs.isEmpty()){
         SimbadResults results = new SimbadResults(200,200);
         results.setResults(objs);

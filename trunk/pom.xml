@@ -24,11 +24,12 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
   <scm>
     <url>https://svn.code.sf.net/p/zvtm/code/zvtm-core</url>
   </scm>
-
+<!--
   <properties>
     <icepdfVersion>4.2.0</icepdfVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  </properties> -->
+
 
   <!-- Repositories -->
   <repositories>
@@ -123,7 +124,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
           mvn install:install-file -Dfile=icepdf-pro.jar -DgroupId=org.icepdf -DartifactId=icepdf-pro -Dversion=4.2.0 -Dpackaging=jar
           mvn install:install-file -Dfile=icepdf-pro-intl.jar -DgroupId=org.icepdf -DartifactId=icepdf-pro-intl -Dversion=4.2.0 -Dpackaging=jar
   -->
-    <dependency>
+    <!-- <dependency>
         <groupId>org.icepdf</groupId>
         <artifactId>icepdf-pro</artifactId>
         <version>${icepdfVersion}</version>
@@ -132,7 +133,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
         <groupId>org.icepdf</groupId>
         <artifactId>icepdf-pro-intl</artifactId>
         <version>${icepdfVersion}</version>
-    </dependency>
+    </dependency> -->
   </dependencies>
 
   <!-- Build -->

@@ -118,15 +118,21 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
               }
           }
         }
+        else if(insideSimbadInfo(jpx, jpy)){
+          draggingSimbadInfo = true;
+          draggingFITS = false;
+          draggingSimbadResults = false;
+          draggingSimbadQTS = false;
+          draggingSimbadCriteria = false;
+          draggingSimbadCQ = false;
+        }
         else if(insideSimbadClearQuery(jpx, jpy)){
-          System.out.println("insideSimbadClearQuery");
           draggingSimbadInfo = false;
           draggingSimbadCQ = true;
           draggingFITS = false;
           draggingSimbadResults = false;
           draggingSimbadQTS = false;
           draggingSimbadCriteria = false;
-
         }
         else if(insideSimbadResults(jpx, jpy)){
           draggingSimbadResults = true;
@@ -135,15 +141,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           draggingSimbadInfo = false;
           draggingSimbadCriteria = false;
           draggingSimbadCQ = false;
-        }
-        else if(insideSimbadInfo(jpx, jpy)){
-          draggingSimbadInfo = true;
-          draggingFITS = false;
-          draggingSimbadResults = false;
-          draggingSimbadQTS = false;
-          draggingSimbadCriteria = false;
-          draggingSimbadCQ = false;
-
         }
         else if(insideSimbadCriteria(jpx, jpy)){
           draggingSimbadCriteria = true;
@@ -224,12 +221,27 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
-        updateSimbadQueryTypeSelector(jpx, jpy);
-        updateSimbadCriteriaTabs(jpx, jpy); //if I'm clicking tabs, update them
-        updateSimbadCriteria(jpx, jpy);
-        updateSimbadResults(jpx, jpy);
-        updateSimbadInfoTabs(jpx, jpy);
+      SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+      SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+      SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
+      SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+      if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
+        updateSimbadCriteriaTabs(jpx, jpy, criteria);
+        updateSimbadCriteria(jpx, jpy, criteria);
+      }
+      else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
+        updateSimbadQueryTypeSelector(jpx, jpy, sqts);
+      }
+      else if(info != null && info.coordInsideItem(jpx, jpy)){
+        updateSimbadInfoTabs(jpx, jpy, info);
+      }
+      else if(list!=null && list.coordInsideItem(jpx, jpy)){
+        updateSimbadResults(jpx, jpy, list);
+      }
+      else if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, app.sqCamera)){
         updateSimbadClearQuery(jpx, jpy);
+      }
     }
 
     public void press2(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){}
@@ -471,18 +483,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
 
     void updateSimbadClearQuery(int jpx, int jpy){
-      SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
-      if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, app.sqCamera)){
-        sq = new SimbadQuery(app);
-        sq.clearQueryResults();
-        sq = null;
-      }
+      sq = new SimbadQuery(app);
+      sq.clearQueryResults();
+      sq = null;
     }
 
-    void updateSimbadQueryTypeSelector(int jpx, int jpy){
-      SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
-      if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
-        int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);
+    void updateSimbadQueryTypeSelector(int jpx, int jpy, SimbadQueryTypeSelector sqts){
+      int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);
         sqts.select(selectedButtonIndex);
         SimbadCriteria current = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
         if(current!=null){
@@ -509,17 +516,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         else if(sqts.getSelected() == sqts.CANCEL){
           exitQueryMode();
         }
-      }
     }
-    void updateSimbadResults(int jpx, int jpy){
-      SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
-      if(list!=null && list.coordInsideItem(jpx, jpy)){
-        Point2D.Double coords = new Point2D.Double();
-        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-        Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
-        updateSimbadInfo(coords.getX(),coords.getY(), list);
-        list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
-      }
+    void updateSimbadResults(int jpx, int jpy, SimbadResults list){
+      Point2D.Double coords = new Point2D.Double();
+      app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
+      Vector<Glyph> gsd = app.dSpace.getAllGlyphs();
+      updateSimbadInfo(coords.getX(),coords.getY(), list);
+      list.highlightCorrespondingGlyph(gsd, list.getCorrespondingGlyph(gsd));
     }
 
     void updateSimbadInfo(double x, double y, SimbadResults list){
@@ -541,35 +544,27 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
     }
 
-    void updateSimbadInfoTabs(int jpx, int jpy){
-      SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
-      if(info != null){
-        Tabs tabs = info.getTabs();
-        if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateBasicDataTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
-        }
-        else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateMeasurementsTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
-        }
+    void updateSimbadInfoTabs(int jpx, int jpy, SimbadInfo info){
+      Tabs tabs = info.getTabs();
+      if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+        tabs.activateBasicDataTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
+      }
+      else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+        tabs.activateMeasurementsTab(info.getBackground(), info.getMeasurements(), info.getBasicData());
       }
     }
 
-    void updateSimbadCriteriaTabs(int jpx, int jpy){
-      SimbadCriteria criteria = (SimbadCriteria) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
-      if(criteria!= null){
-        Tabs tabs = criteria.getTabs();
-        if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateBasicDataTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
-        }
-        else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
-          tabs.activateMeasurementsTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
-        }
+    void updateSimbadCriteriaTabs(int jpx, int jpy, SimbadCriteria criteria){
+      Tabs tabs = criteria.getTabs();
+      if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
+        tabs.activateBasicDataTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
+      }
+      else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
+        tabs.activateMeasurementsTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
       }
     }
 
-    void updateSimbadCriteria(int jpx, int jpy){
-      SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
-      if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
+    void updateSimbadCriteria(int jpx, int jpy, SimbadCriteria criteria){
         Tabs tabs = criteria.getTabs();
         Point2D.Double coords = new Point2D.Double();
         app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
@@ -696,7 +691,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             criteria.getFluxFilter().select(value, inputValue);
           }
         }
-      }
     }
 
     boolean insideSimbadResults(int jpx, int jpy){
