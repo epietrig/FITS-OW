@@ -79,7 +79,6 @@ public class Navigation {
             double qt = (rb[0]-rb[2])/4.0;
             trans = new Point2D.Double(qt,0);
         }
-        System.out.println(trans);
         Animation a = vsm.getAnimationManager().getAnimationFactory().createCameraTranslation(
                             Navigation.ANIM_MOVE_DURATION, c, trans, true,
                             SlowInSlowOutInterpolator.getInstance(), null);
