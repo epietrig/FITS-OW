@@ -140,6 +140,7 @@ public class SimbadCatQuery {
 
     private static URL makeSimbadIdQueryUrl(String id){
         try{
+            id = id.replaceAll("\\s+","");
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
             String script =
             String.format(formatString+
