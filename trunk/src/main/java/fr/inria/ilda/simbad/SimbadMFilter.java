@@ -104,4 +104,19 @@ public class SimbadMFilter extends SimbadFilter{
     }
   }
 
+  // public void reselect(int[] m){
+  //   if(m != null && m.length > 0){
+  //     if(m.length == 1 && m[0] == 1){
+  //       for(VRectangle square : msquares){
+  //         square.setColor(CANCEL_COLOR);
+  //       }
+  //     }
+  //     else if(m.length == Config.CATALOGS.length){
+  //       for(int i = 0; i < m.length; i++){
+  //         if(m[i]==1 && msquares[i+1]!= null) msquares[i+1].setColor(CANCEL_COLOR);
+  //       }
+  //     }
+  //   }
+  // }
+
 }

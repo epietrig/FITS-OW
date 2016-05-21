@@ -242,8 +242,8 @@ public class SimbadQuery {
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
       if(!objs.isEmpty()){
-        SimbadResults results = new SimbadResults(200,200);
-        results.setResults(objs);
+        SimbadResults results = new SimbadResults(200,200, objs);
+        // results.setResults(objs);
         // results.addToVs(app.sqSpace);
         app.sqSpace.addGlyph(results);
         SimbadClearQuery clear = new SimbadClearQuery (-55,200);

@@ -7,11 +7,12 @@
 package fr.inria.ilda.simbad;
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
+import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.glyphs.Composite;
-
+import fr.inria.ilda.simbad.SimbadInfo;
 import fr.inria.ilda.fitsow.Config;
 import java.awt.Font;
-
+import java.util.Vector;
 
 public class Tabs extends SimbadQueryGlyph{
   public static String basicDataStr = "Basic Data";
@@ -19,24 +20,45 @@ public class Tabs extends SimbadQueryGlyph{
   private String tabSelected;
   private VRectangle basicDataTab, measurementsTab;
   private VText basicDataTabStr, measurementsTabStr;
-  private SimbadQueryGlyph parent;//doesnt really need it
+  private SimbadQueryGlyph parent;
   private double width2, height2;
 
-  public Tabs(double top, double left, double height2, double width2, SimbadQueryGlyph parent){
+  // public Tabs(double top, double left, double height2, double width2, SimbadQueryGlyph parent){
+  //   super(parent.getWidth(),parent.getHeight());
+  //   this.width2 = width2;
+  //   this.height2 = height2;
+  //   this.parent = parent;
+  //   basicDataTab = new VRectangle(left+width/4, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, BACKGROUND_COLOR, BACKGROUND_COLOR);
+  //   basicDataTabStr = new VText(left+OFFSET,top-OFFSET*3,Z,TEXT_COLOR,basicDataStr);
+  //   basicDataTabStr.setScale(1.3f);
+  //   tabSelected = basicDataStr;
+  //   basicDataTabStr.setFont(BOLD);
+  //
+  //   measurementsTab = new VRectangle(left+width/4+width/2, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, BACKGROUND_COLOR, BACKGROUND_COLOR);
+  //   measurementsTabStr = new VText(left+width/2+2*OFFSET,top-OFFSET*3,Z,TEXT_COLOR,measurementsStr);
+  //   measurementsTabStr.setScale(1.3f);
+  //
+  //   this.addChild(basicDataTab);
+  //   this.addChild(basicDataTabStr);
+  //   this.addChild(measurementsTab);
+  //   this.addChild(measurementsTabStr);
+  // }
+
+  public Tabs(double top, double left, double height2, double width2, SimbadQueryGlyph parent, String selected){
     super(parent.getWidth(),parent.getHeight());
     this.width2 = width2;
     this.height2 = height2;
-    basicDataTab = new VRectangle(left+width/4, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
+    this.parent = parent;
+    basicDataTab = new VRectangle(left+width/4, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, BACKGROUND_COLOR, BORDER_COLOR);
     basicDataTabStr = new VText(left+OFFSET,top-OFFSET*3,Z,TEXT_COLOR,basicDataStr);
     basicDataTabStr.setScale(1.3f);
-    tabSelected = basicDataStr;
-    bold = basicDataTabStr.getFont().deriveFont(Font.BOLD);
-    notBold = basicDataTabStr.getFont();
-    basicDataTabStr.setFont(bold);
-
-    measurementsTab = new VRectangle(left+width/4+width/2, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, Config.SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
+    measurementsTab = new VRectangle(left+width/4+width/2, top-TEXT_SIZE/2, Z, width/2, TEXT_SIZE, BACKGROUND_COLOR, BORDER_COLOR);
     measurementsTabStr = new VText(left+width/2+2*OFFSET,top-OFFSET*3,Z,TEXT_COLOR,measurementsStr);
     measurementsTabStr.setScale(1.3f);
+
+    tabSelected = selected;
+    if(tabSelected.equals(basicDataStr)) basicDataTabStr.setFont(BOLD);
+    else measurementsTabStr.setFont(BOLD);
 
     this.addChild(basicDataTab);
     this.addChild(basicDataTabStr);
@@ -56,54 +78,74 @@ public class Tabs extends SimbadQueryGlyph{
   public void activateBasicDataTab(VRectangle background, Composite measurements, Composite basicData){
     if(!tabSelected.equals(basicDataStr)){
       tabSelected = basicDataStr;
-      basicDataTab.setColor(SELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
-      basicDataTabStr.setFont(bold);
-      measurementsTabStr.setFont(notBold);
-      if(width2 > width){
-        background.setWidth(width);
-        basicDataTab.setWidth(width/2);
-        measurementsTab.setWidth(width/2);
-        background.move((width-width2-20)/2,0);
-        basicDataTab.move((width-width2-20)/4,0);
-        double[] bounds = basicDataTab.getBounds();
-        measurementsTab.moveTo(bounds[2]+width/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+OFFSET, measurementsTabStr.getLocation().getY());
+      if(this.parent.getType().equals(Config.T_ASTRO_OBJ_BINFO)){
+        SimbadInfo former = (SimbadInfo) parent;
+        VRectangle formerBackground = former.getBackground();
+        SimbadInfo newSimbadInfo;
+        if(width2>width && height2>height){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX()-(width-width2-20)/2,
+          formerBackground.getLocation().getY()+(height2+basicDataTab.getHeight()+20-height)/2,width,height,this);
+        }
+        else if(width2>width){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX()-(width-width2-20)/2,
+          formerBackground.getLocation().getY(),width,height,this);
+        }
+        else if(height2>height){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX(),
+          formerBackground.getLocation().getY()+(height2+basicDataTab.getHeight()+20-height)/2,width,height,this);
+        }
+        else{
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX(),
+          formerBackground.getLocation().getY(),width,height,this);
+        }
+          SQ_VIRTUAL_SPACE.removeGlyph(parent);
+          SQ_VIRTUAL_SPACE.addGlyph(newSimbadInfo);
       }
-      if(height2 > height){
-        background.setHeight(height);
-        background.move(0,(height2+basicDataTab.getHeight()+20-height)/2);
+      if(this.parent.getType().equals(Config.T_ASTRO_OBJ_SC)){
+        SimbadCriteria former = (SimbadCriteria) parent;
+        VRectangle formerBackground = former.getBackground();
+        SimbadCriteria newSimbadCriteria = new SimbadCriteria(formerBackground.getLocation().getX(),
+        formerBackground.getLocation().getY(), former.getParent(), this);
+        SQ_VIRTUAL_SPACE.removeGlyph(parent);
+        SQ_VIRTUAL_SPACE.addGlyph(newSimbadCriteria);
       }
-      SQ_VIRTUAL_SPACE.removeGlyph(measurements);
-      SQ_VIRTUAL_SPACE.addGlyph(basicData);
     }
   }
 
   public void activateMeasurementsTab(VRectangle background, Composite measurements, Composite basicData){
     if(!tabSelected.equals(measurementsStr)){
       tabSelected = measurementsStr;
-      basicDataTab.setColor(Config.SELECTED_BACKGROUND_COLOR);
-      measurementsTab.setColor(SELECTED_BACKGROUND_COLOR);
-      measurementsTabStr.setFont(bold);
-      basicDataTabStr.setFont(notBold);
-      if(width2 > width){
-        background.setWidth(width2+20);
-        basicDataTab.setWidth((width2+20)/2);
-        measurementsTab.setWidth((width2+20)/2);
-        background.move((width2-width+20)/2,0);
-        basicDataTab.move((width2+20-width)/4,0);
-        double[] bounds = basicDataTab.getBounds();
-        measurementsTab.moveTo(bounds[2]+(width2+20)/4,measurementsTab.getLocation().getY());
-        basicDataTabStr.moveTo(bounds[0]+OFFSET,basicDataTabStr.getLocation().getY());
-        measurementsTabStr.moveTo(bounds[2]+OFFSET, measurementsTabStr.getLocation().getY());
+      if(this.parent.getType().equals(Config.T_ASTRO_OBJ_BINFO)){
+        SimbadInfo former = (SimbadInfo) parent;
+        VRectangle formerBackground = former.getBackground();
+        SimbadInfo newSimbadInfo;
+        if(width2>width && height2>height){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX()+(width-width2-20)/2,
+          formerBackground.getLocation().getY()-(height2+basicDataTab.getHeight()+20-height)/2,width2+20,height2+20,this);
+        }
+        else if(width2>width){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX()+(width-width2-20)/2,
+          formerBackground.getLocation().getY(),width2+20,height,this);
+        }
+        else if(height2>height){
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX(),
+          formerBackground.getLocation().getY()-(height2+basicDataTab.getHeight()+20-height)/2,width,height2+basicDataTab.getHeight()+20,this);
+        }
+        else{
+          newSimbadInfo = new SimbadInfo(former.getObj(), former.getInfo() , formerBackground.getLocation().getX(),
+          formerBackground.getLocation().getY(),width,height,this);
+        }
+          SQ_VIRTUAL_SPACE.removeGlyph(parent);
+          SQ_VIRTUAL_SPACE.addGlyph(newSimbadInfo);
       }
-      if(height2 > height){
-        background.setHeight(height2+basicDataTab.getHeight()+20);
-        background.move(0,-(height2+basicDataTab.getHeight()+20-height)/2);
+      if(this.parent.getType().equals(Config.T_ASTRO_OBJ_SC)){
+        SimbadCriteria former = (SimbadCriteria) parent;
+        VRectangle formerBackground = former.getBackground();
+        SimbadCriteria newSimbadCriteria = new SimbadCriteria(formerBackground.getLocation().getX(),
+        formerBackground.getLocation().getY(), former.getParent(), this);
+        SQ_VIRTUAL_SPACE.removeGlyph(parent);
+        SQ_VIRTUAL_SPACE.addGlyph(newSimbadCriteria);
       }
-      SQ_VIRTUAL_SPACE.removeGlyph(basicData);
-      SQ_VIRTUAL_SPACE.addGlyph(measurements);
     }
   }
 
@@ -121,6 +163,12 @@ public class Tabs extends SimbadQueryGlyph{
   }
   public void setHeight2(double height2){
     this.height2 = height2;
+  }
+  public double getWidth2(){
+    return width2;
+  }
+  public double getHeight2(){
+    return height2;
   }
   public String getMeasurementsStr(){
     return measurementsStr;

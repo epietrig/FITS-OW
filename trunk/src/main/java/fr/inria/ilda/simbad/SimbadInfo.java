@@ -27,11 +27,15 @@ public class SimbadInfo extends SimbadQueryGlyph{
   public Composite basicData;
   private Composite measurements;
   private Tabs tabs;
+  String[] info;
+  AstroObject obj;
 
   public SimbadInfo(AstroObject obj, double x, double y, SimbadResults parent){
     super(0,0);
+    this.obj = obj;
     this.setType(Config.T_ASTRO_OBJ_BINFO);
     String[] info = obj.basicDataToString().split("\n");
+    this.info = info;
     this.height = (info.length+2)*TEXT_SIZE+OFFSET;
     this.width = calculateWidth(info);
     double bx = x+width/2+parent.getWidth();
@@ -42,18 +46,43 @@ public class SimbadInfo extends SimbadQueryGlyph{
     double left = bounds[0];
     double top = bounds[1];
 
-    this.tabs = new Tabs(top, left, height, width, this);
+    this.tabs = new Tabs(top, left, height, width, this, "Basic Data");
     this.addChild(tabs);
 
     this.measurements =  measurements(top, left, obj);
     this.basicData = basicData(top, left, obj, info);
+    this.addChild(basicData);
+  }
+
+  public SimbadInfo(AstroObject obj, String[] info, double x, double y,
+   double width, double height, Tabs former){
+    super(width, height);
+    this.setType(Config.T_ASTRO_OBJ_BINFO);
+    this.info = info;
+    this.obj = obj;
+    this.background = new VRectangle(x, y, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
+    this.addChild(background);
+    double[] bounds = background.getBounds();
+    double left = bounds[0];
+    double top = bounds[1];
+    String formerSelected = former.getTabSelected();
+    this.tabs = new Tabs(top, left, former.getHeight2(), former.getWidth2(), this, formerSelected);
+    this.addChild(tabs);
+    this.basicData = basicData(top, left, obj, info);
+    this.measurements = measurements(top, left, obj);
+
+    if(formerSelected.equals("Basic Data")){
+      this.addChild(basicData);
+    }
+    else if(formerSelected.equals("Measurements")){
+      this.addChild(measurements);
+    }
+
   }
 
   private Composite basicData(double top, double left, AstroObject obj, String[] info){
     Composite basicInfo = new Composite();
     VText identifier = new VText(left+OFFSET,top-TEXT_SIZE*2,Z,TEXT_COLOR,obj.getIdentifier());
-    // notBold = identifier.getFont();
-    // bold = identifier.getFont().deriveFont(Font.BOLD);
     identifier.setFont(BOLD);
     identifier.setScale(1.3f);
     basicInfo.addChild(identifier);
@@ -113,5 +142,13 @@ public class SimbadInfo extends SimbadQueryGlyph{
 //should be on parent class
   public VRectangle getBackground(){
     return background;
+  }
+
+  public String[] getInfo(){
+    return info;
+  }
+
+  public AstroObject getObj(){
+    return obj;
   }
 }

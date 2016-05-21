@@ -38,14 +38,16 @@ public class SimbadResults extends SimbadQueryGlyph{
   double x;
   double y;
 
-  public SimbadResults(double x, double y){
+  public SimbadResults(double x, double y, List<AstroObject> results){
     super(300, 0*TEXT_SIZE+OFFSET);
     this.x = x;
     this.y = y;
     this.setType(Config.T_ASTRO_OBJ_SR);
     selected = -1;
     glyphSelected = -1;
+    setResults(results);
   }
+
 
   public void setResults(List<AstroObject> results){
     if(results!=null){

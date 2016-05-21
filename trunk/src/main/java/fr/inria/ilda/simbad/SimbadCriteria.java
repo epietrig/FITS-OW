@@ -99,9 +99,61 @@ public class SimbadCriteria extends SimbadQueryGlyph{
 
     this.measurements = new SimbadMFilter(top-TEXT_SIZE, left, right, this);
 
-    this.tabs = new Tabs(top, left, H, W, this);
+    this.tabs = new Tabs(top, left, H, W, this, "Basic Data");
+    this.addChild(basicData);
     this.addChild(tabs);
   }
+
+  public SimbadCriteria(double x, double y, SimbadQueryTypeSelector parent, Tabs former){
+    super(W, H);
+    this.parent = parent;
+    this.setType(Config.T_ASTRO_OBJ_SC);
+    this.background = new VRectangle (x, y, Z, width, height, CONTAINER_COLOR, CONTAINER_BORDER_COLOR);
+    this.addChild(background);
+    double[] bounds = background.getBounds();
+    double left = bounds[0];
+    double top = bounds[1];
+    double right = bounds[2];
+
+    this.basicData = new Composite();
+    this.queryType = queryType(top, left, right);
+    basicData.addChild(queryType);
+
+    double yOffset = 5*TEXT_SIZE;
+    this.objectTypeFilter = new SimbadOTypeFilter(top-yOffset, left, left+W/3);
+    basicData.addChild(objectTypeFilter);
+
+    this.fluxesFilter = new SimbadFluxFilter(top-yOffset, left+W/3, left+2*W/3);
+    basicData.addChild(fluxesFilter);
+
+    this.spectralTypeFilter = new SimbadSTFilter(top-yOffset, left+2*W/3, left+W);
+    basicData.addChild(spectralTypeFilter);
+
+    this.radialVelocityFilter = new SimbadRVFilter(top-yOffset-H/2, left, left+W/3);
+    basicData.addChild(radialVelocityFilter);
+
+    this.properMotionFilter = new SimbadPMFilter(top-yOffset-H/2, left+W/3, left+2*W/3);
+    basicData.addChild(properMotionFilter);
+
+    this.parallaxesFilter = new SimbadParallaxFilter(top-yOffset-H/2, left+2*W/3, left+W);
+    basicData.addChild(parallaxesFilter);
+
+    this.measurements = new SimbadMFilter(top-TEXT_SIZE, left, right, this);
+
+
+    String formerSelected = former.getTabSelected();
+    if(formerSelected.equals("Basic Data")){
+      this.addChild(basicData);
+    }
+    else if(formerSelected.equals("Measurements")){
+      this.addChild(measurements);
+      // measurements.reselect(mselected);
+    }
+
+    this.tabs = new Tabs(top, left, H, W, this, formerSelected);
+    this.addChild(tabs);
+  }
+
   public Composite queryType(double top, double left, double right){
     Composite c = new Composite();
     int type = parent.getSelected();
@@ -216,5 +268,8 @@ public class SimbadCriteria extends SimbadQueryGlyph{
   }
   public String getCoordinatesStr(){
     return coordinatesStr;
+  }
+  public SimbadQueryTypeSelector getParent(){
+    return parent;
   }
 }

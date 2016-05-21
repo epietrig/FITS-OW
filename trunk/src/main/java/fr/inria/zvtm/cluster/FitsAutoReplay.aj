@@ -52,21 +52,6 @@ aspect FitsAutoReplay extends AbstractAutoReplay {
          execution(public void JSkyFitsImage.setVisible(boolean) ) ||
          execution(public void IcePDFPageImg.setInterpolationMethod(Object) ) ||
          execution(public void IcePDFPageImg.flush() ) ||
-         execution(public void BrowsableDocument.setPage(int) ) ||
-         execution(public void SimbadCriteria.updateQueryParameters(double, double) ) ||
-         execution(public void SimbadCriteria.cleanQueryParameters() ) ||
-         execution(public void SimbadFluxFilter.select(int, String) ) ||
-         execution(public void SimbadMFilter.select(int, String) ) ||
-         execution(public void SimbadOTypeFilter.select(int, String) ) ||
-         execution(public void SimbadParallaxFilter.select(int, String) ) ||
-         execution(public void SimbadPMFilter.select(int, String) ) ||
-         execution(public void SimbadRVFilter.select(int, String) ) ||
-         execution(public void SimbadSTFilter.select(int, String) ) ||
-         execution(public void SimbadQueryTypeSelector.select(int) ) ||
-         execution(public boolean SimbadResults.highlight(int) ) ||
-         execution(public void SimbadResults.setResults(List<AstroObject>) ) ||
-         execution(public void SimbadResults.highlightCorrespondingGlyph(Vector<Glyph>, int) ) ||
-         execution(public void Tabs.activateBasicDataTab(VRectangle, Composite, Composite) ) ||
-         execution(public void Tabs.activateMeasurementsTab(VRectangle, Composite, Composite) )
+         execution(public void BrowsableDocument.setPage(int))
         );
 }
