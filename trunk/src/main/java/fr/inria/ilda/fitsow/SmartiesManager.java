@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import java.awt.Color;
+import java.awt.Point;
 
 import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
@@ -18,6 +19,14 @@ import fr.lri.smarties.libserver.SmartiesEvent;
 import fr.lri.smarties.libserver.SmartiesPuck;
 import fr.lri.smarties.libserver.SmartiesWidget;
 import fr.lri.smarties.libserver.SmartiesWidgetHandler;
+import fr.inria.ilda.simbad.SimbadResults;
+import fr.inria.ilda.simbad.SimbadInfo;
+import fr.inria.ilda.simbad.SimbadCriteria;
+import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
+import fr.inria.ilda.simbad.SimbadQueryGlyph;
+import fr.inria.ilda.simbad.SimbadClearQuery;
+import fr.inria.ilda.simbad.Tabs;
+import fr.inria.ilda.fitsow.cursors.OlivierCursor;
 
 class SmartiesManager implements Observer {
 
@@ -39,6 +48,15 @@ class SmartiesManager implements Observer {
 	MTRecognitionEngine mtRecognizer = null;
 
 	SimbadQuery sq;
+
+	boolean dragging = false;
+	boolean draggingFITS = false;
+	boolean draggingSimbadResults = false;
+	boolean draggingSimbadInfo = false;
+	boolean draggingSimbadCriteria = false;
+	boolean draggingSimbadQTS = false;
+	boolean draggingSimbadCQ = false;
+	int lastJPX, lastJPY;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
 
@@ -70,7 +88,10 @@ class SmartiesManager implements Observer {
         //sw.handler = new ColorMenuHandler();
     SmartiesWidget sw3 = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_BUTTON, "Query Menu", 9,2,4,1);
 		sw3.handler = new QueryMenuHandler();
-
+		SmartiesWidget text = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_INCTEXT_BUTTON , "Input Text", 13,2,4,1);
+		text.handler = new TextMenuHandler();
+		SmartiesWidget dragg = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_TOGGLE_BUTTON , "Dragg", 1,2,4,1);
+		dragg.handler = new DraggHandler();
 	    smarties.addObserver(this);
 	    smarties.setRawTouchEventsConf(true);
 
@@ -87,6 +108,17 @@ class SmartiesManager implements Observer {
 
 	public void setGestureRecognizer(MTRecognitionEngine mtRecognizer) {
 		this.mtRecognizer = mtRecognizer;
+	}
+
+	public int[] jCoords(SmartiesEvent se){
+		OlivierCursor oc = inputManager.getCursor(this, se.id).wc;
+		Point res = new Point();
+		double[] bounds = oc.getBounds();
+		double x = bounds[2] - bounds[0];
+		double y = bounds[1] - bounds[3];
+		application.mView.fromVSToPanelCoordinates(oc.getLocation().getX(),oc.getLocation().getY(),application.crCamera,res);
+		int[] jcoords = {(int) res.getX(),(int) res.getY()};
+		return jcoords;
 	}
 
 	public void update(Observable obj, Object arg)
@@ -206,35 +238,91 @@ class SmartiesManager implements Observer {
 			break;
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MOVE:{
-			//System.out.println("SMARTIE_EVENTS_TYPE_START_MOVE");
+			// System.out.println("SMARTIE_EVENTS_TYPE_START_MOVE");
 			if (se.p != null){
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
 					inputManager.startCircularSelection(this, se.id);
 				}
+				if(dragging){
+					System.out.println("startdragging");
+					int[] jCoords = jCoords(se);
+					int jpx = jCoords[0];
+					int jpy = jCoords[1];
+					application.eh.lastJPX=jpx;
+					application.eh.lastJPY=jpy;
+					application.eh.startDragging(jpx, jpy);
+
+				}
+
 			}
 			break;
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_MOVE:{
-			//System.out.println("SMARTIE_EVENTS_TYPE_MOVE");
+			// System.out.println("SMARTIE_EVENTS_TYPE_MOVE");
 			if (se.p != null){
 				inputManager.moveCursorTo(this, se.id, se.p.x, se.p.y);
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
 					inputManager.resizeCircularSelection(this, se.id);
 				}
+				if(dragging){
+					System.out.println("dragging");
+					int[] jCoords = jCoords(se);
+					int jpx = jCoords[0];
+					int jpy = jCoords[1];
+					application.eh.dragg(jpx, jpy);
+				}
 			}
             break;
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MOVE:{
-            //System.out.println("SMARTIE_EVENTS_TYPE_END_MOVE");
-			if (se.p != null){
-				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
-					inputManager.endCircularSelection(this, se.id);
-				}
-                break;
+            // System.out.println("SMARTIE_EVENTS_TYPE_END_MOVE");
+						if (se.p != null){
+							if(dragging){
+								System.out.println("enddragging");
+								application.eh.endDragging();
+							}
+							if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
+								inputManager.endCircularSelection(this, se.id);
+							}
+              break;
+
             }
+
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_TAP:
-        {
+        {		System.out.println("tap!");
+						// smarties.getWidget(5).handler.callback(smarties.getWidget(5), se, this);
+						// smarties.showKeyboard(se.p.id,se.device);
+						// OlivierCursor oc = inputManager.getCursor(this, se.id).wc;
+						// Point res = new Point();
+						// application.mView.fromVSToPanelCoordinates(oc.getLocation().getX(),oc.getLocation().getY(),application.crCamera,res);
+						int[] jCoords = jCoords(se);
+						int jpx = jCoords[0];
+						int jpy = jCoords[1];
+						// (int) res.getX();
+						// int jpy = (int) res.getY();
+						SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+						SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+						SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+						SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
+						SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+						if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
+							application.eh.updateSimbadCriteriaTabs(jpx, jpy, criteria);
+							application.eh.updateSimbadCriteria(jpx, jpy, criteria);
+						}
+						else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
+							application.eh.updateSimbadQueryTypeSelector(jpx, jpy, sqts);
+						}
+						else if(info != null && info.coordInsideItem(jpx, jpy)){
+							application.eh.updateSimbadInfoTabs(jpx, jpy, info);
+						}
+						else if(list!=null && list.coordInsideItem(jpx, jpy)){
+							application.eh.updateSimbadResults(jpx, jpy, list);
+						}
+						else if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, application.sqCamera)){
+							application.eh.updateSimbadClearQuery(jpx, jpy);
+						}
+
             if (false){  // for emulating wall touch
                 inputManager.createCursor(this, 1000, se.x, se.y, Color.BLUE);
                 inputManager.tap(this, 1000, se.x, se.y, se.num_fingers);
@@ -248,90 +336,77 @@ class SmartiesManager implements Observer {
             }
             break;
         }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFMOVE:{
-            if (useGM) { break;}
-            System.out.println("SMARTIE_EVENTS_TYPE_START_MFMOVE");
-            if (se.p != null){
-            	myCursor cur = (myCursor)se.p.app_data;
-            	cur.prevMFMoveX = se.x;
-                cur.prevMFMoveY = se.y;
-            }
-            else{
-            	nullCur.prevMFMoveX = se.x;
-                nullCur.prevMFMoveY = se.y;
-            }
-            break;
-        }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFMOVE:{
-            if (useGM) { break;}
-            myCursor cur;
-            double x,y;
-            if (se.p != null){
-            	cur = (myCursor)se.p.app_data;
-            }
-            else{
-            	cur = nullCur;
-            }
-            double dx = (se.x - cur.prevMFMoveX);
-            double dy = (se.y - cur.prevMFMoveY);
-            inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
-            cur.prevMFMoveX = se.x;
-            cur.prevMFMoveY = se.y;
-            break;
-        }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFMOVE:{
-        	if (useGM) { break;}
-            System.out.println("SMARTIE_EVENTS_TYPE_END_MFMOVE");
-            break;
-        }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFPINCH:
-        {
-        	if (useGM) { break;}
-            System.out.println("SMARTIE_EVENTS_TYPE_START_MFPINCH");
-            if (se.p != null){
-            	myCursor cur = (myCursor)se.p.app_data;
-            	cur.prevMFPinchD = se.d;
-            }
-            else{
-            	nullCur.prevMFPinchD = se.d;
-            }
-            break;
-        }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFPINCH:{
-        	if (useGM) { break;}
-            //System.out.println("SMARTIE_EVENTS_TYPE_MFPINCH");
-            myCursor cur;
-            double x,y;
-            if (se.p != null){
-            	cur = (myCursor)se.p.app_data;
-            	x = se.p.x; y = se.p.y;
-            }
-            else{
-            	cur = nullCur;
-            	//x = se.x; y = se.y;
-            	x = 0.5; y = 0.5;
-            }
-            if (se.d>0){
-            	double f = cur.prevMFPinchD/se.d;
-            	//System.out.println("zoom: "+ se.id+" "+x+" "+y+" "+cur.prevMFPinchD+" "+se.d + " "+f);
-            	inputManager.zoom(this, se.id, f, x,y);
-            }
-            cur.prevMFPinchD = se.d;
-            break;
-        }
-        case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFPINCH:{
-        	if (useGM) { break;}
-            System.out.println("SMARTIE_EVENTS_TYPE_END_MFPINCH");
-            break;
-        }
-
-        case SmartiesEvent.SMARTIES_EVENTS_TYPE_LONGPRESS:{
-            System.out.println("SMARTIES_EVENTS_TYPE_LONGPRESS");
-            if (se.p != null && se.num_fingers == 1){
-				inputManager.longPress(this, se.id, se.p.x, se.p.y);
-			}
-            break;
-        }
+      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFMOVE:{
+      //       if (useGM) { break;}
+      //       myCursor cur;
+      //       double x,y;
+      //       if (se.p != null){
+      //       	cur = (myCursor)se.p.app_data;
+      //       }
+      //       else{
+      //       	cur = nullCur;
+      //       }
+      //       double dx = (se.x - cur.prevMFMoveX);
+      //       double dy = (se.y - cur.prevMFMoveY);
+      //       inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
+      //       cur.prevMFMoveX = se.x;
+      //       cur.prevMFMoveY = se.y;
+      //       break;
+      //   }
+      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFMOVE:{
+      //   	if (useGM) { break;}
+      //       System.out.println("SMARTIE_EVENTS_TYPE_END_MFMOVE");
+      //       break;
+      //   }
+      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFPINCH:
+      //   {
+      //   	if (useGM) { break;}
+      //       System.out.println("SMARTIE_EVENTS_TYPE_START_MFPINCH");
+      //       if (se.p != null){
+      //       	myCursor cur = (myCursor)se.p.app_data;
+      //       	cur.prevMFPinchD = se.d;
+      //       }
+      //       else{
+      //       	nullCur.prevMFPinchD = se.d;
+      //       }
+      //       break;
+      //   }
+      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFPINCH:{
+      //   	if (useGM) { break;}
+      //       //System.out.println("SMARTIE_EVENTS_TYPE_MFPINCH");
+      //       myCursor cur;
+      //       double x,y;
+      //       if (se.p != null){
+      //       	cur = (myCursor)se.p.app_data;
+      //       	x = se.p.x; y = se.p.y;
+      //       }
+      //       else{
+      //       	cur = nullCur;
+      //       	//x = se.x; y = se.y;
+      //       	x = 0.5; y = 0.5;
+      //       }
+      //       if (se.d>0){
+      //       	double f = cur.prevMFPinchD/se.d;
+      //       	//System.out.println("zoom: "+ se.id+" "+x+" "+y+" "+cur.prevMFPinchD+" "+se.d + " "+f);
+      //       	inputManager.zoom(this, se.id, f, x,y);
+      //       }
+      //       cur.prevMFPinchD = se.d;
+      //       break;
+      //   }
+      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFPINCH:{
+      //   	if (useGM) { break;}
+      //       System.out.println("SMARTIE_EVENTS_TYPE_END_MFPINCH");
+      //       break;
+      //   }
+			// 	case SmartiesEvent.SMARTIE_EVENTS_TYPE_MULTI_TAPS:{
+      //   }
+      //   case SmartiesEvent.SMARTIES_EVENTS_TYPE_LONGPRESS:{
+      //       System.out.println("SMARTIES_EVENTS_TYPE_LONGPRESS");
+      //       if (se.p != null && se.num_fingers == 1){
+			// 	inputManager.longPress(this, se.id, se.p.x, se.p.y);
+			// }
+        //     break;
+        // }
 
         default:{
              //System.out.println("OTHER: " + se.type);
@@ -360,6 +435,24 @@ class SmartiesManager implements Observer {
 				public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
 					System.out.println("Query Menu");
 					application.eh.enterQueryMode();
+					return true;
+				}
+		}
+
+		class TextMenuHandler implements SmartiesWidgetHandler{
+				public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+					System.out.println("Text");
+					// application.eh.enterQueryMode();
+					return true;
+				}
+		}
+
+		class DraggHandler implements SmartiesWidgetHandler{
+				public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+					if(dragging == false) dragging = true;
+					else dragging = false;
+
+					// application.eh.enterQueryMode();
 					return true;
 				}
 		}

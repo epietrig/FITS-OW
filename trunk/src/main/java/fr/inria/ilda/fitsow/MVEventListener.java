@@ -84,7 +84,8 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadInfo = false;
     boolean draggingSimbadCriteria = false;
     boolean draggingSimbadQTS = false;
-  boolean draggingSimbadCQ = false;
+    boolean draggingSimbadCQ = false;
+    boolean dragging = false;
 
     // cursor inside FITS image
     JSkyFitsImage img = null;
@@ -98,6 +99,71 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     MVEventListener(FITSOW app){
         this.app = app;
+    }
+    public void startDragging(int jpx, int jpy){
+      if(insideSimbadInfo(jpx, jpy)){
+        draggingSimbadInfo = true;
+        draggingFITS = false;
+        draggingSimbadResults = false;
+        draggingSimbadQTS = false;
+        draggingSimbadCriteria = false;
+        draggingSimbadCQ = false;
+        dragging = true;
+      }
+      else if(insideSimbadClearQuery(jpx, jpy)){
+        draggingSimbadInfo = false;
+        draggingSimbadCQ = true;
+        draggingFITS = false;
+        draggingSimbadResults = false;
+        draggingSimbadQTS = false;
+        draggingSimbadCriteria = false;
+        dragging = true;
+
+      }
+      else if(insideSimbadResults(jpx, jpy)){
+        draggingSimbadResults = true;
+        draggingFITS = false;
+        draggingSimbadQTS = false;
+        draggingSimbadInfo = false;
+        draggingSimbadCriteria = false;
+        draggingSimbadCQ = false;
+        dragging = true;
+
+      }
+      else if(insideSimbadCriteria(jpx, jpy)){
+        draggingSimbadCriteria = true;
+        draggingSimbadInfo = false;
+        draggingFITS = false;
+        draggingSimbadResults = false;
+        draggingSimbadQTS = false;
+        draggingSimbadCQ = false;
+        dragging = true;
+
+      }
+      else if(insideSimbadQueryTypeSelector(jpx, jpy)){
+        draggingSimbadCriteria = false;
+        draggingSimbadInfo = false;
+        draggingFITS = false;
+        draggingSimbadResults = false;
+        draggingSimbadQTS = true;
+        draggingSimbadCQ = false;
+        dragging = true;
+
+      }
+      else {
+          lge = app.dSpacePicker.lastGlyphEntered();
+          if (lge != null){
+              // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
+              draggingFITS = true;
+              dragging = true;
+
+              app.dSpacePicker.stickGlyph(lge);
+          }
+          else {
+              // pressed button in empty space (or background ZUIST image)
+              panning = true;
+          }
+      }
     }
 
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
@@ -118,83 +184,97 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
               }
           }
         }
-        else if(insideSimbadInfo(jpx, jpy)){
-          draggingSimbadInfo = true;
-          draggingFITS = false;
-          draggingSimbadResults = false;
-          draggingSimbadQTS = false;
-          draggingSimbadCriteria = false;
-          draggingSimbadCQ = false;
+        else{
+          startDragging(jpx, jpy);
         }
-        else if(insideSimbadClearQuery(jpx, jpy)){
-          draggingSimbadInfo = false;
-          draggingSimbadCQ = true;
-          draggingFITS = false;
-          draggingSimbadResults = false;
-          draggingSimbadQTS = false;
-          draggingSimbadCriteria = false;
-        }
-        else if(insideSimbadResults(jpx, jpy)){
-          draggingSimbadResults = true;
-          draggingFITS = false;
-          draggingSimbadQTS = false;
-          draggingSimbadInfo = false;
-          draggingSimbadCriteria = false;
-          draggingSimbadCQ = false;
-        }
-        else if(insideSimbadCriteria(jpx, jpy)){
-          draggingSimbadCriteria = true;
-          draggingSimbadInfo = false;
-          draggingFITS = false;
-          draggingSimbadResults = false;
-          draggingSimbadQTS = false;
-          draggingSimbadCQ = false;
+        // else if(insideSimbadInfo(jpx, jpy)){
+        //   draggingSimbadInfo = true;
+        //   draggingFITS = false;
+        //   draggingSimbadResults = false;
+        //   draggingSimbadQTS = false;
+        //   draggingSimbadCriteria = false;
+        //   draggingSimbadCQ = false;
+        // }
+        // else if(insideSimbadClearQuery(jpx, jpy)){
+        //   draggingSimbadInfo = false;
+        //   draggingSimbadCQ = true;
+        //   draggingFITS = false;
+        //   draggingSimbadResults = false;
+        //   draggingSimbadQTS = false;
+        //   draggingSimbadCriteria = false;
+        // }
+        // else if(insideSimbadResults(jpx, jpy)){
+        //   draggingSimbadResults = true;
+        //   draggingFITS = false;
+        //   draggingSimbadQTS = false;
+        //   draggingSimbadInfo = false;
+        //   draggingSimbadCriteria = false;
+        //   draggingSimbadCQ = false;
+        // }
+        // else if(insideSimbadCriteria(jpx, jpy)){
+        //   draggingSimbadCriteria = true;
+        //   draggingSimbadInfo = false;
+        //   draggingFITS = false;
+        //   draggingSimbadResults = false;
+        //   draggingSimbadQTS = false;
+        //   draggingSimbadCQ = false;
+        //
+        // }
+        // else if(insideSimbadQueryTypeSelector(jpx, jpy)){
+        //   draggingSimbadCriteria = false;
+        //   draggingSimbadInfo = false;
+        //   draggingFITS = false;
+        //   draggingSimbadResults = false;
+        //   draggingSimbadQTS = true;
+        //   draggingSimbadCQ = false;
+        //
+        // }
 
-        }
-        else if(insideSimbadQueryTypeSelector(jpx, jpy)){
-          draggingSimbadCriteria = false;
-          draggingSimbadInfo = false;
-          draggingFITS = false;
-          draggingSimbadResults = false;
-          draggingSimbadQTS = true;
-          draggingSimbadCQ = false;
-
-        }
-        else {
-            lge = app.dSpacePicker.lastGlyphEntered();
-            if (lge != null){
-                // interacting with a Glyph in data space (could be a FITS image, a PDF page, etc.)
-                draggingFITS = true;
-                app.dSpacePicker.stickGlyph(lge);
-            }
-            else {
-                // pressed button in empty space (or background ZUIST image)
-                panning = true;
-            }
-        }
     }
-
+    public void endDragging(){
+      if(draggingSimbadQTS){
+        draggingSimbadQTS = false;
+      }
+      if(draggingSimbadResults){
+        draggingSimbadResults = false;
+      }
+      if(draggingSimbadInfo){
+        draggingSimbadInfo = false;
+      }
+      if(draggingSimbadCriteria){
+        draggingSimbadCriteria = false;
+      }
+      if (draggingFITS){
+          app.dSpacePicker.unstickLastGlyph();
+          draggingFITS = false;
+      }
+      if(draggingSimbadCQ){
+        draggingSimbadCQ = false;
+      }
+      dragging = false;
+    }
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
-        if(draggingSimbadQTS){
-          draggingSimbadQTS = false;
-        }
-        if(draggingSimbadResults){
-          draggingSimbadResults = false;
-        }
-        if(draggingSimbadInfo){
-          draggingSimbadInfo = false;
-        }
-        if(draggingSimbadCriteria){
-          draggingSimbadCriteria = false;
-        }
-        if (draggingFITS){
-            app.dSpacePicker.unstickLastGlyph();
-            draggingFITS = false;
-        }
-        if(draggingSimbadCQ){
-          draggingSimbadCQ = false;
-        }
+        // if(draggingSimbadQTS){
+        //   draggingSimbadQTS = false;
+        // }
+        // if(draggingSimbadResults){
+        //   draggingSimbadResults = false;
+        // }
+        // if(draggingSimbadInfo){
+        //   draggingSimbadInfo = false;
+        // }
+        // if(draggingSimbadCriteria){
+        //   draggingSimbadCriteria = false;
+        // }
+        // if (draggingFITS){
+        //     app.dSpacePicker.unstickLastGlyph();
+        //     draggingFITS = false;
+        // }
+        // if(draggingSimbadCQ){
+        //   draggingSimbadCQ = false;
+        // }
+        endDragging();
         if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
           SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
           if(sqts.getSelected() == 0){
@@ -281,7 +361,42 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             }
         }
     }
+    public void dragg(int jpx, int jpy){
+      if(draggingSimbadCQ){
+        SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+        cq.move(jpx-lastJPX, lastJPY-jpy);
+        lastJPX = jpx;
+        lastJPY = jpy;
+      }
+      else if(draggingSimbadResults){
+        SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+        list.move(jpx-lastJPX, lastJPY-jpy);
+        lastJPX = jpx;
+        lastJPY = jpy;
+      }
+      else if(draggingSimbadQTS){
+        SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+        qts.move(jpx-lastJPX, lastJPY-jpy);
+        lastJPX = jpx;
+        lastJPY = jpy;
+      }
+      else if(draggingSimbadInfo){
+        SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
+        info.move(jpx-lastJPX, lastJPY-jpy);
 
+        lastJPX = jpx;
+        lastJPY = jpy;
+      }
+      else if(draggingSimbadCriteria){
+        SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+        criteria.move(jpx-lastJPX, lastJPY-jpy);
+        // criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
+        // criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
+
+        lastJPX = jpx;
+        lastJPY = jpy;
+      }
+    }
     public void mouseDragged(ViewPanel v, int mod, int buttonNumber, int jpx, int jpy, MouseEvent e){
 
         currentJPX = jpx;
@@ -293,47 +408,50 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             lastJPX = jpx;
             lastJPY = jpy;
         }
-        else if(draggingSimbadCQ){
-          SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
-          cq.move(jpx-lastJPX, lastJPY-jpy);
-          lastJPX = jpx;
-          lastJPY = jpy;
+        else if(dragging){
+          dragg(jpx, jpy);
         }
-        else if(draggingSimbadResults){
-          SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
-          list.move(jpx-lastJPX, lastJPY-jpy);
-          lastJPX = jpx;
-          lastJPY = jpy;
-        }
-        else if(draggingSimbadQTS){
-          SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
-          qts.move(jpx-lastJPX, lastJPY-jpy);
-          lastJPX = jpx;
-          lastJPY = jpy;
-        }
-        else if(draggingSimbadInfo){
-          SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
-          info.move(jpx-lastJPX, lastJPY-jpy);
-
-          lastJPX = jpx;
-          lastJPY = jpy;
-        }
-        else if(draggingSimbadCriteria){
-          SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
-          criteria.move(jpx-lastJPX, lastJPY-jpy);
-          // criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
-          // criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
-
-          lastJPX = jpx;
-          lastJPY = jpy;
-        }
+        // else if(draggingSimbadCQ){
+        //   SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+        //   cq.move(jpx-lastJPX, lastJPY-jpy);
+        //   lastJPX = jpx;
+        //   lastJPY = jpy;
+        // }
+        // else if(draggingSimbadResults){
+        //   SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+        //   list.move(jpx-lastJPX, lastJPY-jpy);
+        //   lastJPX = jpx;
+        //   lastJPY = jpy;
+        // }
+        // else if(draggingSimbadQTS){
+        //   SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+        //   qts.move(jpx-lastJPX, lastJPY-jpy);
+        //   lastJPX = jpx;
+        //   lastJPY = jpy;
+        // }
+        // else if(draggingSimbadInfo){
+        //   SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
+        //   info.move(jpx-lastJPX, lastJPY-jpy);
+        //
+        //   lastJPX = jpx;
+        //   lastJPY = jpy;
+        // }
+        // else if(draggingSimbadCriteria){
+        //   SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+        //   criteria.move(jpx-lastJPX, lastJPY-jpy);
+        //   // criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
+        //   // criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
+        //
+        //   lastJPX = jpx;
+        //   lastJPY = jpy;
+        // }
         else if (querying && sq != null){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
           sq.setRadius(v.getVCursor().getVSCoordinates((app.scene.getActiveFITSImage() != null) ? app.dCamera : app.zfCamera));
           updateZUISTSpacePicker(jpx, jpy);
           updateDataSpacePicker(jpx, jpy);
         }
-        else if(!draggingSimbadResults){
+        else if(draggingFITS && !draggingSimbadResults){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
           updateZUISTSpacePicker(jpx, jpy);
           updateDataSpacePicker(jpx, jpy);
@@ -581,6 +699,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             circleCoords = null;
             sq = null;
           }
+
 
           if(criteria.getExecuteButton().coordInsideP(jpx,jpy,app.sqCamera)){
             SimbadQueryTypeSelector ts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);

@@ -156,6 +156,7 @@ public class FITSOW {
                 this, gestureManager, options.blockWidth, options.blockHeight,
                 options.numCols, options.numRows);
             cm.registerDevice(msmarties,"Smarties");
+            System.out.println(msmarties);
 
             // tablet screen size in pixels 1280 x 800
             // tablet screen size in mms 217.94 x 136.21

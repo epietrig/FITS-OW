@@ -95,7 +95,7 @@ public class WallFITSOW extends FITSOW {
     void initWallOverview(){
         ol = new WOVL(this);
         // ZUIST layer, data layer, simbad query layer
-        ol.cams = new Camera[]{zfSpace.addCamera(), dSpace.addCamera(), sqSpace.addCamera()};
+        ol.cams = new Camera[]{zfSpace.addCamera(), dSpace.addCamera(), sqSpace.addCamera(), crSpace.addCamera()};
         ol.cams[0].stick(ol.cams[1], true);
         wallOverview = vsm.addFrameView(Arrays.asList(ol.cams), OV_VIEW_TITLE, View.STD_VIEW, 1440, 480, false, true, true, null);
         for (int i=0;i<ol.cams.length;i++){
