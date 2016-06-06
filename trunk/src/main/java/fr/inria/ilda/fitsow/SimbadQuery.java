@@ -76,12 +76,14 @@ public class SimbadQuery {
     }
 
     void setRadius(Point2D.Double onCircle){
+      // System.out.println("x: "+onCircle.getX()+" , y: "+ onCircle.getY());
+      // System.out.println("x: "+onCircle.x+" , y: "+ onCircle.y);
         queryRegionG.sizeTo(2*Math.sqrt((onCircle.x-queryRegionCenter.x)*(onCircle.x-queryRegionCenter.x) + (onCircle.y-queryRegionCenter.y)*(onCircle.y-queryRegionCenter.y)));
         // queryRegionLb.setText();
         // queryRegionLb.moveTo(queryRegionG.vx, queryRegionG.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
     }
 
-    void querySimbadbyScript(final String script, final JSkyFitsImage cImg){
+    public void querySimbadbyScript(final String script, final JSkyFitsImage cImg){
       app.scene.setStatusBarMessage("Querying Simbad by script...");
       this.centerImg = cImg;
       System.out.println(script);
@@ -108,7 +110,7 @@ public class SimbadQuery {
       }.start();
     }
 
-        void querySimbadbyCoordinates(final String coords, final JSkyFitsImage cImg){
+    public void querySimbadbyCoordinates(final String coords, final JSkyFitsImage cImg){
           app.scene.setStatusBarMessage("Querying Simbad by coordinates...");
           this.centerImg = cImg;
           System.out.println(coords);
@@ -140,7 +142,7 @@ public class SimbadQuery {
           }
         }
 
-    void querySimbadbyId(final String id, final JSkyFitsImage cImg){
+    public void querySimbadbyId(final String id, final JSkyFitsImage cImg){
       app.scene.setStatusBarMessage("Querying Simbad by identifier...");
       this.centerImg = cImg;
       System.out.println(id);
@@ -167,7 +169,7 @@ public class SimbadQuery {
       }.start();
     }
 
-    void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
+    public void querySimbad(Point2D.Double onCircle, final JSkyFitsImage ocImg){
         this.onCircleImg = ocImg;
         if (centerImg == null) return;
         else if(onCircleImg == null){return;}
@@ -176,8 +178,9 @@ public class SimbadQuery {
         // have to handle this case
         // Point2D.Double centerWCS = centerImg.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
         // Point2D.Double onCircleWCS = onCircleImg.vs2wcs(onCircle.x, onCircle.y);
-        Point2D.Double centerWCS = FITSScene.cc.vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
-        Point2D.Double onCircleWCS = FITSScene.cc.vs2wcs(onCircle.x, onCircle.y);
+        System.out.println("CC "+queryRegionCenter.x+ ", y: "+queryRegionCenter.y);
+        Point2D.Double centerWCS = app.scene.getCC().vs2wcs(queryRegionCenter.x, queryRegionCenter.y);
+        Point2D.Double onCircleWCS = app.scene.getCC().vs2wcs(onCircle.x, onCircle.y);
         if (centerWCS == null || onCircleWCS == null){
             String queryInfo = "Invalid query";
             app.scene.setStatusBarMessage(queryInfo);

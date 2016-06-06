@@ -325,6 +325,13 @@ public class FITSOW {
 		return mView;
 	}
 
+  public MVEventListener getMVEventListener(){
+    return eh;
+  }
+  public VirtualSpace getDSpace(){
+    return dSpace;
+  }
+  
 	public boolean runningOnWall() { return false; }
     int getColumnCount(){ return 1; }
     int getRowCount(){ return 1; }

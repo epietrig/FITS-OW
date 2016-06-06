@@ -3,7 +3,8 @@
 #IP="192.168.6.90"
 # IP="192.168.1.10"
 #IP="129.175.5.15"
-IP="192.168.1.107"
+IP="192.168.43.38"
+# IP = 10.0.115.185
 
 JARS="target/aspectjrt-1.8.9.jar"
 JARS=$JARS":target/jgroups-3.6.8.Final.jar"

@@ -29,6 +29,8 @@ public class SimbadPMFilter extends SimbadFilter{
     setFilterLayout("Proper Motion:", top, left, right);
     ra = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Right ascension angle:");
     dec = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Declination angle:");
+    ra.setScale(1.2f);
+    dec.setScale(1.2f);
     this.addChild(ra);
     this.addChild(dec);
     qsquares = qualitySelector(this, left+2*OFFSET, top-9*TEXT_SIZE);

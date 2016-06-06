@@ -31,6 +31,9 @@ public class SimbadSTFilter extends SimbadFilter{
     st = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Spectral type:");
     lc = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Luminosity class:");
     pec = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"Peculiarities:");
+    st.setScale(1.2f);
+    lc.setScale(1.2f);
+    pec.setScale(1.2f);
     this.addChild(st);
     this.addChild(lc);
     this.addChild(pec);

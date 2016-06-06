@@ -31,10 +31,12 @@ public class SimbadOTypeFilter extends SimbadFilter{
       if( i < 7){
         otsquares[i] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE*(i+2)-20*i, Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         types[i] = new VText(left+5*OFFSET, top-OFFSET-TEXT_SIZE*(i+2)-20*i, Z, TEXT_COLOR, Config.OBJECT_TYPES[i]);
+        types[i].setScale(1.2f);
       }
       else{
         otsquares[i] =  new VRectangle (left+2*OFFSET+width/2, top-TEXT_SIZE*(i+2-7)-20*(i-7), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         types[i] = new VText(left+5*OFFSET+width/2, top-OFFSET-TEXT_SIZE*(i+2-7)-20*(i-7), Z, TEXT_COLOR,  Config.OBJECT_TYPES[i]);
+        types[i].setScale(1.2f);
       }
     this.addChild(otsquares[i]);
     this.addChild(types[i]);

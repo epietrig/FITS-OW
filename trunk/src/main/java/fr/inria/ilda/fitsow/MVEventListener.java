@@ -165,7 +165,21 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           }
       }
     }
-
+    public void startCircularSelection(Point2D.Double coords){
+      SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      if(sqts.getSelected() == 0){
+        if(sq != null)sq.clearQueryRegion();
+        sq = new SimbadQuery(app);
+        if (app.scene.getActiveFITSImage() != null){
+          System.out.println("started circular selection:");
+            sq.setCenter(coords, app.scene.getActiveFITSImage());
+        }
+        // else {
+        //     sq.setCenter(v.getVCursor().getVSCoordinates(app.zfCamera),
+        //                  (JSkyFitsImage)app.zfSpacePicker.lastGlyphEntered());
+        // }
+      }
+    }
     public void press1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         lastJPX = jpx;
         lastJPY = jpy;
@@ -300,6 +314,23 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         }
     }
 
+    public void endCircularSelection(Point2D.Double coords){
+      SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+      if(sqts.getSelected() == 0){
+            if (app.scene.getActiveFITSImage() != null){
+              circleCoords = coords;
+            }
+            // else{
+            //   circleCoords = v.getVCursor().getVSCoordinates(app.zfCamera);
+            //   img = (JSkyFitsImage) app.zfSpacePicker.lastGlyphEntered();
+            // }
+            SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+            if(criteria.getCoordinatesStr() != null){
+              criteria.cleanParameters();
+            }
+      }
+    }
+
     public void click1(ViewPanel v,int mod,int jpx,int jpy,int clickNumber, MouseEvent e){
       SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
       SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
@@ -308,7 +339,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
       if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
         updateSimbadCriteriaTabs(jpx, jpy, criteria);
-        updateSimbadCriteria(jpx, jpy, criteria);
+        criteria.updateSimbadCriteria(jpx, jpy, app);
       }
       else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
         updateSimbadQueryTypeSelector(jpx, jpy, sqts);
@@ -408,43 +439,43 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             lastJPX = jpx;
             lastJPY = jpy;
         }
-        else if(dragging){
-          dragg(jpx, jpy);
+        // else if(dragging){
+        //   dragg(jpx, jpy);
+        // }
+        else if(draggingSimbadCQ){
+          SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
+          cq.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
         }
-        // else if(draggingSimbadCQ){
-        //   SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
-        //   cq.move(jpx-lastJPX, lastJPY-jpy);
-        //   lastJPX = jpx;
-        //   lastJPY = jpy;
-        // }
-        // else if(draggingSimbadResults){
-        //   SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
-        //   list.move(jpx-lastJPX, lastJPY-jpy);
-        //   lastJPX = jpx;
-        //   lastJPY = jpy;
-        // }
-        // else if(draggingSimbadQTS){
-        //   SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
-        //   qts.move(jpx-lastJPX, lastJPY-jpy);
-        //   lastJPX = jpx;
-        //   lastJPY = jpy;
-        // }
-        // else if(draggingSimbadInfo){
-        //   SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
-        //   info.move(jpx-lastJPX, lastJPY-jpy);
-        //
-        //   lastJPX = jpx;
-        //   lastJPY = jpy;
-        // }
-        // else if(draggingSimbadCriteria){
-        //   SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
-        //   criteria.move(jpx-lastJPX, lastJPY-jpy);
-        //   // criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
-        //   // criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
-        //
-        //   lastJPX = jpx;
-        //   lastJPY = jpy;
-        // }
+        else if(draggingSimbadResults){
+          SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
+          list.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
+        else if(draggingSimbadQTS){
+          SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
+          qts.move(jpx-lastJPX, lastJPY-jpy);
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
+        else if(draggingSimbadInfo){
+          SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
+          info.move(jpx-lastJPX, lastJPY-jpy);
+
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
+        else if(draggingSimbadCriteria){
+          SimbadCriteria criteria = (SimbadCriteria)SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SC);
+          criteria.move(jpx-lastJPX, lastJPY-jpy);
+          // criteria.getBasicData().move(jpx-lastJPX, lastJPY-jpy);
+          // criteria.getMeasurements().move(jpx-lastJPX, lastJPY-jpy);
+
+          lastJPX = jpx;
+          lastJPY = jpy;
+        }
         else if (querying && sq != null){
           app.mView.setActiveLayer(FITSOW.DATA_LAYER);
           sq.setRadius(v.getVCursor().getVSCoordinates((app.scene.getActiveFITSImage() != null) ? app.dCamera : app.zfCamera));
@@ -457,7 +488,12 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
           updateDataSpacePicker(jpx, jpy);
         }
     }
-
+    public void resizeCircularSelection(Point2D.Double coords, int jpx, int jpy){
+      app.mView.setActiveLayer(FITSOW.DATA_LAYER);
+      sq.setRadius(coords);
+      // updateZUISTSpacePicker(jpx, jpy);
+      updateDataSpacePicker(jpx, jpy);
+    }
     public void mouseWheelMoved(ViewPanel v, short wheelDirection, int jpx, int jpy, MouseWheelEvent e){
         double mvx = v.getVCursor().getVSXCoordinate();
         double mvy = v.getVCursor().getVSYCoordinate();
@@ -473,6 +509,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     public void enterGlyph(Glyph g){
         g.highlight(true, null);
         if (g.getType().equals(Config.T_FITS)){
+          System.out.println("blablba");
             app.scene.setActiveFITSImage((JSkyFitsImage)g);
         }
         else if (g.getType().equals(Config.T_PDF)){
@@ -482,6 +519,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     public void exitGlyph(Glyph g){
         g.highlight(false, null);
+        System.out.println("bleble");
         if (g.getType().equals(Config.T_FITS)){
             Glyph[] insideOtherFITS = app.dSpacePicker.getPickedGlyphList(Config.T_FITS);
             if (insideOtherFITS.length > 0){
@@ -582,7 +620,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         app.scene.setStatusBarMessage("Select query parameters");
     }
 
-    void exitQueryMode(){
+    public void exitQueryMode(){
       SimbadQueryTypeSelector qts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
       app.scene.setStatusBarMessage("");
       app.sqSpace.removeGlyph(qts);
@@ -680,137 +718,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
     }
 
-    void updateSimbadCriteria(int jpx, int jpy, SimbadCriteria criteria){
-        Tabs tabs = criteria.getTabs();
-        Point2D.Double coords = new Point2D.Double();
-        app.mView.fromPanelToVSCoordinates(jpx,jpy,app.sqCamera,coords);
-        double x = coords.getX();
-        double y = coords.getY();
-        System.out.println(app.sqSpace.contains(criteria.getMeasurements()));
-        if(tabs.getTabSelected().equals(tabs.getMeasurementsStr())){
-          criteria.getMeasurements().select(criteria.getMeasurements().getItemSelected(x,y),"");
-        }
-        else if(tabs.getTabSelected().equals(tabs.getBasicDataStr())){
-          criteria.updateQueryParameters(x, y);
-          if(criteria.getCoordinatesStr() != null){
-            if(sq!=null){
-              app.dSpace.removeGlyph(sq.getQueryRegion());
-            }
-            circleCoords = null;
-            sq = null;
-          }
-
-
-          if(criteria.getExecuteButton().coordInsideP(jpx,jpy,app.sqCamera)){
-            SimbadQueryTypeSelector ts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
-            if(ts.getSelected() == ts.BY_ID){
-              sq = new SimbadQuery(app);
-              exitQueryMode();
-              sq.querySimbadbyId(criteria.getIdStr(), app.scene.getActiveFITSImage());
-              sq = null;
-              return;
-            }
-            else if(ts.getSelected() == ts.BY_COORDINATES){
-              exitQueryMode();
-              if (sq != null && circleCoords!= null){
-                if (app.scene.getActiveFITSImage() != null){
-                    sq.querySimbad(circleCoords, app.scene.getActiveFITSImage());}
-                else
-                    sq.querySimbad(circleCoords, img);
-                sq = null;
-                return;
-              }
-              else if(sq == null && app.scene.getActiveFITSImage()!=null){
-                sq = new SimbadQuery(app);
-                sq.querySimbadbyCoordinates(criteria.getCoordinatesStr(), app.scene.getActiveFITSImage());
-                sq = null;
-                return;
-              }
-            }
-          }
-
-          if(criteria.getCancelButton().coordInsideP(jpx,jpy,app.sqCamera)){
-            exitQueryMode();
-          }
-
-          if(criteria.getObjectTypeFilter().coordInsideItem(jpx, jpy)){
-          criteria.getObjectTypeFilter().select(criteria.getObjectTypeFilter().getItemSelected(x,y),"");
-          }
-          else if(criteria.getPMFilter().coordInsideItem(jpx, jpy)){
-            int angle = criteria.getPMFilter().getItemSelected(x,y);
-            JOptionPane optionPane;
-            String inputValue ="";
-            if(angle == 0){
-              optionPane = new JOptionPane("right ascension of proper motion (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value");
-            }else if(angle ==1){
-              optionPane = new JOptionPane("declination of proper motion (mas) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value");
-            }
-            criteria.getPMFilter().select(angle, inputValue);
-          }
-          else if(criteria.getParallaxFilter().coordInsideItem(jpx,jpy)){
-            int parallax = criteria.getParallaxFilter().getItemSelected(x,y);
-            String inputValue ="";
-            if(parallax == 0){
-              JFrame parent = new JFrame();
-              JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
-            }
-            criteria.getParallaxFilter().select(parallax, inputValue);
-          }
-          else if(criteria.getRVFilter().coordInsideItem(jpx,jpy)){
-            int value = criteria.getRVFilter().getItemSelected(x,y);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value == 0){
-              optionPane = new JOptionPane("Radial velocity (km/s) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value");
-            }
-            else if(value == 1){
-              optionPane = new JOptionPane("Redshift ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value");
-            }
-            else if(value ==2){
-              optionPane = new JOptionPane("cz ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter cz in the format:\n >=/<=/=/!= numrical-value");
-            }
-            criteria.getRVFilter().select(value,inputValue);
-          }
-          else if(criteria.getSTFilter().coordInsideItem(jpx,jpy)){
-            int value = criteria.getSTFilter().getItemSelected(x,y);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value == 0){
-              optionPane = new JOptionPane("Spectral type ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter spectral type in the format:\n >=/<=/>/</!=/= value ");
-            }
-            else if(value == 1){
-              optionPane = new JOptionPane("Luminosity class ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter luminosity value in the format:\n >=/<=/>/</!=/= value ");
-            }
-            else if(value ==2){
-              optionPane = new JOptionPane("Peculiarities ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter Peculiarities in the format:\n =/!= numrical-value");
-            }
-            criteria.getSTFilter().select(value,inputValue);
-          }
-          else if(criteria.getFluxFilter().coordInsideItem(jpx,jpy)){
-            int value = criteria.getFluxFilter().getItemSelected(x,y);
-            String inputValue="";
-            JFrame parent = new JFrame();
-            JOptionPane optionPane;
-            if(value%2!=0 && value<25 && value >0){
-              optionPane = new JOptionPane(Config.FLUX_TYPES[value/2]+" Range", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-              inputValue = JOptionPane.showInputDialog("Enter range of "+Config.FLUX_TYPES[value/2]+" magnitude in the format:\n =/!= value");
-            }
-            criteria.getFluxFilter().select(value, inputValue);
-          }
-        }
-    }
-
     boolean insideSimbadResults(int jpx, int jpy){
       SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);
       if(list!= null) return list.getBackground().coordInsideP(jpx, jpy, app.sqCamera);
@@ -842,5 +749,20 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       if(ts != null)
         return ts.coordInsideItem(jpx, jpy);
       return false;
+    }
+    public SimbadQuery getSimbadQuery(){
+      return sq;
+    }
+    public void setSimbadQuery(SimbadQuery newsq){
+      sq = newsq;
+    }
+    public Point2D.Double getCircleCoords(){
+      return circleCoords;
+    }
+    public void setCircleCoords(Point2D.Double newCoords){
+      circleCoords = newCoords;
+    }
+    public JSkyFitsImage getImg(){
+      return img;
     }
 }

@@ -29,8 +29,9 @@ public class SimbadMFilter extends SimbadFilter{
     msquares = new VRectangle[Config.CATALOGS.length+1];
     mnames = new VText[Config.CATALOGS.length+1];
     VSegment[] msplits = new VSegment[(Config.CATALOGS.length)/2+1];
-    msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, SELECTED_BACKGROUND_COLOR,BORDER_COLOR);
+    msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
     mnames[0] = new VText(left+6*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "All");
+    mnames[0].setScale(1.2f);
     // msplits[0] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
     this.addChild(msquares[0]);
     this.addChild(mnames[0]);
@@ -39,12 +40,54 @@ public class SimbadMFilter extends SimbadFilter{
       if(i <= (Config.CATALOGS.length)/2){
         msquares[i] =  new VRectangle (left+3*OFFSET, top-TEXT_SIZE*(i+1)-i*10, Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         mnames[i] = new VText(left+7*OFFSET, top-OFFSET-TEXT_SIZE*(i+1)-i*10, Z, TEXT_COLOR, Config.CATALOGS[i]);
+        mnames[i].setScale(1.2f);
         msplits[i-1] = new VSegment(left, top-2*OFFSET-TEXT_SIZE*i-i*10, right, top-2*OFFSET-TEXT_SIZE*i-i*10 ,Z, BORDER_COLOR);
         this.addChild(msplits[i-1]);
       }
       else{
         msquares[i] =  new VRectangle (left+3*OFFSET+width/2, top-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         mnames[i] = new VText(left+7*OFFSET+width/2, top-OFFSET-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, TEXT_COLOR, Config.CATALOGS[i]);
+        mnames[i].setScale(1.2f);
+      }
+      this.addChild(msquares[i]);
+      this.addChild(mnames[i]);
+    }
+    VSegment vertical = new VSegment(left+ width/2, msplits[0].getLocation().getY(), left+width/2, background.getBounds()[3],Z,BORDER_COLOR);
+    this.addChild(vertical);
+  }
+  public SimbadMFilter(double top, double left, double right, SimbadCriteria parent, VRectangle[] m){
+    super(900, 600);
+    background = parent.background;
+    // this.parent = parent;
+    msquares = new VRectangle[Config.CATALOGS.length+1];
+    mnames = new VText[Config.CATALOGS.length+1];
+    VSegment[] msplits = new VSegment[(Config.CATALOGS.length)/2+1];
+    if(m[0].getColor().equals(CANCEL_COLOR)) msquares[0] = new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, CANCEL_COLOR,BORDER_COLOR);
+    else msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
+    mnames[0] = new VText(left+6*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "All");
+    mnames[0].setScale(1.2f);
+    // msplits[0] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
+    this.addChild(msquares[0]);
+    this.addChild(mnames[0]);
+    // this.addChild(msplits[0]);
+    for(int i = 1; i < Config.CATALOGS.length; i++){
+      if(i <= (Config.CATALOGS.length)/2){
+        if(m[i].getColor().equals(CANCEL_COLOR))
+          msquares[i] =  new VRectangle (left+3*OFFSET, top-TEXT_SIZE*(i+1)-i*10, Z, 10, 10, CANCEL_COLOR, BORDER_COLOR);
+        else
+          msquares[i] =  new VRectangle (left+3*OFFSET, top-TEXT_SIZE*(i+1)-i*10, Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        mnames[i] = new VText(left+7*OFFSET, top-OFFSET-TEXT_SIZE*(i+1)-i*10, Z, TEXT_COLOR, Config.CATALOGS[i]);
+        mnames[i].setScale(1.2f);
+        msplits[i-1] = new VSegment(left, top-2*OFFSET-TEXT_SIZE*i-i*10, right, top-2*OFFSET-TEXT_SIZE*i-i*10 ,Z, BORDER_COLOR);
+        this.addChild(msplits[i-1]);
+      }
+      else{
+        if(m[i].getColor().equals(CANCEL_COLOR))
+          msquares[i] =  new VRectangle (left+3*OFFSET+width/2, top-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, 10, 10, CANCEL_COLOR, BORDER_COLOR);
+        else
+          msquares[i] =  new VRectangle (left+3*OFFSET+width/2, top-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
+        mnames[i] = new VText(left+7*OFFSET+width/2, top-OFFSET-TEXT_SIZE*(i+1-Config.CATALOGS.length/2)-((i-Config.CATALOGS.length/2)*10), Z, TEXT_COLOR, Config.CATALOGS[i]);
+        mnames[i].setScale(1.2f);
       }
       this.addChild(msquares[i]);
       this.addChild(mnames[i]);
@@ -102,6 +145,9 @@ public class SimbadMFilter extends SimbadFilter{
       if(count == 0) retval = null;
       return retval;
     }
+  }
+  public VRectangle[] getMSquares(){
+    return msquares;
   }
 
   // public void reselect(int[] m){

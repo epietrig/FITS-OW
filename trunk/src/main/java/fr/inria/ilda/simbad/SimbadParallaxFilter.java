@@ -30,6 +30,7 @@ public class SimbadParallaxFilter extends SimbadFilter{
     this.addChild(background);
     setFilterLayout("Parallax:", top, left, right);
     parallax = new VText(left+2*OFFSET,top-3*TEXT_SIZE-OFFSET,Z,TEXT_COLOR,"Parallax:");
+    parallax.setScale(1.2f);
     this.addChild(parallax);
     this.qsquares = qualitySelector(this, left+2*OFFSET, top-TEXT_SIZE*9);
   }

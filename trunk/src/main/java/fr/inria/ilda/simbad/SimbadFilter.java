@@ -24,7 +24,7 @@ public abstract class SimbadFilter extends SimbadQueryGlyph{
   }
     public void setFilterLayout(String titleStr, double top, double left, double right){
       VText title = new VText(left+OFFSET,top-TEXT_SIZE,Z,TEXT_COLOR, titleStr);
-      title.setScale(1.1f);
+      title.setScale(1.3f);
       this.addChild(title);
       VSegment split = new VSegment(left, top-OFFSET-TEXT_SIZE, right, top-OFFSET-TEXT_SIZE,Z, BORDER_COLOR);
 
@@ -36,11 +36,13 @@ public abstract class SimbadFilter extends SimbadQueryGlyph{
     }
     public VRectangle[] qualitySelector(Composite c, double x, double y){
       VText quality = new VText(x,y,Z,TEXT_COLOR,"Quality:");
+      quality.setScale(1.2f);
       c.addChild(quality);
       VRectangle[] qualities = new VRectangle[5];
       for(char alphabet = 'A'; alphabet <= 'E';alphabet++) {
         VRectangle square =  new VRectangle (x+((int)alphabet-65)*2*TEXT_SIZE+OFFSET, y-TEXT_SIZE+OFFSET, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
         VText qualityStr = new VText(x+((int)alphabet-65)*2*TEXT_SIZE+3*OFFSET, y-TEXT_SIZE,Z,TEXT_COLOR, Character.toString(alphabet));
+        qualityStr.setScale(1.2f);
         qualities[(int)alphabet-65] = square;
         c.addChild(square);
         c.addChild(qualityStr);

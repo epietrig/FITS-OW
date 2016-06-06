@@ -41,17 +41,23 @@ public class SimbadFluxFilter extends SimbadFilter{
       if( i < 10){
         squares[i/2] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE*(i+2), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         type[i/2] = new VText(left+5*OFFSET, top-OFFSET-TEXT_SIZE*(i+2), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        type[i/2].setScale(1.2f);
         range[i/2] = new VText(left+5*OFFSET, top-OFFSET-TEXT_SIZE*(i+3), Z, TEXT_COLOR, "Range:");
+        range[i/2].setScale(1.2f);
       }
       else if(i<20){
         squares[i/2] =  new VRectangle (left+2*OFFSET+width/3, top-TEXT_SIZE*(i+2-10), Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
         type[i/2] = new VText(left+5*OFFSET+width/3, top-OFFSET-TEXT_SIZE*(i+2-10), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        type[i/2].setScale(1.2f);
         range[i/2] = new VText(left+5*OFFSET+width/3, top-OFFSET-TEXT_SIZE*(i+3-10), Z, TEXT_COLOR, "Range:");
+        range[i/2].setScale(1.2f);
       }
       else{
         squares[i/2] =  new VRectangle (left+2*OFFSET+2*width/3, top-TEXT_SIZE*(i+2-20), Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
         type[i/2] = new VText(left+5*OFFSET+2*width/3, top-OFFSET-TEXT_SIZE*(i+2-20), Z, TEXT_COLOR, Config.FLUX_TYPES[i/2]);
+        type[i/2].setScale(1.2f);
         range[i/2] = new VText(left+5*OFFSET+2*width/3, top-OFFSET-TEXT_SIZE*(i+3-20), Z, TEXT_COLOR, "Range:");
+        range[i/2].setScale(1.2f);
       }
       this.addChild(squares[i/2]);
       this.addChild(type[i/2]);

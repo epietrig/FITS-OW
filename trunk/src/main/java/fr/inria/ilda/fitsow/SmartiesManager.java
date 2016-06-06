@@ -6,6 +6,7 @@ import java.util.Observer;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 import fr.inria.ilda.fitsow.cursors.CursorDwellEvent;
 import fr.inria.ilda.fitsow.cursors.CursorDwellListener;
@@ -50,12 +51,13 @@ class SmartiesManager implements Observer {
 	SimbadQuery sq;
 
 	boolean dragging = false;
-	boolean draggingFITS = false;
-	boolean draggingSimbadResults = false;
-	boolean draggingSimbadInfo = false;
-	boolean draggingSimbadCriteria = false;
-	boolean draggingSimbadQTS = false;
-	boolean draggingSimbadCQ = false;
+	boolean circularSelection = false;
+	// boolean draggingFITS = false;
+	// boolean draggingSimbadResults = false;
+	// boolean draggingSimbadInfo = false;
+	// boolean draggingSimbadCriteria = false;
+	// boolean draggingSimbadQTS = false;
+	// boolean draggingSimbadCQ = false;
 	int lastJPX, lastJPY;
 
 	SmartiesManager(FITSOW app, GestureManager gestureManager, int app_width, int app_height, int row, int col){
@@ -92,6 +94,8 @@ class SmartiesManager implements Observer {
 		text.handler = new TextMenuHandler();
 		SmartiesWidget dragg = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_TOGGLE_BUTTON , "Dragg", 1,2,4,1);
 		dragg.handler = new DraggHandler();
+		SmartiesWidget circularSelection = smarties.addWidget(SmartiesWidget.SMARTIES_WIDGET_TYPE_TOGGLE_BUTTON , "Draw circle", 5,2,4,1);
+		circularSelection.handler = new CircularSelectionHandler();
 	    smarties.addObserver(this);
 	    smarties.setRawTouchEventsConf(true);
 
@@ -238,20 +242,25 @@ class SmartiesManager implements Observer {
 			break;
 		}
 		case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MOVE:{
-			// System.out.println("SMARTIE_EVENTS_TYPE_START_MOVE");
 			if (se.p != null){
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
 					inputManager.startCircularSelection(this, se.id);
 				}
+				int[] jCoords = jCoords(se);
+				int jpx = jCoords[0];
+				int jpy = jCoords[1];
 				if(dragging){
-					System.out.println("startdragging");
-					int[] jCoords = jCoords(se);
-					int jpx = jCoords[0];
-					int jpy = jCoords[1];
 					application.eh.lastJPX=jpx;
 					application.eh.lastJPY=jpy;
 					application.eh.startDragging(jpx, jpy);
-
+				}
+				else if(circularSelection && application.eh.querying &&
+				!application.eh.insideSimbadCriteria(jpx, jpy) &&
+				!application.eh.insideSimbadQueryTypeSelector(jpx, jpy)){
+					Point2D.Double res = new Point2D.Double();
+					application.mView.fromPanelToVSCoordinates(jpx, jpy, application.dCamera,res);
+					System.out.println("start circle x: "+res.getX()+" ,y : "+res.getY());
+					application.eh.startCircularSelection(res);
 				}
 
 			}
@@ -264,23 +273,39 @@ class SmartiesManager implements Observer {
 				if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
 					inputManager.resizeCircularSelection(this, se.id);
 				}
+				int[] jCoords = jCoords(se);
+				int jpx = jCoords[0];
+				int jpy = jCoords[1];
 				if(dragging){
-					System.out.println("dragging");
-					int[] jCoords = jCoords(se);
-					int jpx = jCoords[0];
-					int jpy = jCoords[1];
 					application.eh.dragg(jpx, jpy);
+				}
+				else if(circularSelection && application.eh.querying && application.eh.sq != null){
+					Point2D.Double res = new Point2D.Double();
+					application.mView.fromPanelToVSCoordinates(jpx, jpy, application.dCamera,res);
+					System.out.println("move circle x: "+res.getX()+" ,y : "+res.getY());
+					application.eh.resizeCircularSelection(res, jpx, jpy);
 				}
 			}
             break;
         }
         case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MOVE:{
-            // System.out.println("SMARTIE_EVENTS_TYPE_END_MOVE");
+
 						if (se.p != null){
+							int[] jCoords = jCoords(se);
+							int jpx = jCoords[0];
+							int jpy = jCoords[1];
 							if(dragging){
 								System.out.println("enddragging");
 								application.eh.endDragging();
 							}
+							else if(circularSelection && application.eh.querying &&
+							!application.eh.insideSimbadQueryTypeSelector(jpx, jpy)
+							&&!application.eh.insideSimbadCriteria(jpx, jpy)){
+								Point2D.Double res = new Point2D.Double();
+								application.mView.fromPanelToVSCoordinates(jpx, jpy, application.dCamera,res);
+								application.eh.endCircularSelection(res);
+							}
+
 							if (se.mode == SmartiesEvent.SMARTIE_GESTUREMOD_DRAG){
 								inputManager.endCircularSelection(this, se.id);
 							}
@@ -308,7 +333,7 @@ class SmartiesManager implements Observer {
 						SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
 						if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
 							application.eh.updateSimbadCriteriaTabs(jpx, jpy, criteria);
-							application.eh.updateSimbadCriteria(jpx, jpy, criteria);
+							criteria.updateSimbadCriteria(jpx, jpy, application);
 						}
 						else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
 							application.eh.updateSimbadQueryTypeSelector(jpx, jpy, sqts);
@@ -336,28 +361,28 @@ class SmartiesManager implements Observer {
             }
             break;
         }
-      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFMOVE:{
-      //       if (useGM) { break;}
-      //       myCursor cur;
-      //       double x,y;
-      //       if (se.p != null){
-      //       	cur = (myCursor)se.p.app_data;
-      //       }
-      //       else{
-      //       	cur = nullCur;
-      //       }
-      //       double dx = (se.x - cur.prevMFMoveX);
-      //       double dy = (se.y - cur.prevMFMoveY);
-      //       inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
-      //       cur.prevMFMoveX = se.x;
-      //       cur.prevMFMoveY = se.y;
-      //       break;
-      //   }
-      //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFMOVE:{
-      //   	if (useGM) { break;}
-      //       System.out.println("SMARTIE_EVENTS_TYPE_END_MFMOVE");
-      //       break;
-      //   }
+        case SmartiesEvent.SMARTIE_EVENTS_TYPE_MFMOVE:{
+            if (useGM) { break;}
+            myCursor cur;
+            double x,y;
+            if (se.p != null){
+            	cur = (myCursor)se.p.app_data;
+            }
+            else{
+            	cur = nullCur;
+            }
+            double dx = (se.x - cur.prevMFMoveX);
+            double dy = (se.y - cur.prevMFMoveY);
+            inputManager.drag(this, se.id, -dx, dy, se.num_fingers);
+            cur.prevMFMoveX = se.x;
+            cur.prevMFMoveY = se.y;
+            break;
+        }
+        case SmartiesEvent.SMARTIE_EVENTS_TYPE_END_MFMOVE:{
+        	if (useGM) { break;}
+            System.out.println("SMARTIE_EVENTS_TYPE_END_MFMOVE");
+            break;
+        }
       //   case SmartiesEvent.SMARTIE_EVENTS_TYPE_START_MFPINCH:
       //   {
       //   	if (useGM) { break;}
@@ -453,6 +478,13 @@ class SmartiesManager implements Observer {
 					else dragging = false;
 
 					// application.eh.enterQueryMode();
+					return true;
+				}
+		}
+		class CircularSelectionHandler implements SmartiesWidgetHandler{
+				public boolean callback(SmartiesWidget sw, SmartiesEvent se, Object user_data){
+					if(circularSelection == false) circularSelection = true;
+					else circularSelection = false;
 					return true;
 				}
 		}

@@ -34,6 +34,9 @@ public class SimbadRVFilter extends SimbadFilter{
     rv = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Radial velocity (km/s):");
     z  = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Redshift (z):");
     cz  = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"cz:");
+    rv.setScale(1.2f);
+    z.setScale(1.2f);
+    cz.setScale(1.2f);
     this.addChild(rv);
     this.addChild(z);
     this.addChild(cz);

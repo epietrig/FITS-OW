@@ -105,7 +105,7 @@ public class Tabs extends SimbadQueryGlyph{
         SimbadCriteria former = (SimbadCriteria) parent;
         VRectangle formerBackground = former.getBackground();
         SimbadCriteria newSimbadCriteria = new SimbadCriteria(formerBackground.getLocation().getX(),
-        formerBackground.getLocation().getY(), former.getParent(), this);
+        formerBackground.getLocation().getY(), former.getParent(), this, former.getMeasurements().getMSquares());
         SQ_VIRTUAL_SPACE.removeGlyph(parent);
         SQ_VIRTUAL_SPACE.addGlyph(newSimbadCriteria);
       }
@@ -142,7 +142,7 @@ public class Tabs extends SimbadQueryGlyph{
         SimbadCriteria former = (SimbadCriteria) parent;
         VRectangle formerBackground = former.getBackground();
         SimbadCriteria newSimbadCriteria = new SimbadCriteria(formerBackground.getLocation().getX(),
-        formerBackground.getLocation().getY(), former.getParent(), this);
+        formerBackground.getLocation().getY(), former.getParent(), this, former.getMeasurements().getMSquares());
         SQ_VIRTUAL_SPACE.removeGlyph(parent);
         SQ_VIRTUAL_SPACE.addGlyph(newSimbadCriteria);
       }

@@ -359,7 +359,7 @@ public class FITSScene implements Java2DPainter, PickerListener {
         }
     }
 
-    JSkyFitsImage getActiveFITSImage(){
+    public JSkyFitsImage getActiveFITSImage(){
         return this.activeFITSimg;
     }
 
@@ -389,7 +389,9 @@ public class FITSScene implements Java2DPainter, PickerListener {
         sbMsg = s;
         app.mView.repaint();
     }
-
+    public CoordConv getCC(){
+      return cc;
+    }
     public void	paint(Graphics2D g2d, int viewWidth, int viewHeight){
         g2d.setColor(Config.INFO_BAR_BACKGROUND);
         g2d.setComposite(TranslucentWidget.AB_08);
