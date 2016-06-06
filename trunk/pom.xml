@@ -113,7 +113,7 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
     <dependency>
         <groupId>jep</groupId>
         <artifactId>jep</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
     </dependency>
     <!-- ICEpdf Pro 4.2 (if available) -->
 <!--
