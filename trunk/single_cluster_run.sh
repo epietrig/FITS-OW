@@ -1,8 +1,9 @@
 #!/bin/bash
 
 #IP="192.168.6.90"
-IP="192.168.1.10"
+#IP="192.168.1.10"
 #IP="129.175.5.15"
+IP="127.0.0.1"
 
 JARS="target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
