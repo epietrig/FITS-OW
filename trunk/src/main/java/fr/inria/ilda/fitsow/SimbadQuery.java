@@ -141,15 +141,13 @@ public class SimbadQuery {
         }
 
     void querySimbadbyId(final String id, final JSkyFitsImage cImg){
-      app.scene.setStatusBarMessage("Querying Simbad by identifier...");
+      app.scene.setStatusBarMessage("Querying Simbad by identifier: "+id);
       this.centerImg = cImg;
-      System.out.println(id);
       new SwingWorker(){
           @Override public List<AstroObject> construct(){
               List<AstroObject> objs = null;
-              try{
-                System.out.println("querying...");
-                // start_time = System.nanoTime();
+              try {
+                  System.out.println("querying...");
                   objs = SimbadCatQuery.makeSimbadIdQuery(id);
               } catch(IOException ioe){
                   ioe.printStackTrace();
@@ -219,7 +217,7 @@ public class SimbadQuery {
     void displayQueryResults(List<AstroObject> objs, JSkyFitsImage img){
       try{
         clearQueryResults();
-        System.out.println("displaying..."+objs.size());
+        System.out.println("Number of results: "+objs.size());
         for(AstroObject obj: objs){
           Point2D.Double p = FITSScene.cc.wcs2vs(obj.getRa(), obj.getDec());
           VCross cr = new VCross(p.x, p.y, Config.Z_ASTRO_OBJ_CR, 10, 10,

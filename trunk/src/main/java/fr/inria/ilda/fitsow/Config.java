@@ -70,6 +70,8 @@ public class Config {
     public static String HTTPD_IP = "127.0.0.1";
     public static int HTTPD_PORT = 8081;
 
+    public static final float PAN_GESTURE_GAIN = 8f;
+
     public static final Color BACKGROUND_COLOR = Color.BLACK;
     public static final Color CURSOR_COLOR = Color.WHITE;
 
@@ -252,6 +254,10 @@ public class Config {
 
     /* ------------ Simbad queries ---------- */
 
+    public static final String SIMBAD_SERVER_STRASBOURG = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
+    public static final String SIMBAD_SERVER_HARVARD = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
+    public static final String SIMBAD_SERVER = SIMBAD_SERVER_STRASBOURG;
+
     public static final BasicStroke QUERY_REGION_STROKE = new BasicStroke(2f);
     public static final Color QUERY_REGION_COLOR = Color.RED;
     public static final float QUERY_REGION_ALPHA = .5f;
@@ -271,8 +277,6 @@ public class Config {
     public static final Color SELECTED_TEXT_COLOR = new Color(34,34,34);
 
     public static final DecimalFormat ARCMIN_FORMATTER = new DecimalFormat("#0.0000");
-
-    public static final float PAN_GESTURE_GAIN = 8f;
 
     public static final String BD_OT = "Object type :";
     public static final String BD_COORD_ICRS = "ICRS coord. (ep=J2000) :";

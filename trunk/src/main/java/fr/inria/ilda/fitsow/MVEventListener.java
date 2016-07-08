@@ -55,6 +55,7 @@ import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
 import fr.inria.ilda.simbad.SimbadQueryGlyph;
 import fr.inria.ilda.simbad.SimbadClearQuery;
 import fr.inria.ilda.simbad.Tabs;
+import fr.inria.ilda.simbad.AstroObject;
 
 public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -83,8 +84,10 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadResults = false;
     boolean draggingSimbadInfo = false;
     boolean draggingSimbadCriteria = false;
+    // query type selector
     boolean draggingSimbadQTS = false;
-  boolean draggingSimbadCQ = false;
+    // clear query
+    boolean draggingSimbadCQ = false;
 
     // cursor inside FITS image
     JSkyFitsImage img = null;
@@ -176,24 +179,14 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
-        if(draggingSimbadQTS){
-          draggingSimbadQTS = false;
-        }
-        if(draggingSimbadResults){
-          draggingSimbadResults = false;
-        }
-        if(draggingSimbadInfo){
-          draggingSimbadInfo = false;
-        }
-        if(draggingSimbadCriteria){
-          draggingSimbadCriteria = false;
-        }
+        draggingSimbadQTS = false;
+        draggingSimbadResults = false;
+        draggingSimbadInfo = false;
+        draggingSimbadCriteria = false;
+        draggingSimbadCQ = false;
         if (draggingFITS){
             app.dSpacePicker.unstickLastGlyph();
             draggingFITS = false;
-        }
-        if(draggingSimbadCQ){
-          draggingSimbadCQ = false;
         }
         if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
           SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
@@ -413,6 +406,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
             app.scene.selectNextColorMapping(app.meh.selectedFITSImage);
         }
+        // else if (code==KeyEvent.VK_D){
+        //     Glyph[] aos = app.dSpacePicker.getPickedGlyphList(Config.T_ASTRO_OBJ_LB);
+        //     if (aos.length > 0){
+        //         AstroObject ao = (AstroObject)aos[0].getOwner();
+        //         ao.displayBibRefs();
+        //     }
+        // }
     }
 
     public void Ktype(ViewPanel v,char c,int code,int mod, KeyEvent e){}
@@ -588,6 +588,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             if(ts.getSelected() == ts.BY_ID){
               sq = new SimbadQuery(app);
               exitQueryMode();
+            //   sq.querySimbadbyId("2MASS J18184834-1349146", app.scene.getActiveFITSImage());
               sq.querySimbadbyId(criteria.getIdStr(), app.scene.getActiveFITSImage());
               sq = null;
               return;
@@ -596,9 +597,11 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
               exitQueryMode();
               if (sq != null && circleCoords!= null){
                 if (app.scene.getActiveFITSImage() != null){
-                    sq.querySimbad(circleCoords, app.scene.getActiveFITSImage());}
-                else
+                    sq.querySimbad(circleCoords, app.scene.getActiveFITSImage());
+                }
+                else {
                     sq.querySimbad(circleCoords, img);
+                }
                 sq = null;
                 return;
               }

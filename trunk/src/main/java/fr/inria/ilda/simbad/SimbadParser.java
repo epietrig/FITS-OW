@@ -22,7 +22,7 @@ public class SimbadParser{
 
   public SimbadParser(){}
 
-  public static List<String> splitURLIntoStrings(URL url)throws IOException{
+  public static List<String> get(URL url)throws IOException{
     List<String> result = new ArrayList<String>();
     long start_time = System.nanoTime();
 
