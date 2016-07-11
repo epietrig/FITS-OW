@@ -148,6 +148,7 @@ JARS=$JARS":target/xmlParserAPIs-2.6.2.jar"
 JARS=$JARS":target/zvtm-svg-0.2.2-SNAPSHOT.jar"
 JARS=$JARS":target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
+JARS=$JARS":target/jep-3.5.3.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
 
 
