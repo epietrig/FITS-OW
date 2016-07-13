@@ -19,23 +19,18 @@ import java.awt.Color;
 public class SimbadMFilter extends SimbadFilter{
   private VRectangle[] msquares;
   private VText[] mnames;
-  // private SimbadCriteria parent;//doesnt really needit
-  // private VSegment l1, l2;//doesnt need them either, once i add bckg
-//I should be getting vs from parent class
+  
   public SimbadMFilter(double top, double left, double right, SimbadCriteria parent){
     super(900, 600);
     background = parent.background;
-    // this.parent = parent;
     msquares = new VRectangle[Config.CATALOGS.length+1];
     mnames = new VText[Config.CATALOGS.length+1];
     VSegment[] msplits = new VSegment[(Config.CATALOGS.length)/2+1];
     msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
     mnames[0] = new VText(left+6*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "All");
     mnames[0].setScale(1.2f);
-    // msplits[0] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
     this.addChild(msquares[0]);
     this.addChild(mnames[0]);
-    // this.addChild(msplits[0]);
     for(int i = 1; i < Config.CATALOGS.length; i++){
       if(i <= (Config.CATALOGS.length)/2){
         msquares[i] =  new VRectangle (left+3*OFFSET, top-TEXT_SIZE*(i+1)-i*10, Z, 10, 10, BACKGROUND_COLOR, BORDER_COLOR);
@@ -58,7 +53,6 @@ public class SimbadMFilter extends SimbadFilter{
   public SimbadMFilter(double top, double left, double right, SimbadCriteria parent, VRectangle[] m){
     super(900, 600);
     background = parent.background;
-    // this.parent = parent;
     msquares = new VRectangle[Config.CATALOGS.length+1];
     mnames = new VText[Config.CATALOGS.length+1];
     VSegment[] msplits = new VSegment[(Config.CATALOGS.length)/2+1];
@@ -66,10 +60,8 @@ public class SimbadMFilter extends SimbadFilter{
     else msquares[0] =  new VRectangle (left+2*OFFSET, top-TEXT_SIZE, Z, 10, 10, BACKGROUND_COLOR,BORDER_COLOR);
     mnames[0] = new VText(left+6*OFFSET, top-OFFSET-TEXT_SIZE, Z, TEXT_COLOR, "All");
     mnames[0].setScale(1.2f);
-    // msplits[0] = new VSegment(left, top-2*Config.OFFSET-Config.TEXT_SIZE, right, top-2*Config.OFFSET-Config.TEXT_SIZE ,Z, Config.SELECTED_TEXT_COLOR);
     this.addChild(msquares[0]);
     this.addChild(mnames[0]);
-    // this.addChild(msplits[0]);
     for(int i = 1; i < Config.CATALOGS.length; i++){
       if(i <= (Config.CATALOGS.length)/2){
         if(m[i].getColor().equals(CANCEL_COLOR))
@@ -149,20 +141,5 @@ public class SimbadMFilter extends SimbadFilter{
   public VRectangle[] getMSquares(){
     return msquares;
   }
-
-  // public void reselect(int[] m){
-  //   if(m != null && m.length > 0){
-  //     if(m.length == 1 && m[0] == 1){
-  //       for(VRectangle square : msquares){
-  //         square.setColor(CANCEL_COLOR);
-  //       }
-  //     }
-  //     else if(m.length == Config.CATALOGS.length){
-  //       for(int i = 0; i < m.length; i++){
-  //         if(m[i]==1 && msquares[i+1]!= null) msquares[i+1].setColor(CANCEL_COLOR);
-  //       }
-  //     }
-  //   }
-  // }
 
 }

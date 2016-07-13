@@ -14,7 +14,7 @@ import fr.inria.zvtm.engine.Camera;
 
 import fr.inria.ilda.fitsow.Config;
 
-
+import javax.swing.JOptionPane;
 import java.awt.Color;
 
 public class SimbadSTFilter extends SimbadFilter{
@@ -22,15 +22,21 @@ public class SimbadSTFilter extends SimbadFilter{
   private String stStr = "";
   private String lcStr = "";
   private String pecStr = "";
+  private static final String stInput = "Enter spectral type in the format:\n >=/<=/>/</!=/= value ";
+  private static final String lcInput = "Enter luminosity value in the format:\n >=/<=/>/</!=/= value ";
+  private static final String pecInput = "Enter Peculiarities in the format:\n =/!= numrical-value";
+  private static final String stLabel = "Spectral Type: ";
+  private static final String lcLabel = "Luminosity Class: ";
+  private static final String pecLabel = "Peculiarities: ";
 
   public SimbadSTFilter(double top, double left, double right){
     super(W, H);
     this.background = new VRectangle(left+150,top-150,Z,300,300,SELECTED_BACKGROUND_COLOR,BORDER_COLOR);
     this.addChild(background);
-    setFilterLayout("Spectral Type:", top, left, right);
-    st = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Spectral type:");
-    lc = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Luminosity class:");
-    pec = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"Peculiarities:");
+    setFilterLayout(stLabel, top, left, right);
+    st = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,stLabel);
+    lc = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,lcLabel);
+    pec = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,pecLabel);
     st.setScale(1.2f);
     lc.setScale(1.2f);
     pec.setScale(1.2f);
@@ -54,17 +60,25 @@ public class SimbadSTFilter extends SimbadFilter{
 
 
   public void select(int i  , String str){
+    String inputValue="";
+    JOptionPane optionPane;
     if(i == 0){
-      st.setText("Spectral type: "+str);
-      stStr = str;
+      optionPane = new JOptionPane(stLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(stInput);
+      st.setText(stLabel+inputValue);
+      stStr = inputValue;
      }
     else if(i == 1){
-      lc.setText("Luminosity class: "+str);
-      lcStr = str;
+      optionPane = new JOptionPane(lcLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(lcInput);
+      lc.setText(lcLabel+inputValue);
+      lcStr = inputValue;
      }
     else if(i == 2){
-      pec.setText("Peculiarities: "+str);
-      pecStr = str;
+      optionPane = new JOptionPane(pecLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(pecInput);
+      pec.setText(pecLabel+inputValue);
+      pecStr = inputValue;
     }
     else if(qsquares != null && i >=3){
       if(qsquares[i-3].getColor().equals(CANCEL_COLOR))
@@ -73,6 +87,7 @@ public class SimbadSTFilter extends SimbadFilter{
         qsquares[i-3].setColor(CANCEL_COLOR);
     }
   }
+
   public int[] getQualitiesSelected(){
     int[] retval = new int[5];
     for(int i = 0; i < qsquares.length; i++){

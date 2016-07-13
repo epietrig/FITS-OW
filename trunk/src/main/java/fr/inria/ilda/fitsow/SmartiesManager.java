@@ -332,7 +332,7 @@ class SmartiesManager implements Observer {
 						SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
 						SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
 						if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
-							application.eh.updateSimbadCriteriaTabs(jpx, jpy, criteria);
+							criteria.updateSimbadCriteriaTabs(jpx, jpy);
 							criteria.updateSimbadCriteria(jpx, jpy, application);
 						}
 						else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){

@@ -14,22 +14,21 @@ import fr.inria.zvtm.engine.Camera;
 
 import fr.inria.ilda.fitsow.Config;
 
-
+import javax.swing.JOptionPane;
 import java.awt.Color;
 
 public class SimbadParallaxFilter extends SimbadFilter{
-  // private SimbadCriteria parent;//doesnt need it
-  // private VSegment l1, l2;//doesnt need it
   private VText parallax;
   private String parallaxStr ="";
-  // private VRectangle[] qsquares = null;
+  private static final String parallaxLabel = "Parallax: ";
+  private static final String parallaxInput = "Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value";
 
   public SimbadParallaxFilter(double top, double left, double right){
     super(W, H-90);
     this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
-    setFilterLayout("Parallax:", top, left, right);
-    parallax = new VText(left+2*OFFSET,top-3*TEXT_SIZE-OFFSET,Z,TEXT_COLOR,"Parallax:");
+    setFilterLayout(parallaxLabel, top, left, right);
+    parallax = new VText(left+2*OFFSET,top-3*TEXT_SIZE-OFFSET,Z,TEXT_COLOR,parallaxLabel);
     parallax.setScale(1.2f);
     this.addChild(parallax);
     this.qsquares = qualitySelector(this, left+2*OFFSET, top-TEXT_SIZE*9);
@@ -44,8 +43,10 @@ public class SimbadParallaxFilter extends SimbadFilter{
 
   public void select(int i, String str){
     if(i == 0){
-      parallax.setText("Parallax: "+str);
-      parallaxStr = str;
+      JOptionPane optionPane = new JOptionPane(parallaxLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      String inputValue = JOptionPane.showInputDialog(parallaxInput);
+      parallax.setText(parallaxLabel+inputValue);
+      parallaxStr = inputValue;
     }
     else if(qsquares!=null && i >= 0){
       if(qsquares[i-1].getColor().equals(CANCEL_COLOR))

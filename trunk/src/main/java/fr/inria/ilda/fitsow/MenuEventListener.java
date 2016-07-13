@@ -356,7 +356,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         double gridW = Config.COLOR_MAPPINGS.length;
         double cellW = (Config.CLT_BTN_W + 2*Config.CLT_BTN_PADDING);
         double cellH = (Config.CLT_BTN_H + 2*Config.CLT_BTN_PADDING);
-        VRectangle bkg = new VRectangle(0, 0, Config.Z_CLT_BKG,
+        VRectangle bkg = new VRectangle(0, 0/*-300*/, Config.Z_CLT_BKG,
                                         Config.CLT_MENU_W, 1.05*Config.CLT_MENU_H,
                                         Color.BLACK, Color.BLACK, .8f);
         bkg.setType(Config.T_CLT_BTN);
@@ -366,7 +366,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         for (int i=0;i<Config.COLOR_MAPPINGS.length;i++){
             for (int j=0;j<Config.COLOR_MAPPINGS[i].length;j++){
                 double x = i * cellW - Config.CLT_MENU_W/2d + cellW/2d;
-                double y = -j * cellH + Config.CLT_MENU_H/2d - cellH/2d;
+                double y = /*-300*/ -j * cellH + Config.CLT_MENU_H/2d - cellH/2d;
                 RGBImageFilter f = Config.COLOR_MAPPING_GRADIENTS.get(Config.COLOR_MAPPINGS[i][j]);
                 MultipleGradientPaint mgp = Utils.makeGradient(f);
                 PRectangle filterG = new PRectangle(x, y, Config.Z_CLT_BTN,
@@ -386,7 +386,7 @@ public class MenuEventListener implements ViewListener, PickerListener {
         }
         app.mnSpace.addGlyphs(cltMenuGs.toArray(new Glyph[cltMenuGs.size()]));
         if (selectedFITSImage == null){
-            app.scene.showThumbnails(0, .8f*Config.CLT_MENU_H);
+            app.scene.showThumbnails(0, .8f*Config.CLT_MENU_H /*-300*/);
         }
         showingCLTmenu = true;
         clt2button.get(currentCLT).select();

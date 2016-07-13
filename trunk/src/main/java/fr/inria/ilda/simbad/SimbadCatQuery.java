@@ -71,67 +71,48 @@ public class SimbadCatQuery {
 
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
-        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<String> objLines = SimbadParser.get(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
     }
+
     public static List<AstroObject> makeSimbadCoordQuery(String ra, String dec, String radmin) throws IOException{
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
-        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<String> objLines = SimbadParser.get(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
     }
+
     public static List<AstroObject> makeSimbadIdQuery(String id) throws IOException{
         URL queryUrl = makeSimbadIdQueryUrl(id);
-        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<String> objLines = SimbadParser.get(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
     }
 
     public static List<AstroObject> makeSimbadScriptQuery(String script) throws IOException{
         String query = formatString2 +script+"\n";
-        System.out.println("format+scritp:"+query);
         URL queryUrl = makeSimbadScriptQueryUrl(query);
-        List<String> objLines = SimbadParser.splitURLIntoStrings(queryUrl);
+        List<String> objLines = SimbadParser.get(queryUrl);
         List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
         return astroObjs;
     }
 
-    private static URL makeSimbadCoordQueryUrl(double ra, double dec,
-            double radMin){
-        try{
-            Coordinates coords = new Coordinates(ra, dec);
-            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script =
-            String.format(formatString+
-                    queryOptionalFilters(criteria)+
-                    "query sample region(%s%s,%sm)"
-                    + queryOptionalCriteria(criteria),
-                    coords.raToString(),coords.decToString(),Config.ARCMIN_FORMATTER.format(radMin)
-                    );
-
-            System.out.println("script: "+script);
-            return makeSimbadScriptQueryUrl(script);
-
-        } catch (MalformedURLException ex){
-            //we are supposed to create well-formed URLs here...
-            throw new Error(ex);
-        }
+    private static URL makeSimbadCoordQueryUrl(double ra, double dec, double radMin){
+        Coordinates coords = new Coordinates(ra, dec);
+        return makeSimbadCoordQueryUrl(coords.raToString(), coords.decToString(),
+                                       Config.ARCMIN_FORMATTER.format(radMin));
     }
-    private static URL makeSimbadCoordQueryUrl(String ra, String dec,
-            String radMin){
-        try{
-            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script =
-            String.format(formatString+
-                    queryOptionalFilters(criteria)+
-                    "query sample region(%s%s,%s)"
-                    + queryOptionalCriteria(criteria),
-                    ra,dec,radMin
-                    );
-            System.out.println("script: "+script);
-            return makeSimbadScriptQueryUrl(script);
 
+    private static URL makeSimbadCoordQueryUrl(String ra, String dec, String radMin){
+        try {
+            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
+            String script = String.format(formatString +
+                                          queryOptionalFilters(criteria) +
+                                          "query sample region(%s%s,%s)" +
+                                          queryOptionalCriteria(criteria),
+                                          ra, dec, radMin);
+            return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...
             throw new Error(ex);
@@ -139,18 +120,14 @@ public class SimbadCatQuery {
     }
 
     private static URL makeSimbadIdQueryUrl(String id){
-        try{
+        try {
             id = id.replaceAll("\\s+","");
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script =
-            String.format(formatString+
-                    queryOptionalFilters(criteria)+
-                    "query sample region(%s)"
-                    + queryOptionalCriteria(criteria),
-                    id
-                    );
-
-                    System.out.println("script: "+script);
+            String script = String.format(formatString +
+                                          queryOptionalFilters(criteria) +
+                                          "query sample region(%s)" +
+                                          queryOptionalCriteria(criteria),
+                                          id);
             return makeSimbadScriptQueryUrl(script);
         } catch (MalformedURLException ex){
             //we are supposed to create well-formed URLs here...
@@ -159,17 +136,17 @@ public class SimbadCatQuery {
     }
 
     private static URL makeSimbadScriptQueryUrl(String script) throws MalformedURLException {
-      String prefix = "http://simbad.u-strasbg.fr/simbad/sim-script?script=";
-      // String prefix = "http://simbak.cfa.harvard.edu/simbad/sim-script?script=";
-      try{
-          return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
-      } catch (UnsupportedEncodingException eex){
-          //Java implementations are required to offer UTF-8 encoding
-          //support, so we should not trigger this.
-          //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
-          throw new Error(eex);
-      }
-
+        System.out.println("SIMBAD script generated:\n------------\n"+script+"\n------------");
+        String prefix = Config.SIMBAD_SERVER;
+        try{
+            return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
+        }
+        catch (UnsupportedEncodingException eex){
+            //Java implementations are required to offer UTF-8 encoding
+            //support, so we should not trigger this.
+            //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
+            throw new Error(eex);
+        }
     }
 
     private static String queryOptionalFilters(SimbadCriteria criteria){

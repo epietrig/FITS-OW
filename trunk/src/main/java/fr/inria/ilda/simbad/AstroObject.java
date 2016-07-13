@@ -10,6 +10,7 @@ import jsky.science.Coordinates;
 import java.util.HashMap;
 import fr.inria.ilda.fitsow.Config;
 import java.util.Vector;
+import java.io.IOException;
 
 public class AstroObject {
 
@@ -94,4 +95,18 @@ public class AstroObject {
       if(fluxesStr != "") retval = retval + keys[keys.length-1]+"\n"+fluxesStr;
       return retval;
     }
+
+    // public void displayBibRefs(){
+
+    // 2MASS J18184834-1349146
+    //     System.out.println(identifier);
+    //     try {
+    //         SimbadCatQuery.makeSimbadIdQuery(identifier);
+    //         // SimbadCatQuery.getBibcodesForId(identifier);
+    //     }
+    //     catch (IOException ex){
+    //         ex.printStackTrace();
+    //     }
+    // }
+
 }

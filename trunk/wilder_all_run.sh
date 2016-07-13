@@ -21,7 +21,7 @@ REST=""
 #ZVTMHOME="/home2/wild/workspace/zc-sample"
 ZVTMHOME="/home2/wild/workspace/zvtm_demos/FITS-OW/trunk"
 
-export LD_LIBRARY_PATH="/usr/lib/jvm/default-java/jre/lib/amd64/"
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0
 
 for i in "$@"
 do
@@ -153,7 +153,7 @@ JARS=$JARS":target/fits-ow-0.1.jar"
 
 
 #java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr="192.168.0.56" -Djava.library.path=".:lib" -cp "target/*" $CLASS $REST
-java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr="192.168.2.$LIP" -Djava.library.path=".:lib:/usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/lib/amd64" -cp $JARS $CLASS -r 5 -c 15 -bw 960 -bh 960 $REST
+java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr="192.168.2.$LIP" -Djava.library.path=".:/usr/lib/jvm/java-8-oracle/jre/lib/amd64:/usr/local/lib/python2.7/dist-packages/jep" -cp $JARS $CLASS -r 5 -c 15 -bw 960 -bh 960 $REST
 
 WALL=WILDER  walldo -l $LOGIN killall java
 #WALL=WILDER walldo -l wild killall java

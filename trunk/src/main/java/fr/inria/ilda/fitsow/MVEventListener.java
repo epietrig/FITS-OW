@@ -55,6 +55,7 @@ import fr.inria.ilda.simbad.SimbadQueryTypeSelector;
 import fr.inria.ilda.simbad.SimbadQueryGlyph;
 import fr.inria.ilda.simbad.SimbadClearQuery;
 import fr.inria.ilda.simbad.Tabs;
+import fr.inria.ilda.simbad.AstroObject;
 
 public class MVEventListener implements ViewListener, CameraListener, ComponentListener, PickerListener {
 
@@ -83,9 +84,15 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     boolean draggingSimbadResults = false;
     boolean draggingSimbadInfo = false;
     boolean draggingSimbadCriteria = false;
+    // query type selector
     boolean draggingSimbadQTS = false;
+// <<<<<<< HEAD
     boolean draggingSimbadCQ = false;
     boolean dragging = false;
+// =======
+    // clear query
+    // boolean draggingSimbadCQ = false;
+// >>>>>>> 8e4c9c830def8da484e52dea0a6c110aeaa9ee46
 
     // cursor inside FITS image
     JSkyFitsImage img = null;
@@ -269,6 +276,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     }
     public void release1(ViewPanel v,int mod,int jpx,int jpy, MouseEvent e){
         panning = false;
+// <<<<<<< HEAD
         // if(draggingSimbadQTS){
         //   draggingSimbadQTS = false;
         // }
@@ -288,7 +296,18 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         // if(draggingSimbadCQ){
         //   draggingSimbadCQ = false;
         // }
-        endDragging();
+//         endDragging();
+// =======
+        draggingSimbadQTS = false;
+        draggingSimbadResults = false;
+        draggingSimbadInfo = false;
+        draggingSimbadCriteria = false;
+        draggingSimbadCQ = false;
+        if (draggingFITS){
+            app.dSpacePicker.unstickLastGlyph();
+            draggingFITS = false;
+        }
+// >>>>>>> 8e4c9c830def8da484e52dea0a6c110aeaa9ee46
         if (querying && !insideSimbadQueryTypeSelector(jpx, jpy) &&!insideSimbadCriteria(jpx, jpy)){
           SimbadQueryTypeSelector sqts = (SimbadQueryTypeSelector) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SQTS);
           if(sqts.getSelected() == 0){
@@ -338,7 +357,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       SimbadInfo info = (SimbadInfo) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_BINFO);
       SimbadClearQuery cq = (SimbadClearQuery) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SCQ);
       if(criteria != null && criteria.coordInsideItem(jpx,jpy)){
-        updateSimbadCriteriaTabs(jpx, jpy, criteria);
+        criteria.updateSimbadCriteriaTabs(jpx, jpy);
         criteria.updateSimbadCriteria(jpx, jpy, app);
       }
       else if(sqts != null && sqts.coordInsideItem(jpx, jpy)){
@@ -567,6 +586,13 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
             app.meh.setSelectedFITSImage(app.dSpacePicker.getPickedGlyphList(Config.T_FITS));
             app.scene.selectNextColorMapping(app.meh.selectedFITSImage);
         }
+        // else if (code==KeyEvent.VK_D){
+        //     Glyph[] aos = app.dSpacePicker.getPickedGlyphList(Config.T_ASTRO_OBJ_LB);
+        //     if (aos.length > 0){
+        //         AstroObject ao = (AstroObject)aos[0].getOwner();
+        //         ao.displayBibRefs();
+        //     }
+        // }
     }
 
     public void Ktype(ViewPanel v,char c,int code,int mod, KeyEvent e){}
@@ -708,15 +734,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       }
     }
 
-    void updateSimbadCriteriaTabs(int jpx, int jpy, SimbadCriteria criteria){
-      Tabs tabs = criteria.getTabs();
-      if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,app.sqCamera)){
-        tabs.activateBasicDataTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
-      }
-      else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,app.sqCamera)){
-        tabs.activateMeasurementsTab(criteria.getBackground(), criteria.getMeasurements(), criteria.getBasicData());
-      }
-    }
 
     boolean insideSimbadResults(int jpx, int jpy){
       SimbadResults list = (SimbadResults) SimbadQueryGlyph.getCurrent(Config.T_ASTRO_OBJ_SR);

@@ -14,7 +14,7 @@ import fr.inria.zvtm.engine.Camera;
 
 import fr.inria.ilda.fitsow.Config;
 
-
+import javax.swing.JOptionPane;
 import java.awt.Color;
 
 public class SimbadRVFilter extends SimbadFilter{
@@ -25,13 +25,19 @@ public class SimbadRVFilter extends SimbadFilter{
   private String rvStr="";
   private String zStr="";
   private String czStr = "";
+  private static final String rvLabel = "Radial velocity: ";
+  private static final String redshiftLabel = "Redshift: ";
+  private static final String czLabel = "cz: ";
+  private static final String rvInput = "Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value";
+  private static final String redshiftInput = "Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value";
+  private static final String czInput = "Enter cz in the format:\n >=/<=/=/!= numrical-value";
 
   public SimbadRVFilter(double top, double left, double right){
     super(W,H-90);
     this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
-    setFilterLayout("Radial velocity:", top, left, right);
-    rv = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Radial velocity (km/s):");
+    setFilterLayout(rvLabel, top, left, right);
+    rv = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,rvLabel);
     z  = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Redshift (z):");
     cz  = new VText(left+2*OFFSET,top-7*TEXT_SIZE,Z,TEXT_COLOR,"cz:");
     rv.setScale(1.2f);
@@ -56,17 +62,25 @@ public class SimbadRVFilter extends SimbadFilter{
   }
 
   public void select(int i, String str){
+    String inputValue="";
+    JOptionPane optionPane;
     if(i == 0){
-     rv.setText("Radial velocity (km/s) :"+str);
-     rvStr = str;
+      optionPane = new JOptionPane(rvLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(rvInput);
+      rv.setText(rvLabel+inputValue);
+      rvStr = inputValue;
     }
     else if(i == 1){
-      z.setText("Redshift (z) :"+str);
-      zStr = str;
+      optionPane = new JOptionPane(redshiftLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(redshiftInput);
+      z.setText(redshiftLabel+inputValue);
+      zStr = inputValue;
     }
     else if(i == 2){
-      cz.setText("cz :"+str);
-      czStr = str;
+      optionPane = new JOptionPane(czLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(czInput);
+      cz.setText(czLabel+inputValue);
+      czStr = inputValue;
     }
     else if(qsquares != null && i >= 3){
       if(qsquares[i-3].getColor().equals(CANCEL_COLOR))

@@ -218,6 +218,15 @@ public class SimbadCriteria extends SimbadQueryGlyph{
     }
   }
 
+  public void updateSimbadCriteriaTabs(int jpx, int jpy){
+      if(tabs.getBasicDataTab().coordInsideP(jpx,jpy,SQ_CAMERA)){
+        tabs.activateBasicDataTab(this.getBackground(), this.getMeasurements(), this.getBasicData());
+      }
+      else if(tabs.getMeasurementsTab().coordInsideP(jpx,jpy,SQ_CAMERA)){
+        tabs.activateMeasurementsTab(this.getBackground(), this.getMeasurements(), this.getBasicData());
+      }
+  }
+
   public void updateSimbadCriteria(int jpx, int jpy, FITSOW app){
       Point2D.Double coords = new Point2D.Double();
       app.getView().fromPanelToVSCoordinates(jpx,jpy,SQ_CAMERA,coords);
@@ -271,79 +280,22 @@ public class SimbadCriteria extends SimbadQueryGlyph{
         }
 
         if(objectTypeFilter.coordInsideItem(jpx, jpy)){
-        objectTypeFilter.select(objectTypeFilter.getItemSelected(x,y),"");
+          objectTypeFilter.select(objectTypeFilter.getItemSelected(x,y),"");
         }
         else if(properMotionFilter.coordInsideItem(jpx, jpy)){
-          int angle = properMotionFilter.getItemSelected(x,y);
-          JOptionPane optionPane;
-          String inputValue ="";
-          if(angle == 0){
-            optionPane = new JOptionPane("right ascension of proper motion (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value");
-          }else if(angle ==1){
-            optionPane = new JOptionPane("declination of proper motion (mas) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value");
-          }
-          properMotionFilter.select(angle, inputValue);
+          properMotionFilter.select(properMotionFilter.getItemSelected(x,y), "");
         }
         else if(parallaxesFilter.coordInsideItem(jpx,jpy)){
-          int parallax = parallaxesFilter.getItemSelected(x,y);
-          String inputValue ="";
-          if(parallax == 0){
-            JFrame parent = new JFrame();
-            JOptionPane optionPane = new JOptionPane("parallax (mas)", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter parallax (mas) in the format:\n!=/=/>=/<= numrical-value");
-          }
-          parallaxesFilter.select(parallax, inputValue);
+          parallaxesFilter.select(parallaxesFilter.getItemSelected(x,y), "");
         }
         else if(radialVelocityFilter.coordInsideItem(jpx,jpy)){
-          int value = radialVelocityFilter.getItemSelected(x,y);
-          String inputValue="";
-          JFrame parent = new JFrame();
-          JOptionPane optionPane;
-          if(value == 0){
-            optionPane = new JOptionPane("Radial velocity (km/s) ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter radial velocity (km/s) in the format:\n >=/<=/=/!= numrical-value");
-          }
-          else if(value == 1){
-            optionPane = new JOptionPane("Redshift ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter redshift (km/s) in the format:\n >=/<=/=/!= numrical-value");
-          }
-          else if(value ==2){
-            optionPane = new JOptionPane("cz ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter cz in the format:\n >=/<=/=/!= numrical-value");
-          }
-          radialVelocityFilter.select(value,inputValue);
+          radialVelocityFilter.select(radialVelocityFilter.getItemSelected(x,y),"");
         }
         else if(spectralTypeFilter.coordInsideItem(jpx,jpy)){
-          int value = spectralTypeFilter.getItemSelected(x,y);
-          String inputValue="";
-          JFrame parent = new JFrame();
-          JOptionPane optionPane;
-          if(value == 0){
-            optionPane = new JOptionPane("Spectral type ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter spectral type in the format:\n >=/<=/>/</!=/= value ");
-          }
-          else if(value == 1){
-            optionPane = new JOptionPane("Luminosity class ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter luminosity value in the format:\n >=/<=/>/</!=/= value ");
-          }
-          else if(value ==2){
-            optionPane = new JOptionPane("Peculiarities ", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter Peculiarities in the format:\n =/!= numrical-value");
-          }
-          spectralTypeFilter.select(value,inputValue);
+          spectralTypeFilter.select(spectralTypeFilter.getItemSelected(x,y),"");
         }
         else if(fluxesFilter.coordInsideItem(jpx,jpy)){
-          int value = fluxesFilter.getItemSelected(x,y);
-          String inputValue="";
-          JFrame parent = new JFrame();
-          JOptionPane optionPane;
-          if(value%2!=0 && value<25 && value >0){
-            optionPane = new JOptionPane(Config.FLUX_TYPES[value/2]+" Range", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
-            inputValue = JOptionPane.showInputDialog("Enter range of "+Config.FLUX_TYPES[value/2]+" magnitude in the format:\n =/!= value");
-          }
-          fluxesFilter.select(value, inputValue);
+          fluxesFilter.select(fluxesFilter.getItemSelected(x,y), "");
         }
       }
   }

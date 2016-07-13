@@ -13,7 +13,7 @@ import fr.inria.zvtm.engine.VirtualSpace;
 import fr.inria.zvtm.engine.Camera;
 
 import fr.inria.ilda.fitsow.Config;
-
+import javax.swing.JOptionPane;
 
 import java.awt.Color;
 
@@ -21,14 +21,19 @@ public class SimbadPMFilter extends SimbadFilter{
   private VText ra, dec;
   private String raStr ="";
   private String decStr="";
+  private static final String pmLabel = "Proper Motion: ";
+  private static final String raLabel = "Right ascension angle: ";
+  private static final String decLabel = "Declination angle: ";
+  private static final String raInput = "Enter right ascension of proper motion (mas) in the format:\n >=/<= numrical-value";
+  private static final String decInput = "Enter declination of proper motion (mas) in the format:\n >=/<= numrical-value";
 
   public SimbadPMFilter(double top, double left, double right){
     super(W, H-90);
     this.background = new VRectangle(left+150,top-105,Z,300,210,SELECTED_BACKGROUND_COLOR, BORDER_COLOR);
     this.addChild(background);
-    setFilterLayout("Proper Motion:", top, left, right);
-    ra = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,"Right ascension angle:");
-    dec = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,"Declination angle:");
+    setFilterLayout(pmLabel, top, left, right);
+    ra = new VText(left+2*OFFSET,top-3*TEXT_SIZE,Z,TEXT_COLOR,raLabel);
+    dec = new VText(left+2*OFFSET,top-5*TEXT_SIZE,Z,TEXT_COLOR,decLabel);
     ra.setScale(1.2f);
     dec.setScale(1.2f);
     this.addChild(ra);
@@ -49,13 +54,19 @@ public class SimbadPMFilter extends SimbadFilter{
   }
 
   public void select(int i, String str){
+    JOptionPane optionPane;
+    String inputValue ="";
     if(i == 0){
-     ra.setText("Right ascension angle: "+str);
-     raStr = str;
+      optionPane = new JOptionPane(raLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(raInput);
+      ra.setText(raLabel+inputValue);
+      raStr = inputValue;
    }
     else if(i == 1){
-      dec.setText("Declination angle: "+str);
-      decStr = str;
+      optionPane = new JOptionPane(decLabel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+      inputValue = JOptionPane.showInputDialog(decInput);
+      dec.setText(decLabel+inputValue);
+      decStr = inputValue;
     }
     else if(qsquares != null && i >= 2){
       if(qsquares[i-2].getColor().equals(CANCEL_COLOR))

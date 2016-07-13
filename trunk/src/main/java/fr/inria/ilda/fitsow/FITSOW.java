@@ -70,8 +70,8 @@ public class FITSOW {
     /* screen dimensions, actual dimensions of windows */
     static int SCREEN_WIDTH =  Toolkit.getDefaultToolkit().getScreenSize().width;
     static int SCREEN_HEIGHT =  Toolkit.getDefaultToolkit().getScreenSize().height;
-    static int VIEW_MAX_W = 1200;
-    static int VIEW_MAX_H = 800;
+    static int VIEW_MAX_W = 1920;
+    static int VIEW_MAX_H = 1080;
     int VIEW_W, VIEW_H;
     int VIEW_X, VIEW_Y;
     /* dimensions of zoomable panel */
