@@ -2,6 +2,9 @@ package fr.inria.ilda.simbad;
 
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
+import fr.inria.ilda.fitsow.FITSOW;
+import fr.inria.ilda.fitsow.SimbadQuery;
+import fr.inria.ilda.fitsow.MVEventListener;
 import java.awt.Color;
 import fr.inria.ilda.fitsow.Config;
 
@@ -32,6 +35,14 @@ public class SimbadClearQuery extends SimbadQueryGlyph{
   }
   public VRectangle getBackground(){
     return background;
+  }
+
+  public void updateSimbadClearQuery(int jpx, int jpy, FITSOW app){
+    MVEventListener eh = app.getMVEventListener();
+    SimbadQuery sq = eh.getSimbadQuery();
+    if(sq == null) sq = new SimbadQuery(app);
+    sq.clearQueryResults();
+    sq = null;
   }
 
 }

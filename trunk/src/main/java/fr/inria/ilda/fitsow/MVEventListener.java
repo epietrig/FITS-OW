@@ -370,7 +370,7 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
         updateSimbadResults(jpx, jpy, list);
       }
       else if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, app.sqCamera)){
-        updateSimbadClearQuery(jpx, jpy);
+        cq.updateSimbadClearQuery(jpx, jpy, app);
       }
     }
 
@@ -662,11 +662,11 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
       if(sq != null)sq.clearQueryRegion();
     }
 
-    void updateSimbadClearQuery(int jpx, int jpy){
-      sq = new SimbadQuery(app);
-      sq.clearQueryResults();
-      sq = null;
-    }
+    // void updateSimbadClearQuery(int jpx, int jpy){
+    //   sq = new SimbadQuery(app);
+    //   sq.clearQueryResults();
+    //   sq = null;
+    // }
 
     void updateSimbadQueryTypeSelector(int jpx, int jpy, SimbadQueryTypeSelector sqts){
       int selectedButtonIndex = sqts.getSelectedButton(jpx, jpy, app.sqCamera);

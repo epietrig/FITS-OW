@@ -345,7 +345,7 @@ class SmartiesManager implements Observer {
 							application.eh.updateSimbadResults(jpx, jpy, list);
 						}
 						else if(cq!= null && cq.getClearButton().coordInsideP(jpx, jpy, application.sqCamera)){
-							application.eh.updateSimbadClearQuery(jpx, jpy);
+							cq.updateSimbadClearQuery(jpx, jpy, application);
 						}
 
             if (false){  // for emulating wall touch
