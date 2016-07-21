@@ -33,10 +33,10 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
 
   <!-- Repositories -->
   <repositories>
-      <repository>
+      <!-- <repository>
         <id>inriacentral</id>
         <url>http://maven.inria.fr/artifactory/ilda-private-snapshot</url>
-      </repository>
+      </repository> -->
     <repository>
       <id>zvtm repository</id>
       <url>http://isteam.gforge.inria.fr/maven/</url>
@@ -47,11 +47,11 @@ $Id: pom.xml 108 2013-09-04 18:40:18Z epietrig $
       <name>Maven Repository</name>
       <url>http://repo1.maven.org/maven2</url>
     </repository>
-    <repository>
+    <!-- <repository>
       <id>fr.lri.smarties</id>
       <name>Smarties Repository</name>
       <url>http://smarties.lri.fr/repository/maven2</url>
-    </repository>
+    </repository> -->
   </repositories>
 
   <!-- Dependencies -->

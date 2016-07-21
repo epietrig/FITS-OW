@@ -203,16 +203,18 @@ public class SimbadQuery {
 
                   System.out.println("querying...");
                   // start_time = System.nanoTime();
-                    objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
+                  // objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
+                  SimbadCatQuery.testVOTable(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
-                    ioe.printStackTrace();
-                } finally {
-                    return objs;
-                }
+                    ioe.printStackTrace();}
+                // } finally {
+                //     return objs;
+                // }
+                return null;
             }
             @Override public void finished(){
-                List<AstroObject> objs = (List<AstroObject>)get();
-                displayQueryResults(objs, centerImg);
+                // List<AstroObject> objs = (List<AstroObject>)get();
+                // displayQueryResults(objs, centerImg);
 
                 fadeOutQueryRegion();
             }

@@ -17,11 +17,47 @@ import java.util.HashMap;
 import jsky.science.Coordinates;
 import fr.inria.ilda.fitsow.Config;
 import java.util.Vector;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import java.io.InputStream;
+import javax.xml.parsers.ParserConfigurationException;
 public class SimbadParser{
 
   public SimbadParser(){}
 
+  public static void getVOTableAsString(URL url)throws ParserConfigurationException{
+    List<String> result = new ArrayList<String>();
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+
+   try {
+
+    //  URLConnection uc = url.openConnection();
+    //  BufferedReader in = new BufferedReader(new InputStreamReader(
+    //              uc.getInputStream()));
+    //  String toAppend;
+    //  String object = "";
+    //  int length;
+    //  while((toAppend = in.readLine()) != null){
+    //    System.out.println(toAppend);
+     //
+    //  }
+    //  in.close();
+
+      // InputStream in = url.openStream();
+      Document doc = builder.parse(url.openStream());
+      Element element = doc.getDocumentElement();
+      NodeList nodes = element.getChildNodes();
+      for (int i = 0; i < nodes.getLength(); i++)
+         System.out.println(nodes.item(i).getTextContent().trim());
+      // in.close();
+   }catch (Exception ex) {
+      ex.printStackTrace();
+   }
+  }
   public static List<String> get(URL url)throws IOException{
     List<String> result = new ArrayList<String>();
     long start_time = System.nanoTime();

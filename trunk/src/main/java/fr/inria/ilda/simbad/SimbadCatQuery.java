@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Locale;
 import java.text.DecimalFormat;
 
+
+
+
 import jsky.science.Coordinates;
 
 import fr.inria.ilda.fitsow.Config;
@@ -68,6 +71,51 @@ public class SimbadCatQuery {
     "#%%MEASLIST(rvel;AH)#%%MEASLIST(sao;AH)#%%MEASLIST(td1;AH)#%%MEASLIST(ubv;AH)"+
     "#%%MEASLIST(uvby;AH)#%%MEASLIST(uvby1;AH)#%%MEASLIST(v*;AH)#%%MEASLIST(velocities;AH)"+
     "#%%MEASLIST(xmm;AH)#%%MEASLIST(z;AH)#%%MEASLIST(ze;AH)#";
+
+    public static void testVOTable(double ra, double dec, double radmin) throws IOException{
+        // URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
+        System.out.println("starting votable test");
+
+        Coordinates coords = new Coordinates(ra, dec);
+        String prefix = Config.SIMBAD_SERVER;
+        String script;
+        URL url;
+            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
+            script = String.format("output console=off script=off\n votable vot{main_id\n otype}\n"+ "votable open vot\n"+"query sample region(%s%s,%s)\n"+"votable close",
+                                          // queryOptionalCriteria(criteria),
+                                          coords.raToString(), coords.decToString(),  Config.ARCMIN_FORMATTER.format(radmin));
+
+
+        try{
+            url = new URL(prefix + URLEncoder.encode(script, "UTF-8"));
+        }catch(UnsupportedEncodingException eex){
+            //Java implementations are required to offer UTF-8 encoding
+            //support, so we should not trigger this.
+            //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
+            throw new Error(eex);
+        }
+        try{
+          SimbadParser.getVOTableAsString(url);
+          // List<String> result = new ArrayList<String>();
+          // URLConnection uc = url.openConnection();
+          // BufferedReader in = new BufferedReader(new InputStreamReader(
+          //             uc.getInputStream()));
+          // String toAppend;
+          // String object = "";
+          // int length;
+          // while((toAppend = in.readLine()) != null){
+          //   System.out.println(toAppend);
+          //
+          // }
+          // in.close();
+        }catch(Exception e){
+          e.printStackTrace();
+        }
+
+        // List<String> objLines = SimbadParser.get(queryUrl);
+        // List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        // return astroObjs;
+    }
 
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
         URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
