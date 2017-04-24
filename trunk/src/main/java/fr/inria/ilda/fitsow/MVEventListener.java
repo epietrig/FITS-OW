@@ -528,7 +528,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
     public void enterGlyph(Glyph g){
         g.highlight(true, null);
         if (g.getType().equals(Config.T_FITS)){
-          System.out.println("blablba");
             app.scene.setActiveFITSImage((JSkyFitsImage)g);
         }
         else if (g.getType().equals(Config.T_PDF)){
@@ -538,7 +537,6 @@ public class MVEventListener implements ViewListener, CameraListener, ComponentL
 
     public void exitGlyph(Glyph g){
         g.highlight(false, null);
-        System.out.println("bleble");
         if (g.getType().equals(Config.T_FITS)){
             Glyph[] insideOtherFITS = app.dSpacePicker.getPickedGlyphList(Config.T_FITS);
             if (insideOtherFITS.length > 0){
