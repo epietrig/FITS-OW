@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.icepdf.core.pobjects.Document;
-import org.icepdf.core.pobjects.Page;
-import org.icepdf.core.exceptions.PDFException;
-import org.icepdf.core.exceptions.PDFSecurityException;
+// import org.icepdf.core.pobjects.Document;
+// import org.icepdf.core.pobjects.Page;
+// import org.icepdf.core.exceptions.PDFException;
+// import org.icepdf.core.exceptions.PDFSecurityException;
 
 import fr.inria.zvtm.glyphs.BrowsableDocument;
 

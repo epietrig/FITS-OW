@@ -117,7 +117,6 @@ public class FITSOW {
 
     public FITSOW(FOWOptions options){
         VirtualSpaceManager.INSTANCE.getAnimationManager().setResolution(80);
-        // System.setProperty("java.library.path", "/usr/local/lib/python2.7/dist-packages/jep");
         System.out.println("java.library.path= "+System.getProperty("java.library.path"));
         initGUI(options);
         nav = new Navigation(this);

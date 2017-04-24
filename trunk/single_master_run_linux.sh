@@ -1,19 +1,5 @@
 #!/bin/bash
 
-<<<<<<< HEAD
-#IP="192.168.6.90"
-<<<<<<< HEAD
-# IP="192.168.1.10"
-#IP="129.175.5.15"
-IP="192.168.1.107"
-=======
-#IP="192.168.1.10"
-#IP="129.175.5.15"
-IP="127.0.0.1"
->>>>>>> 8e4c9c830def8da484e52dea0a6c110aeaa9ee46
-
-=======
->>>>>>> 11fa2ca4708ef3d446adafda07d578bc55639c93
 JARS="target/commons-logging-1.1.jar"
 JARS=$JARS":target/args4j-2.0.29.jar"
 JARS=$JARS":target/aspectjrt-1.8.9.jar"
@@ -24,6 +10,5 @@ JARS=$JARS":target/slf4j-log4j12-1.7.10.jar"
 JARS=$JARS":target/timingframework-1.0.jar"
 JARS=$JARS":target/fits-ow-0.1.jar"
 
-#java -XX:+DoEscapeAnalysis -XX:+UseConcMarkSweepGC -Xmx1g -cp .:$JARS fr.inria.zvtm.cluster.SlaveApp -n WallFITSOW -b 0 -a $* &
-
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0
 java -server -XX:+DoEscapeAnalysis -XX:+UseConcMarkSweepGC -Djava.net.preferIPv4Stack=true -Xmx4096M -Xms2048M -Djgroups.bind_addr=$IP -Dcom.sun.media.jai.disableMediaLib=true -cp .:$JARS fr.inria.zvtm.cluster.SlaveApp -n WallFITSOW -b 0
