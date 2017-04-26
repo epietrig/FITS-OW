@@ -82,6 +82,26 @@ public class AstroObject {
       return measurements;
     }
 
+    public void setIdentifier(String id){
+      this.identifier = id;
+    }
+
+    public void setCoords(Coordinates coords){
+      this.coords = coords;
+    }
+
+    public void setBasicData(HashMap<String, String> bd){
+      this.basicData = bd;
+    }
+
+    public void setFluxes(String[] fluxes){
+      this.fluxes = fluxes;
+    }
+
+    public void setMeasurements(Vector<Measurement> m){
+      this.measurements = m;
+    }
+
     public String basicDataToString(){
       String[] keys = Config.BD_KEYS;
       String retval = "";
@@ -95,18 +115,5 @@ public class AstroObject {
       if(fluxesStr != "") retval = retval + keys[keys.length-1]+"\n"+fluxesStr;
       return retval;
     }
-
-    // public void displayBibRefs(){
-
-    // 2MASS J18184834-1349146
-    //     System.out.println(identifier);
-    //     try {
-    //         SimbadCatQuery.makeSimbadIdQuery(identifier);
-    //         // SimbadCatQuery.getBibcodesForId(identifier);
-    //     }
-    //     catch (IOException ex){
-    //         ex.printStackTrace();
-    //     }
-    // }
 
 }

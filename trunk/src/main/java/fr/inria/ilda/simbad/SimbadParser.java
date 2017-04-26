@@ -24,39 +24,58 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import java.io.InputStream;
 import javax.xml.parsers.ParserConfigurationException;
+import java.util.List;
 public class SimbadParser{
 
   public SimbadParser(){}
 
-  public static void getVOTableAsString(URL url)throws ParserConfigurationException{
+  public static List<AstroObject> getVOTableAsString(URL url)throws ParserConfigurationException{
     List<String> result = new ArrayList<String>();
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
-
+    List<AstroObject> astroObjs = new ArrayList<AstroObject>();
    try {
-
-    //  URLConnection uc = url.openConnection();
-    //  BufferedReader in = new BufferedReader(new InputStreamReader(
-    //              uc.getInputStream()));
-    //  String toAppend;
-    //  String object = "";
-    //  int length;
-    //  while((toAppend = in.readLine()) != null){
-    //    System.out.println(toAppend);
-     //
-    //  }
-    //  in.close();
-
-      // InputStream in = url.openStream();
       Document doc = builder.parse(url.openStream());
+      System.out.println(doc);
       Element element = doc.getDocumentElement();
       NodeList nodes = element.getChildNodes();
-      for (int i = 0; i < nodes.getLength(); i++)
-         System.out.println(nodes.item(i).getTextContent().trim());
-      // in.close();
+      String toAppend = "";
+      NodeList nodes2 = element.getElementsByTagName("TR");
+      NodeList nodes3;
+      String text;
+
+      for (int i = 0; i < nodes2.getLength(); i++){
+        nodes3 = nodes2.item(i).getChildNodes();
+        AstroObject obj = new AstroObject();
+        double ra = Double.NaN;
+        double dec = Double.NaN;
+        for(int j = 0; j < nodes3.getLength(); j++){
+          text = nodes3.item(j).getTextContent();
+          if(j==0) obj.setIdentifier(text);
+          else if(j==2){
+            ra = Double.parseDouble(text);
+          }
+          else if(j==3){
+            dec = Double.parseDouble(text);
+          }
+          System.out.println(text);
+        }
+        if(!Double.isNaN(ra) && !Double.isNaN(dec)){
+          Coordinates coords = new Coordinates(ra, dec);
+          obj.setCoords(coords);
+        }
+        astroObjs.add(obj);
+        System.out.println(" ");
+        // System.out.println(nodes2.item(i).getTextContent());
+        // toAppend = toAppend+nodes2.item(i).getTextContent();
+        // System.out.println(nodes.item(i).getTextContent().trim());
+      }
+      // System.out.println(toAppend);
    }catch (Exception ex) {
       ex.printStackTrace();
    }
+   return astroObjs;
+
   }
   public static List<String> get(URL url)throws IOException{
     List<String> result = new ArrayList<String>();

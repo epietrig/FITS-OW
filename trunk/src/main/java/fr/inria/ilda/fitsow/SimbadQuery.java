@@ -204,17 +204,16 @@ public class SimbadQuery {
                   System.out.println("querying...");
                   // start_time = System.nanoTime();
                   // objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
-                  SimbadCatQuery.testVOTable(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
+                  objs = SimbadCatQuery.testVOTable(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
-                    ioe.printStackTrace();}
-                // } finally {
-                //     return objs;
-                // }
-                return null;
+                    ioe.printStackTrace();
+                } finally {
+                    return objs;
+                }
             }
             @Override public void finished(){
-                // List<AstroObject> objs = (List<AstroObject>)get();
-                // displayQueryResults(objs, centerImg);
+                List<AstroObject> objs = (List<AstroObject>)get();
+                displayQueryResults(objs, centerImg);
 
                 fadeOutQueryRegion();
             }
@@ -246,17 +245,12 @@ public class SimbadQuery {
           cr.setType(Config.T_ASTRO_OBJ_CR);
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
-      if(!objs.isEmpty()){
-        SimbadResults results = new SimbadResults(200,200, objs);
-        // results.setResults(objs);
-        // results.addToVs(app.sqSpace);
-        app.sqSpace.addGlyph(results);
-        SimbadClearQuery clear = new SimbadClearQuery (-55,200);
-        app.sqSpace.addGlyph(clear);
-        // end_time = System.nanoTime();
-        // difference = (end_time - start_time)/1e6;
-        // System.out.println("time in ms it took to construct query, query and display results: "+difference);
-      }
+      // if(!objs.isEmpty()){
+        // SimbadResults results = new SimbadResults(200,200, objs);
+        // app.sqSpace.addGlyph(results);
+        // SimbadClearQuery clear = new SimbadClearQuery (-55,200);
+        // app.sqSpace.addGlyph(clear);
+      // }
       }catch(NullPointerException e){
         e.printStackTrace();
       }

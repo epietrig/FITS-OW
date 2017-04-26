@@ -72,16 +72,19 @@ public class SimbadCatQuery {
     "#%%MEASLIST(uvby;AH)#%%MEASLIST(uvby1;AH)#%%MEASLIST(v*;AH)#%%MEASLIST(velocities;AH)"+
     "#%%MEASLIST(xmm;AH)#%%MEASLIST(z;AH)#%%MEASLIST(ze;AH)#";
 
-    public static void testVOTable(double ra, double dec, double radmin) throws IOException{
+    public static List<AstroObject> testVOTable(double ra, double dec, double radmin) throws IOException{
         // URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
         System.out.println("starting votable test");
 
         Coordinates coords = new Coordinates(ra, dec);
         String prefix = Config.SIMBAD_SERVER;
         String script;
+        List<AstroObject> astroObjs = null;
         URL url;
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            script = String.format("output console=off script=off\n votable vot{main_id\n otype}\n"+ "votable open vot\n"+"query sample region(%s%s,%s)\n"+"votable close",
+            script = String.format("output console=off script=off\n votable vot{main_id\n otype\n ra(d)\n dec(d)\n}\n"+
+            "votable open vot\n"+"query sample region(%s%s,%s)"+
+            queryOptionalCriteria(criteria)+"\n"+"votable close",
                                           // queryOptionalCriteria(criteria),
                                           coords.raToString(), coords.decToString(),  Config.ARCMIN_FORMATTER.format(radmin));
 
@@ -95,7 +98,8 @@ public class SimbadCatQuery {
             throw new Error(eex);
         }
         try{
-          SimbadParser.getVOTableAsString(url);
+          astroObjs= SimbadParser.getVOTableAsString(url);
+
           // List<String> result = new ArrayList<String>();
           // URLConnection uc = url.openConnection();
           // BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -114,7 +118,7 @@ public class SimbadCatQuery {
 
         // List<String> objLines = SimbadParser.get(queryUrl);
         // List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
-        // return astroObjs;
+        return astroObjs;
     }
 
     public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException{
