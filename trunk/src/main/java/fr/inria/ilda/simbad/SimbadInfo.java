@@ -100,7 +100,7 @@ public class SimbadInfo extends SimbadQueryGlyph{
     double maxHeight = 0;
     double aux = 0;
     MeasurementsTable table;
-    if(vmeasurements.size() > 0){
+    if(vmeasurements != null && vmeasurements.size() > 0){
       for (Measurement m : vmeasurements){
         if(m.equals(vmeasurements.firstElement()))
           table = new MeasurementsTable(m, left, top-TEXT_SIZE, 25, vs);

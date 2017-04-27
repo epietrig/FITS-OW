@@ -82,7 +82,13 @@ public class SimbadCatQuery {
         List<AstroObject> astroObjs = null;
         URL url;
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            script = String.format("output console=off script=off\n votable vot{main_id\n otype\n ra(d)\n dec(d)\n}\n"+
+            script = String.format("output console=off script=off\n votable vot{main_id, ra(d), dec(d), otype,"+
+            "ra(s; ICRS; J2000; 2000), dec(s; ICRS; 2000; 2000),"+
+            "ra(s; FK5; J2000; 2000), dec(s; FK5; 2000; 2000),"+
+            "ra(s; FK4; B1950; 1950), dec(s; FK4; B1950; 1950),"+
+            "ra(d; gal; J2000; 2000), dec(d; gal; 2000; 2000),"+
+            "pm, rv_value, z_value, sp, plx, mt,"+
+            "flux(U), flux(V), flux(B), flux(R), flux(I), flux(J), flux(K), flux(H), flux(u), flux(g), flux(r), flux(i), flux(z) }\n"+
             "votable open vot\n"+"query sample region(%s%s,%s)"+
             queryOptionalCriteria(criteria)+"\n"+"votable close",
                                           // queryOptionalCriteria(criteria),

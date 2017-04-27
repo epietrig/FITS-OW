@@ -30,40 +30,84 @@ public class SimbadParser{
   public SimbadParser(){}
 
   public static List<AstroObject> getVOTableAsString(URL url)throws ParserConfigurationException{
-    List<String> result = new ArrayList<String>();
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     List<AstroObject> astroObjs = new ArrayList<AstroObject>();
    try {
       Document doc = builder.parse(url.openStream());
-      System.out.println(doc);
       Element element = doc.getDocumentElement();
       NodeList nodes = element.getChildNodes();
-      String toAppend = "";
       NodeList nodes2 = element.getElementsByTagName("TR");
       NodeList nodes3;
       String text;
-
+      String[] keys = Config.BD_KEYS;
       for (int i = 0; i < nodes2.getLength(); i++){
         nodes3 = nodes2.item(i).getChildNodes();
         AstroObject obj = new AstroObject();
         double ra = Double.NaN;
         double dec = Double.NaN;
+        String cooICRS = "";
+        String cooFK5 = "";
+        String cooFK4 = "";
+        String cooGal = "";
+        String rv = "";
+        String fluxes ="";
+        HashMap basicData = new HashMap<String,String>();
         for(int j = 0; j < nodes3.getLength(); j++){
           text = nodes3.item(j).getTextContent();
-          if(j==0) obj.setIdentifier(text);
-          else if(j==2){
-            ra = Double.parseDouble(text);
-          }
-          else if(j==3){
-            dec = Double.parseDouble(text);
-          }
+          switch (j) {
+           case 0: obj.setIdentifier(text); //obj identifier
+                    break;
+           case 1: ra = Double.parseDouble(text); //coordinates right ascention
+                    break;
+           case 2: dec = Double.parseDouble(text); //coordinates declination angle
+                    break;
+           case 3: basicData.put(keys[j-3], text); //type of obj
+                    break;
+           case 4:
+           case 5: cooICRS = cooICRS+" "+text;//coordinates ICRS
+                    break;
+           case 6:
+           case 7: cooFK5 = cooFK5+" "+text;//coordinates FK5
+                    break;
+           case 8:
+           case 9: cooFK4 = cooFK4+" "+text;//coordinates FK4
+                    break;
+           case 10:
+           case 11: cooGal = cooGal+" "+text;//Galactic coordinates
+                    break;
+           case 12:
+            basicData.put(keys[j-7], text); //type of obj, proper motion, spectarl type, parallax, morphological type
+                 break;
+           case 13:
+           case 14: rv = rv + " "+text;
+                    break;
+           case 15:
+           case 16:
+           case 17:
+            basicData.put(keys[j-8], text); //type of obj, proper motion, spectarl type, parallax, morphological type
+                 break;
+           case 18: case 19: case 20: case 21: case 22: case 23:
+           case 24: case 25: case 26: case 27: case 28: case 29: case 30:
+                    fluxes = fluxes+" "+text;
+                    break;
+        }
           System.out.println(text);
         }
         if(!Double.isNaN(ra) && !Double.isNaN(dec)){
           Coordinates coords = new Coordinates(ra, dec);
           obj.setCoords(coords);
         }
+        //build basic data
+        basicData.put(keys[1], cooICRS);
+        basicData.put(keys[2], cooFK5);
+        basicData.put(keys[3], cooFK4);
+        basicData.put(keys[4], cooGal);
+        basicData.put(keys[6], rv);
+        // basicData.put(keys[10], fluxes.split(" "));
+        obj.setBasicData(basicData);
+        obj.setFluxes(fluxes.split(" "));
+
         astroObjs.add(obj);
         System.out.println(" ");
         // System.out.println(nodes2.item(i).getTextContent());

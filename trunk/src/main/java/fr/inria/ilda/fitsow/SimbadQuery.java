@@ -245,12 +245,12 @@ public class SimbadQuery {
           cr.setType(Config.T_ASTRO_OBJ_CR);
           lb.setType(Config.T_ASTRO_OBJ_LB);
       }
-      // if(!objs.isEmpty()){
-        // SimbadResults results = new SimbadResults(200,200, objs);
-        // app.sqSpace.addGlyph(results);
-        // SimbadClearQuery clear = new SimbadClearQuery (-55,200);
-        // app.sqSpace.addGlyph(clear);
-      // }
+      if(!objs.isEmpty()){
+        SimbadResults results = new SimbadResults(200,200, objs);
+        app.sqSpace.addGlyph(results);
+        SimbadClearQuery clear = new SimbadClearQuery (-55,200);
+        app.sqSpace.addGlyph(clear);
+      }
       }catch(NullPointerException e){
         e.printStackTrace();
       }
