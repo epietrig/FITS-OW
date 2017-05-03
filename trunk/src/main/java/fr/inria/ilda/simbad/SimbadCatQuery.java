@@ -87,7 +87,7 @@ public class SimbadCatQuery {
             "ra(s; FK5; J2000; 2000), dec(s; FK5; 2000; 2000),"+
             "ra(s; FK4; B1950; 1950), dec(s; FK4; B1950; 1950),"+
             "ra(d; gal; J2000; 2000), dec(d; gal; 2000; 2000),"+
-            "pm, rv_value, z_value, sp, plx, mt,"+
+            "pmra, pmdec, rv_value, z_value, sp, plx, mt,"+
             "flux(U), flux(V), flux(B), flux(R), flux(I), flux(J), flux(K), flux(H), flux(u), flux(g), flux(r), flux(i), flux(z) }\n"+
             "votable open vot\n"+"query sample region(%s%s,%s)"+
             queryOptionalCriteria(criteria)+"\n"+"votable close",
@@ -104,6 +104,7 @@ public class SimbadCatQuery {
             throw new Error(eex);
         }
         try{
+          System.out.println(url);
           astroObjs= SimbadParser.getVOTableAsString(url);
 
           // List<String> result = new ArrayList<String>();
