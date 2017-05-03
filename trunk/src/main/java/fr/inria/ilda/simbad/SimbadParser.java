@@ -36,15 +36,43 @@ public class SimbadParser{
    try {
       Document doc = builder.parse(url.openStream());
       Element element = doc.getDocumentElement();
-      NodeList nodes = element.getChildNodes();
-      NodeList nodes2 = element.getElementsByTagName("TR");
-      NodeList nodes3;
-      String[] keys = Config.BD_KEYS;
-      for (int i = 0; i < nodes2.getLength(); i++){
-        nodes3 = nodes2.item(i).getChildNodes();
-        AstroObject obj = new AstroObject();
-        parseBasicData(nodes3, obj, keys);
-        astroObjs.add(obj);
+      NodeList fields = element.getElementsByTagName("FIELD");
+      NodeList fieldNames;
+      String[] fieldDesc = new String[fields.getLength()];
+      String text;
+      // System.out.println("length "+fields.getLength());
+      for(int i = 0; i < fields.getLength(); i++){
+        fieldNames = fields.item(i).getChildNodes();
+        text = fieldNames.item(1).getTextContent().trim();
+          if(!text.equals("")){
+            fieldDesc[i] = text;
+            System.out.println(fieldDesc[i]);
+          }
+      }
+      NodeList objs = element.getElementsByTagName("TR");
+      NodeList objAttrs;
+      String attr;
+      for (int i = 0; i < objs.getLength(); i++){
+        objAttrs = objs.item(i).getChildNodes();
+        AstroObject astroObj = new AstroObject();
+        HashMap basicData = new HashMap<String,String>();
+        for (int j = 0; j < objAttrs.getLength(); j++) {
+          text = objAttrs.item(j).getTextContent();
+          if(j==0) astroObj.setIdentifier(text);
+          else if(j==1){
+            Coordinates coords = new Coordinates();
+            astroObj.setCoords(coords);
+            astroObj.setRa(Double.parseDouble(text));
+          }
+          else if(j==2) astroObj.setDec(Double.parseDouble(text));
+          else{
+            if(!text.trim().equals("")){
+              basicData.put(fieldDesc[j],text);
+            }
+          }
+        }
+        astroObj.setBasicData(basicData);
+        astroObjs.add(astroObj);
       }
    }catch (Exception ex) {
       ex.printStackTrace();
@@ -53,73 +81,7 @@ public class SimbadParser{
 
   }
 
-  public static void parseBasicData(NodeList nodes, AstroObject obj, String[] keys){
-    double ra = Double.NaN;
-    double dec = Double.NaN;
-    String cooICRS = "";
-    String cooFK5 = "";
-    String cooFK4 = "";
-    String cooGal = "";
-    String rv = "";
-    String fluxes ="";
-    String pm = "";
-    String text;
-    HashMap basicData = new HashMap<String,String>();
-    for(int j = 0; j < nodes.getLength(); j++){
-      text = nodes.item(j).getTextContent();
-      // System.out.println(text);
-        switch (j) {
-         case 0: obj.setIdentifier(text); //obj identifier
-                  break;
-         case 1: ra = Double.parseDouble(text); //coordinates right ascention
-                  break;
-         case 2: dec = Double.parseDouble(text); //coordinates declination angle
-                  break;
-         case 3: basicData.put(keys[j-3], text); //type of obj
-                  break;
-         case 4:
-         case 5: cooICRS = cooICRS+" "+text;//coordinates ICRS
-                  break;
-         case 6:
-         case 7: cooFK5 = cooFK5+" "+text;//coordinates FK5
-                  break;
-         case 8:
-         case 9: cooFK4 = cooFK4+" "+text;//coordinates FK4
-                  break;
-         case 10:
-         case 11: cooGal = cooGal+" "+text;//Galactic coordinates
-                  break;
-         case 12:
-         case 13: pm = pm + " "+text;
-                  break;
-         case 14:
-         case 15: rv = rv + " "+text;
-                  break;
-         case 16:
-         case 17:
-         case 18:
-          basicData.put(keys[j-8], text); // spectarl type, parallax, morphological type
-               break;
-         case 19: case 20: case 21: case 22: case 23:
-         case 24: case 25: case 26: case 27: case 28: case 29: case 30: case 31:
-                  fluxes = fluxes+","+Config.FLUX_TYPES[j-19]+": "+text;
-                  break;
-                }
-    }
-    if(!Double.isNaN(ra) && !Double.isNaN(dec)){
-      Coordinates coords = new Coordinates(ra, dec);
-      obj.setCoords(coords);
-    }
-    //build basic data
-    basicData.put(keys[1], cooICRS);
-    basicData.put(keys[2], cooFK5);
-    basicData.put(keys[3], cooFK4);
-    basicData.put(keys[4], cooGal);
-    basicData.put(keys[5], pm);
-    basicData.put(keys[6], rv);
-    obj.setBasicData(basicData);
-    obj.setFluxes(fluxes.split(","));
-  }
+
 
   public static List<String> get(URL url)throws IOException{
     List<String> result = new ArrayList<String>();

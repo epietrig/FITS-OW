@@ -70,6 +70,14 @@ public class AstroObject {
         return coords.getDec();
     }
 
+    public void setRa(double ra){
+      this.coords.setRa(ra);
+    }
+
+    public void setDec(double dec){
+      this.coords.setDec(dec);
+    }
+
     public String getIdentifier(){
         return identifier;
     }
@@ -103,16 +111,14 @@ public class AstroObject {
     }
 
     public String basicDataToString(){
-      String[] keys = Config.BD_KEYS;
-      String retval = "";
-      String fluxesStr = "";
+      String retval = "ICRS coord. (ep=J2000) : "+Double.toString(getRa())+", "+Double.toString(getDec())+"\n";
+      String[] keys= Config.BASIC_DATA_KEYS;
+
+
       for(int i = 0; i < keys.length-1; i++){
         String value = basicData.get(keys[i]);
-        if(value!=null) retval = retval + keys[i]+ value + "\n";
+        if(value!=null) retval = retval + keys[i]+" : "+ value + "\n";
       }
-      for(int i = 0; i < fluxes.length; i++)
-        if(!fluxes[i].contains("~")) fluxesStr = fluxesStr + fluxes[i] + "\n";
-      if(fluxesStr != "") retval = retval + keys[keys.length-1]+"\n"+fluxesStr;
       return retval;
     }
 

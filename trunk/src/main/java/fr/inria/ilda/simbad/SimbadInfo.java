@@ -122,11 +122,13 @@ public class SimbadInfo extends SimbadQueryGlyph{
   private double calculateWidth(String[] info){
     int retval = 0;
     int length = 0;
+    String id = obj.getIdentifier();
+    retval = 50;
     for(String str : info){
       length = str.length();
       if(length > retval) retval = length;
     }
-    return retval*5.5;
+    return (retval+1)*10;
   }
 
   public Tabs getTabs(){
