@@ -84,7 +84,7 @@ public class SimbadCatQuery {
             SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
             script = String.format("output console=off script=off\n votable vot{main_id, ra(d), dec(d), otype,"+
             "pmra, pmdec, rv_value, z_value, sp, plx, mt,"+
-            "flux(U), flux(V), flux(B), flux(R), flux(I), flux(J), flux(K), flux(H), flux(u), flux(g), flux(r), flux(i), flux(z) }\n"+
+            "flux(U), flux(V), flux(B), flux(R), flux(I), flux(J), flux(K), flux(H), flux(u), flux(g), flux(r), flux(i), flux(z), measurements}\n"+
             "votable open vot\n"+"query sample region(%s%s,%s)"+
             queryOptionalCriteria(criteria)+"\n"+"votable close",
                                           // queryOptionalCriteria(criteria),

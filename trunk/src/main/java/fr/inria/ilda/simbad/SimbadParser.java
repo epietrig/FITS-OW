@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 import java.io.InputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
 public class SimbadParser{
 
   public SimbadParser(){}
@@ -33,46 +34,53 @@ public class SimbadParser{
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     List<AstroObject> astroObjs = new ArrayList<AstroObject>();
-   try {
-      Document doc = builder.parse(url.openStream());
-      Element element = doc.getDocumentElement();
-      NodeList fields = element.getElementsByTagName("FIELD");
-      NodeList fieldNames;
-      String[] fieldDesc = new String[fields.getLength()];
-      String text;
-      // System.out.println("length "+fields.getLength());
-      for(int i = 0; i < fields.getLength(); i++){
-        fieldNames = fields.item(i).getChildNodes();
-        text = fieldNames.item(1).getTextContent().trim();
-          if(!text.equals("")){
-            fieldDesc[i] = text;
-            System.out.println(fieldDesc[i]);
-          }
-      }
-      NodeList objs = element.getElementsByTagName("TR");
-      NodeList objAttrs;
-      String attr;
-      for (int i = 0; i < objs.getLength(); i++){
-        objAttrs = objs.item(i).getChildNodes();
-        AstroObject astroObj = new AstroObject();
-        HashMap basicData = new HashMap<String,String>();
-        for (int j = 0; j < objAttrs.getLength(); j++) {
-          text = objAttrs.item(j).getTextContent();
-          if(j==0) astroObj.setIdentifier(text);
-          else if(j==1){
-            Coordinates coords = new Coordinates();
-            astroObj.setCoords(coords);
-            astroObj.setRa(Double.parseDouble(text));
-          }
-          else if(j==2) astroObj.setDec(Double.parseDouble(text));
-          else{
-            if(!text.trim().equals("")){
-              basicData.put(fieldDesc[j],text);
+    try {
+      InputStream in = url.openStream();
+      String inStr = IOUtils.toString(in, "UTF-8");
+      if(!inStr.contains("No object found")){
+        // int xmlStart = inStr.indexOf("<?xml");
+        // inStr = inStr.substring(xmlStart);
+        // System.out.println("no obj found 404");
+        // InputStream inFix = IOUtils.toInputStream(inStr, "UTF-8");
+        Document doc = builder.parse(in);
+        Element element = doc.getDocumentElement();
+        NodeList fields = element.getElementsByTagName("FIELD");
+        NodeList fieldNames;
+        String[] fieldDesc = new String[fields.getLength()];
+        String text;
+        for(int i = 0; i < fields.getLength(); i++){
+          fieldNames = fields.item(i).getChildNodes();
+          text = fieldNames.item(1).getTextContent().trim();
+            if(!text.equals("")){
+              fieldDesc[i] = text;
+            }
+        }
+        NodeList objs = element.getElementsByTagName("TR");
+        NodeList objAttrs;
+        String attr;
+        System.out.println("objs length; "+objs.getLength());
+        for (int i = 0; i < objs.getLength(); i++){
+          objAttrs = objs.item(i).getChildNodes();
+          AstroObject astroObj = new AstroObject();
+          HashMap basicData = new HashMap<String,String>();
+          for (int j = 0; j < objAttrs.getLength(); j++) {
+            text = objAttrs.item(j).getTextContent();
+            if(j==0) astroObj.setIdentifier(text);
+            else if(j==1){
+              Coordinates coords = new Coordinates();
+              astroObj.setCoords(coords);
+              astroObj.setRa(Double.parseDouble(text));
+            }
+            else if(j==2) astroObj.setDec(Double.parseDouble(text));
+            else{
+              if(!text.trim().equals("")){
+                basicData.put(fieldDesc[j],text);
+              }
             }
           }
+          astroObj.setBasicData(basicData);
+          astroObjs.add(astroObj);
         }
-        astroObj.setBasicData(basicData);
-        astroObjs.add(astroObj);
       }
    }catch (Exception ex) {
       ex.printStackTrace();

@@ -112,12 +112,16 @@ public class AstroObject {
 
     public String basicDataToString(){
       String retval = "ICRS coord. (ep=J2000) : "+Double.toString(getRa())+", "+Double.toString(getDec())+"\n";
-      String[] keys= Config.BASIC_DATA_KEYS;
+      // String[] keys= Config.BASIC_DATA_KEYS;
+      Object[] keys = basicData.keySet().toArray();
 
-
+      // for(int i = 0; i < keys.length-1; i++){
+      //   String value = basicData.get(keys[i]);
+      //   if(value!=null) retval = retval + keys[i]+" : "+ value + "\n";
+      // }
       for(int i = 0; i < keys.length-1; i++){
-        String value = basicData.get(keys[i]);
-        if(value!=null) retval = retval + keys[i]+" : "+ value + "\n";
+        String value = basicData.get((String)keys[i]);
+        if(value!=null) retval = retval + (String)keys[i]+" : "+ value + "\n";
       }
       return retval;
     }
