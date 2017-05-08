@@ -38,31 +38,39 @@ public class SimbadParser{
       InputStream in = url.openStream();
       String inStr = IOUtils.toString(in, "UTF-8");
       if(!inStr.contains("No object found")){
-        // int xmlStart = inStr.indexOf("<?xml");
-        // inStr = inStr.substring(xmlStart);
+        int xmlStart = inStr.indexOf("<?xml");
+        inStr = inStr.substring(xmlStart);
         // System.out.println("no obj found 404");
-        // InputStream inFix = IOUtils.toInputStream(inStr, "UTF-8");
-        Document doc = builder.parse(in);
+        InputStream inFix = IOUtils.toInputStream(inStr, "UTF-8");
+        Document doc = builder.parse(inFix);
         Element element = doc.getDocumentElement();
         NodeList fields = element.getElementsByTagName("FIELD");
         NodeList fieldNames;
         String[] fieldDesc = new String[fields.getLength()];
+        String[] fieldIDs = new String[fields.getLength()];
         String text;
         for(int i = 0; i < fields.getLength(); i++){
           fieldNames = fields.item(i).getChildNodes();
           text = fieldNames.item(1).getTextContent().trim();
-            if(!text.equals("")){
-              fieldDesc[i] = text;
-            }
+          if(!text.equals("")){
+            fieldDesc[i] = text;
+            Element e = (Element)fields.item(i);
+            fieldIDs[i] = e.getAttribute("ID");
+          }
         }
         NodeList objs = element.getElementsByTagName("TR");
         NodeList objAttrs;
         String attr;
-        System.out.println("objs length; "+objs.getLength());
+        String mname = "";
+        String newmname;
+        ArrayList<String[]> mlist = new ArrayList<String[]>();
         for (int i = 0; i < objs.getLength(); i++){
           objAttrs = objs.item(i).getChildNodes();
+          mname ="";
+          System.out.println("new obj");
           AstroObject astroObj = new AstroObject();
           HashMap basicData = new HashMap<String,String>();
+          Vector<Measurement> measurements = new Vector();
           for (int j = 0; j < objAttrs.getLength(); j++) {
             text = objAttrs.item(j).getTextContent();
             if(j==0) astroObj.setIdentifier(text);
@@ -72,13 +80,33 @@ public class SimbadParser{
               astroObj.setRa(Double.parseDouble(text));
             }
             else if(j==2) astroObj.setDec(Double.parseDouble(text));
-            else{
+            else if(j<24){
               if(!text.trim().equals("")){
                 basicData.put(fieldDesc[j],text);
               }
             }
+            else{
+              if(!text.trim().equals("")){
+                newmname = fieldIDs[j].split("_")[0];
+                if(!newmname.equals(mname)){
+                  if(!mname.equals("")){
+                    String[][] matrix = toMatrix(mlist);
+                    Measurement m = new Measurement(mname, matrix);
+                    measurements.add(m);
+                  }
+                  mname = newmname;
+                  mlist = new ArrayList<String[]>();
+                  System.out.println(mname);
+                }
+                System.out.println(fieldIDs[j]);
+                System.out.println(text);
+                String[] newm = {fieldDesc[j], text};
+                mlist.add(newm);
+              }
+            }
           }
           astroObj.setBasicData(basicData);
+          astroObj.setMeasurements(measurements);
           astroObjs.add(astroObj);
         }
       }
@@ -89,7 +117,15 @@ public class SimbadParser{
 
   }
 
-
+  public static String[][] toMatrix(ArrayList<String[]> mlist){
+    int size = mlist.size();
+    String [][] matrix = new String[size][2];
+    for(int i = 0; i < size; i++){
+      matrix[i][0] = mlist.get(i)[0];
+      matrix[i][1] = mlist.get(i)[1];
+    }
+    return matrix;
+  }
 
   public static List<String> get(URL url)throws IOException{
     List<String> result = new ArrayList<String>();
