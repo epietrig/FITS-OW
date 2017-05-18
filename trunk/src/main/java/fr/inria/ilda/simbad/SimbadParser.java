@@ -5,6 +5,7 @@
  */
 
 package fr.inria.ilda.simbad;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -26,18 +27,20 @@ import java.io.InputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-public class SimbadParser{
 
-  public SimbadParser(){}
+public class SimbadParser {
 
-  public static List<AstroObject> getVOTableAsString(URL url)throws ParserConfigurationException{
+  public SimbadParser() {
+  }
+
+  public static List<AstroObject> getVOTableAsString(URL url) throws ParserConfigurationException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     List<AstroObject> astroObjs = new ArrayList<AstroObject>();
     try {
       InputStream in = url.openStream();
       String inStr = IOUtils.toString(in, "UTF-8");
-      if(!inStr.contains("No object found")){
+      if (!inStr.contains("No object found")) {
         int xmlStart = inStr.indexOf("<?xml");
         inStr = inStr.substring(xmlStart);
         // System.out.println("no obj found 404");
@@ -49,101 +52,131 @@ public class SimbadParser{
         String[] fieldDesc = new String[fields.getLength()];
         String[] fieldIDs = new String[fields.getLength()];
         String text;
-        for(int i = 0; i < fields.getLength(); i++){
+        for (int i = 0; i < fields.getLength(); i++) {
           fieldNames = fields.item(i).getChildNodes();
           text = fieldNames.item(1).getTextContent().trim();
-          if(!text.equals("")){
+          if (!text.equals("")) {
             fieldDesc[i] = text;
-            Element e = (Element)fields.item(i);
+            Element e = (Element) fields.item(i);
             fieldIDs[i] = e.getAttribute("ID");
           }
         }
         NodeList objs = element.getElementsByTagName("TR");
         NodeList objAttrs;
-        String attr;
-        String mname = "";
         String newmname;
-        ArrayList<String[]> mlist = new ArrayList<String[]>();
-        for (int i = 0; i < objs.getLength(); i++){
+        for (int i = 0; i < objs.getLength(); i++) {
           objAttrs = objs.item(i).getChildNodes();
-          mname ="";
-          System.out.println("new obj");
+          System.out.println(" ");
+          System.out.println(" ");
+          System.out.println("NEW OBJ");
           AstroObject astroObj = new AstroObject();
-          HashMap basicData = new HashMap<String,String>();
-          Vector<Measurement> measurements = new Vector();
+          HashMap<String, String> basicData = new HashMap<String, String>();
+          ArrayList<String[]> mlist = new ArrayList<String[]>();
           for (int j = 0; j < objAttrs.getLength(); j++) {
             text = objAttrs.item(j).getTextContent();
-            if(j==0) astroObj.setIdentifier(text);
-            else if(j==1){
+            if (j == 0) {
+              astroObj.setIdentifier(text);
+              System.out.println(text);
+            } else if (j == 1) {
               Coordinates coords = new Coordinates();
               astroObj.setCoords(coords);
               astroObj.setRa(Double.parseDouble(text));
-            }
-            else if(j==2) astroObj.setDec(Double.parseDouble(text));
-            else if(j<24){
-              if(!text.trim().equals("")){
-                basicData.put(fieldDesc[j],text);
-              }
-            }
-            else{
-              if(!text.trim().equals("")){
-                newmname = fieldIDs[j].split("_")[0];
-                if(!newmname.equals(mname)){
-                  if(!mname.equals("")){
-                    String[][] matrix = toMatrix(mlist);
-                    Measurement m = new Measurement(mname, matrix);
-                    measurements.add(m);
-                  }
-                  mname = newmname;
-                  mlist = new ArrayList<String[]>();
-                  System.out.println(mname);
-                }
-                System.out.println(fieldIDs[j]);
+              System.out.println(text);
+            } else if (j == 2) {
+              astroObj.setDec(Double.parseDouble(text));
+              System.out.println(text);
+            } else if (j < 24) {
+              if (!text.trim().equals("")) {
+                basicData.put(fieldDesc[j], text);
                 System.out.println(text);
-                String[] newm = {fieldDesc[j], text};
-                mlist.add(newm);
               }
+            } else {
+              if (!text.trim().equals("")) {
+               
+                newmname = fieldIDs[j].split("_")[0];
+                String[] newm = {newmname, fieldDesc[j], text};
+                mlist.add(newm);
+                System.out.println(newmname);
+                 System.out.println(fieldIDs[j]);
+                System.out.println(text);
             }
           }
-          astroObj.setBasicData(basicData);
-          astroObj.setMeasurements(measurements);
-          astroObjs.add(astroObj);
+          
         }
+        //group measurements
+          
+          astroObj.setBasicData(basicData);
+          astroObj.setMeasurements(groupMeasurements(mlist));
+          astroObjs.add(astroObj);
+
       }
-   }catch (Exception ex) {
+
+    }} catch (Exception ex) {
       ex.printStackTrace();
-   }
-   return astroObjs;
+    }
+    return astroObjs;
 
   }
 
-  public static String[][] toMatrix(ArrayList<String[]> mlist){
+public static Vector<Measurement> groupMeasurements(ArrayList<String[]> mlist){
+    Vector<Measurement> measurements= new Vector<Measurement>();
+    ArrayList<String[]> list = new ArrayList<String[]>();
+    String aux = "";
+    for(int i = 0; i< mlist.size(); i++){
+      String[] m = mlist.get(i);
+      String[] row = {m[1], m[2]};
+      
+      if(i==0){
+        aux = m[0];
+        list.add(row);
+      } 
+      if(i== mlist.size()-1){ //si cambié o si llegué al final
+        list.add(row);
+        Measurement measurement = new Measurement(aux,toMatrix(list));
+        measurements.add(measurement);
+      }
+      else if(!m[0].equals(aux)){
+        Measurement measurement = new Measurement(aux,toMatrix(list));
+        measurements.add(measurement);
+        list = new ArrayList<String[]>();
+        list.add(row);
+        aux=m[0];
+      } 
+      else{
+        list.add(row);
+      }
+     
+      
+    }
+    return measurements;
+  }
+
+  public static String[][] toMatrix(ArrayList<String[]> mlist) {
     int size = mlist.size();
-    String [][] matrix = new String[size][2];
-    for(int i = 0; i < size; i++){
+    String[][] matrix = new String[size][2];
+    for (int i = 0; i < size; i++) {
       matrix[i][0] = mlist.get(i)[0];
       matrix[i][1] = mlist.get(i)[1];
     }
     return matrix;
   }
 
-  public static List<String> get(URL url)throws IOException{
+  public static List<String> get(URL url) throws IOException {
     List<String> result = new ArrayList<String>();
     long start_time = System.nanoTime();
 
-    try{
+    try {
       URLConnection uc = url.openConnection();
-      BufferedReader in = new BufferedReader(new InputStreamReader(
-                  uc.getInputStream()));
+      BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
       String toAppend;
       String object = "";
       int length;
-      while((toAppend = in.readLine()) != null){
+      while ((toAppend = in.readLine()) != null) {
         // System.out.println(toAppend);
         toAppend = toAppend.trim();
-        object = object+toAppend;
+        object = object + toAppend;
         length = toAppend.length();
-        if(length > 0 && toAppend.endsWith("$$")){
+        if (length > 0 && toAppend.endsWith("$$")) {
           // System.out.println("url obj : "+object+"\n");
           result.add(object);
           object = "";
@@ -155,45 +188,45 @@ public class SimbadParser{
       // double difference2 = (end_time - start_time)/1e6;
       // System.out.println("time in ms it took to execute query: "+difference);
       return result;
-    }catch(Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
     return result;
   }
 
-  public static List<AstroObject> stringsToAstroObjects(List<String> strs){
+  public static List<AstroObject> stringsToAstroObjects(List<String> strs) {
     List<AstroObject> result = new ArrayList<AstroObject>();
-    try{
-    AstroObject obj = new AstroObject();
-    for(String str : strs){
-      obj = stringToAstroObject(str);
-      if(obj != null) result.add(obj);
-    }
-  }catch(Exception e){
-    System.out.println("caught sm!");
-    e.printStackTrace();
+    try {
+      AstroObject obj = new AstroObject();
+      for (String str : strs) {
+        obj = stringToAstroObject(str);
+        if (obj != null)
+          result.add(obj);
+      }
+    } catch (Exception e) {
+      System.out.println("caught sm!");
+      e.printStackTrace();
 
-  }
+    }
     return result;
   }
 
-  private static AstroObject stringToAstroObject(String str){
-    String obj = str.substring(0,str.length()-1);
+  private static AstroObject stringToAstroObject(String str) {
+    String obj = str.substring(0, str.length() - 1);
     String[] attrs = obj.split("\\$");
-    for(String atr : attrs){
+    for (String atr : attrs) {
       // System.out.println("attr: "+atr+"\n");
     }
-    if(attrs.length >= 2){
+    if (attrs.length >= 2) {
       String[] idAndCoords = attrs[0].split("#");
       String[] basicData = attrs[1].split("#");
       // String[] measurements = attrs[2].split("#");
-      if(idAndCoords.length >= 3){
+      if (idAndCoords.length >= 3) {
         String identifier = idAndCoords[0];
-        Coordinates coords =  new Coordinates(Double.parseDouble(idAndCoords[1]),
-          Double.parseDouble(idAndCoords[2]));
+        Coordinates coords = new Coordinates(Double.parseDouble(idAndCoords[1]), Double.parseDouble(idAndCoords[2]));
         HashMap<String, String> basicDataHash = parseBasicData(basicData);
-        String[] fluxes = basicData[basicData.length-1].split(",");
+        String[] fluxes = basicData[basicData.length - 1].split(",");
         // System.out.println("obj measurements: "+attrs[2]);
         Vector<Measurement> measurements = parseMeasurements(attrs[2]);
         return new AstroObject(identifier, coords, basicDataHash, fluxes, measurements);
@@ -202,49 +235,52 @@ public class SimbadParser{
     return null;
   }
 
- private static HashMap<String, String> parseBasicData(String[] attrs){
-   HashMap<String, String> basicData = new HashMap<String, String>();
-   for(int i = 0; i < attrs.length-1; i++){
-     String elementFirstComponent = attrs[i].split(",")[0];
-     if (!elementFirstComponent.trim().contains("~")){
+  private static HashMap<String, String> parseBasicData(String[] attrs) {
+    HashMap<String, String> basicData = new HashMap<String, String>();
+    for (int i = 0; i < attrs.length - 1; i++) {
+      String elementFirstComponent = attrs[i].split(",")[0];
+      if (!elementFirstComponent.trim().contains("~")) {
         basicData.put(Config.BD_KEYS[i], attrs[i]);
-     }
-   }
-   return basicData;
- }
+      }
+    }
+    return basicData;
+  }
 
- private static Vector<Measurement> parseMeasurements(String attrs){
-   String[] measurements = attrs.split("#");
-   Vector<Measurement> retval = new Vector();
-   for(String measurement : measurements){
-    //  System.out.println("m: "+ measurement +"\n");
-     if(measurement.length()>0){
-       Measurement table = buildTable(measurement.split("\\|"));
-       retval.add(table);
-     }
-   }
-   return retval;
- }
+  private static Vector<Measurement> parseMeasurements(String attrs) {
+    String[] measurements = attrs.split("#");
+    Vector<Measurement> retval = new Vector();
+    for (String measurement : measurements) {
+      //  System.out.println("m: "+ measurement +"\n");
+      if (measurement.length() > 0) {
+        Measurement table = buildTable(measurement.split("\\|"));
+        retval.add(table);
+      }
+    }
+    return retval;
+  }
 
- private static Measurement buildTable(String[] measurement){
-   String name = measurement[0].trim();
-   int nRows = 1;
-   int nCols = 0;
-   for(int i = 1; i < measurement.length; i++){
-     if(measurement[i].equals(name) || measurement[i].contains(name)) nRows++;
-     else nCols++;
-   }
+  private static Measurement buildTable(String[] measurement) {
+    String name = measurement[0].trim();
+    int nRows = 1;
+    int nCols = 0;
+    for (int i = 1; i < measurement.length; i++) {
+      if (measurement[i].equals(name) || measurement[i].contains(name))
+        nRows++;
+      else
+        nCols++;
+    }
 
-   if(nRows > 0) nCols = nCols/nRows;
-   String[][] table = new String[nRows][nCols];
-   for(int i = 0 ; i < nRows; i++){
-     for(int j = 0; j < nCols; j++){
-       table[i][j] = measurement[i+1+j+nCols*i];
-     }
-   }
+    if (nRows > 0)
+      nCols = nCols / nRows;
+    String[][] table = new String[nRows][nCols];
+    for (int i = 0; i < nRows; i++) {
+      for (int j = 0; j < nCols; j++) {
+        table[i][j] = measurement[i + 1 + j + nCols * i];
+      }
+    }
 
-   Measurement retval = new Measurement(name, table);
-   return retval;
- }
+    Measurement retval = new Measurement(name, table);
+    return retval;
+  }
 
 }
