@@ -52,12 +52,12 @@ public class MeasurementsTable extends SimbadQueryGlyph{
     double bottom = bounds[3];
 
     VText title = new VText(OFFSET+left, top+OFFSET, 0, TEXT_COLOR, name);
-    VSegment split = new VSegment(left, top-TEXT_SIZE, right, top-TEXT_SIZE,Z, BORDER_COLOR);
+    // VSegment split = new VSegment(left, top-TEXT_SIZE, right, top-TEXT_SIZE,Z, BORDER_COLOR);
     title.setScale(1.1f);
 
     this.addChild(background);
     this.addChild(title);
-    this.addChild(split);
+    // this.addChild(split);
 
     double xPosition = 0;
     for(int j = 0; j < nRows; j ++){
@@ -65,7 +65,6 @@ public class MeasurementsTable extends SimbadQueryGlyph{
 
         VText mText = new VText(OFFSET+left+xPosition, top-15-20*j, 0, TEXT_COLOR, measurements[j][i].trim());
         if(j==0){
-          mText.setFont(mText.getFont().deriveFont(Font.BOLD));
           double xSplit = mText.getBounds()[0]-Config.OFFSET;
           VSegment splits = new VSegment(xSplit,top,xSplit,bottom,Z,BORDER_COLOR);
           this.addChild(splits);
