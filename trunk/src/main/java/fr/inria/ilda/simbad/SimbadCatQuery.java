@@ -29,38 +29,6 @@ import fr.inria.ilda.fitsow.Config;
  */
 public class SimbadCatQuery {
 
-    private static String formatString = "output console=off script=off\n"
-            + "format object \"%%IDLIST(1)#%%COO(d;A)#%%COO(d;D)" + "$%%OTYPE(V)#"
-            + "%%COO(A,D,(W),Q,[E],B;ICRS;J2000)#" + "%%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#"
-            + "%%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#" + "%%COO(A,D,(W),Q,[E],B;GAL;J2000)#"
-            + "%%PM(A,D,Q,E)#%%RV(V,Z,W,Q,E)#%%SP(S,Q)#%%PLX(V,Q,E)#%%MT(M,Q)#";
-
-    private static String formatString2 = "output console=off script=off\n"
-            + "format object \"%IDLIST(1)#%COO(d;A)#%COO(d;D)" + "$%OTYPE(V)#" + "%COO(A,D,(W),Q,[E],B;ICRS;J2000)#"
-            + "%COO(A,D,(W),Q,[E],B;FK5;J2000;2000)#" + "%COO(A,D,(W),Q,[E],B;FK4;B1950;1950)#"
-            + "%COO(A,D,(W),Q,[E],B;GAL;J2000)#" + "%PM(A,D,Q,E)#%RV(V,Z,W,Q,E)#%SP(S,Q)#%PLX(V,Q,E)#%MT(M,Q)#"
-            + "#%FLUXLIST(; N = F (Q) B,)$" + "#%MEASLIST(cel;AH)#%MEASLIST(cl.g;AH)#%MEASLIST(diameter;AH)"
-            + "#%MEASLIST(distance;AH)#%MEASLIST(einstein;AH)#%MEASLIST(fe_h;AH)"
-            + "#%MEASLIST(gcrv;AH)#%MEASLIST(gen;AH)#%MEASLIST(gj;AH)#%MEASLIST(hbet;AH)"
-            + "#%MEASLIST(hbet1;AH)#%MEASLIST(herschel;AH)#%MEASLIST(hgam;AH)"
-            + "#%MEASLIST(iras;AH)#%MEASLIST(irc;AH)#%MEASLIST(iso;AH)#%MEASLIST(iue;AH)"
-            + "#%MEASLIST(jp11;AH)#%MEASLIST(mk;AH)#%MEASLIST(orv;AH)#%MEASLIST(plx;AH)"
-            + "#%MEASLIST(pm;AH)#%MEASLIST(pos;AH)#%MEASLIST(posa;AH)#%MEASLIST(rot;AH)"
-            + "#%MEASLIST(rvel;AH)#%MEASLIST(sao;AH)#%MEASLIST(td1;AH)#%MEASLIST(ubv;AH)"
-            + "#%MEASLIST(uvby;AH)#%MEASLIST(uvby1;AH)#%MEASLIST(v*;AH)#%MEASLIST(velocities;AH)"
-            + "#%MEASLIST(xmm;AH)#%MEASLIST(z;AH)#%MEASLIST(ze;AH)#$$ \"\n";
-
-    private static String measurements = "%%MEASLIST(cel;AH)#%%MEASLIST(cl.g;AH)#%%MEASLIST(diameter;AH)"
-            + "#%%MEASLIST(distance;AH)#%%MEASLIST(einstein;AH)#%%MEASLIST(fe_h;AH)"
-            + "#%%MEASLIST(gcrv;AH)#%%MEASLIST(gen;AH)#%%MEASLIST(gj;AH)#%%MEASLIST(hbet;AH)"
-            + "#%%MEASLIST(hbet1;AH)#%%MEASLIST(herschel;AH)#%%MEASLIST(hgam;AH)"
-            + "#%%MEASLIST(iras;AH)#%%MEASLIST(irc;AH)#%%MEASLIST(iso;AH)#%%MEASLIST(iue;AH)"
-            + "#%%MEASLIST(jp11;AH)#%%MEASLIST(mk;AH)#%%MEASLIST(orv;AH)#%%MEASLIST(plx;AH)"
-            + "#%%MEASLIST(pm;AH)#%%MEASLIST(pos;AH)#%%MEASLIST(posa;AH)#%%MEASLIST(rot;AH)"
-            + "#%%MEASLIST(rvel;AH)#%%MEASLIST(sao;AH)#%%MEASLIST(td1;AH)#%%MEASLIST(ubv;AH)"
-            + "#%%MEASLIST(uvby;AH)#%%MEASLIST(uvby1;AH)#%%MEASLIST(v*;AH)#%%MEASLIST(velocities;AH)"
-            + "#%%MEASLIST(xmm;AH)#%%MEASLIST(z;AH)#%%MEASLIST(ze;AH)#";
-
     private static String PREFIX = "output console=off script=off\n votable vot{main_id, ra(d), dec(d), otype,"
             + "pmra, pmdec, rv_value, z_value, sp, plx, mt,"
             + "flux(U), flux(V), flux(B), flux(R), flux(I), flux(J), flux(K), flux(H), flux(u), flux(g), flux(r), flux(i), flux(z), measurements}\n"
@@ -68,7 +36,7 @@ public class SimbadCatQuery {
     private static String SUFIX = "\n" + "votable close";
     private static String SERVER_PREFIX = Config.SIMBAD_SERVER;
 
-    public static List<AstroObject> testVOTable(double ra, double dec, double radmin) throws IOException {
+    public static List<AstroObject> makeSimbadCircleQuery(double ra, double dec, double radmin) throws IOException {
         Coordinates coords = new Coordinates(ra, dec);
         List<AstroObject> astroObjs = null;
         URL url;
@@ -76,8 +44,7 @@ public class SimbadCatQuery {
         String script = String.format(PREFIX + "query sample region(%s%s,%s)"+ queryOptionalCriteria(criteria) + SUFIX, coords.raToString(), coords.decToString(), Config.ARCMIN_FORMATTER.format(radmin));
         try {
             url = new URL(SERVER_PREFIX + URLEncoder.encode(script, "UTF-8"));
-            System.out.println(url);
-            astroObjs = SimbadParser.getVOTableAsString(url);
+            astroObjs = SimbadParser.getVOTableAsAObjects(url);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Error(e);
@@ -85,17 +52,20 @@ public class SimbadCatQuery {
         return astroObjs;
     }
 
-    public static List<AstroObject> makeSimbadCoordQuery(double ra, double dec, double radmin) throws IOException {
-        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
-        List<String> objLines = SimbadParser.get(queryUrl);
-        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
-        return astroObjs;
-    }
 
     public static List<AstroObject> makeSimbadCoordQuery(String ra, String dec, String radmin) throws IOException {
-        URL queryUrl = makeSimbadCoordQueryUrl(ra, dec, radmin);
-        List<String> objLines = SimbadParser.get(queryUrl);
-        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        Coordinates coords = new Coordinates(Double.parseDouble(ra), Double.parseDouble(dec));
+        List<AstroObject> astroObjs = null;
+        URL url;
+        SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
+        String script = String.format(PREFIX + "query sample region(%s%s,%s)"+ queryOptionalCriteria(criteria) + SUFIX, coords.raToString(), coords.decToString(), Config.ARCMIN_FORMATTER.format(radmin));
+        try {
+            url = new URL(SERVER_PREFIX + URLEncoder.encode(script, "UTF-8"));
+            astroObjs = SimbadParser.getVOTableAsAObjects(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Error(e);
+        }
         return astroObjs;
     }
 
@@ -106,8 +76,7 @@ public class SimbadCatQuery {
         String script = String.format(PREFIX +"query sample region(%s)" +queryOptionalCriteria(criteria) + SUFIX, id);
         try {
             url = new URL(SERVER_PREFIX + URLEncoder.encode(script, "UTF-8"));
-            System.out.println(url);
-            astroObjs = SimbadParser.getVOTableAsString(url);
+            astroObjs = SimbadParser.getVOTableAsAObjects(url);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Error(e);
@@ -116,64 +85,16 @@ public class SimbadCatQuery {
     }
 
     public static List<AstroObject> makeSimbadScriptQuery(String script) throws IOException {
-        String query = formatString2 + script + "\n";
-        URL queryUrl = makeSimbadScriptQueryUrl(query);
-        List<String> objLines = SimbadParser.get(queryUrl);
-        List<AstroObject> astroObjs = SimbadParser.stringsToAstroObjects(objLines);
+        List<AstroObject> astroObjs = null;
+        URL url;
+        try {
+            url = new URL(SERVER_PREFIX + URLEncoder.encode(script, "UTF-8"));
+            astroObjs = SimbadParser.getVOTableAsAObjects(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Error(e);
+        }
         return astroObjs;
-    }
-
-    private static URL makeSimbadCoordQueryUrl(double ra, double dec, double radMin) {
-        Coordinates coords = new Coordinates(ra, dec);
-        return makeSimbadCoordQueryUrl(coords.raToString(), coords.decToString(),
-                Config.ARCMIN_FORMATTER.format(radMin));
-    }
-
-    private static URL makeSimbadCoordQueryUrl(String ra, String dec, String radMin) {
-        try {
-            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script = String.format(formatString + queryOptionalFilters(criteria) + "query sample region(%s%s,%s)"
-                    + queryOptionalCriteria(criteria), ra, dec, radMin);
-            return makeSimbadScriptQueryUrl(script);
-        } catch (MalformedURLException ex) {
-            //we are supposed to create well-formed URLs here...
-            throw new Error(ex);
-        }
-    }
-
-    private static URL makeSimbadIdQueryUrl(String id) {
-        try {
-            id = id.replaceAll("\\s+", "");
-            SimbadCriteria criteria = SimbadCriteria.getLastSimbadCriteria();
-            String script = String.format(formatString + queryOptionalFilters(criteria) + "query sample region(%s)"
-                    + queryOptionalCriteria(criteria), id);
-            return makeSimbadScriptQueryUrl(script);
-        } catch (MalformedURLException ex) {
-            //we are supposed to create well-formed URLs here...
-            throw new Error(ex);
-        }
-    }
-
-    private static URL makeSimbadScriptQueryUrl(String script) throws MalformedURLException {
-        System.out.println("SIMBAD script generated:\n------------\n" + script + "\n------------");
-        String prefix = Config.SIMBAD_SERVER;
-        try {
-            return new URL(prefix + URLEncoder.encode(script, "UTF-8"));
-        } catch (UnsupportedEncodingException eex) {
-            //Java implementations are required to offer UTF-8 encoding
-            //support, so we should not trigger this.
-            //See http://download.oracle.com/javase/1.3/docs/api/java/lang/package-summary.html#charenc
-            throw new Error(eex);
-        }
-    }
-
-    private static String queryOptionalFilters(SimbadCriteria criteria) {
-        String measurementsQuery = SimbadQueryConstructor
-                .measurementSelector(criteria.getMeasurements().getMeasurementsSelected());
-        SimbadFluxFilter fluxFilter = criteria.getFluxFilter();
-        int[] fluxes = fluxFilter.getFluxesSelected();
-        String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
-        return "%%" + fluxQuery + "$#" + measurements + "$$ \"\n";
     }
 
     private static String queryOptionalCriteria(SimbadCriteria criteria) {
@@ -222,7 +143,7 @@ public class SimbadCatQuery {
         String fluxRangeQuery = SimbadQueryConstructor.fluxRangeSelector(rangeStrs, qf);
         if (!fluxRangeQuery.equals(""))
             fluxRangeQuery = " & " + fluxRangeQuery;
-        String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
+        // String fluxQuery = SimbadQueryConstructor.fluxSelector(fluxes);
 
         return objectTypeQuery + properMotionQuery + parallaxQuery + radialVelocityQuery + spectralTypeQuery
                 + fluxRangeQuery + measurementsQuery + "\n";

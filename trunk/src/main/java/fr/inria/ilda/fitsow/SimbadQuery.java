@@ -5,8 +5,6 @@
  */
 
 package fr.inria.ilda.fitsow;
-import fr.inria.zvtm.glyphs.VRectangle;
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
@@ -33,7 +31,6 @@ import fr.inria.ilda.simbad.AstroObject;
 import fr.inria.ilda.simbad.SimbadCatQuery;
 import fr.inria.ilda.simbad.SimbadResults;
 import fr.inria.ilda.simbad.SimbadInfo;
-import fr.inria.ilda.simbad.SimbadCriteria;
 import fr.inria.ilda.simbad.SimbadClearQuery;
 
 import jsky.coords.WorldCoords;
@@ -49,8 +46,6 @@ public class SimbadQuery {
     Point2D.Double queryRegionCenter;
     VCircle queryRegionG = new VCircle(0, 0, Config.Z_QUERY_REGION, 1,
                                        Color.BLACK, Config.QUERY_REGION_COLOR, Config.QUERY_REGION_ALPHA);
-    // VText queryRegionLb = new VText(0, 0, Config.Z_QUERY_REGION,
-    //                                 Config.QUERY_REGION_COLOR, EMPTY_STRING, VText.TEXT_ANCHOR_MIDDLE);
 
     public SimbadQuery(FITSOW app){
         this.app = app;
@@ -65,9 +60,7 @@ public class SimbadQuery {
         queryRegionG.sizeTo(1);
         queryRegionCenter = p;
         queryRegionG.moveTo(queryRegionCenter.x, queryRegionCenter.y);
-        // queryRegionLb.moveTo(queryRegionCenter.x, queryRegionCenter.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
         queryRegionG.setVisible(true);
-        // queryRegionLb.setVisible(true);
 
     }
 
@@ -76,11 +69,7 @@ public class SimbadQuery {
     }
 
     void setRadius(Point2D.Double onCircle){
-      // System.out.println("x: "+onCircle.getX()+" , y: "+ onCircle.getY());
-      // System.out.println("x: "+onCircle.x+" , y: "+ onCircle.y);
         queryRegionG.sizeTo(2*Math.sqrt((onCircle.x-queryRegionCenter.x)*(onCircle.x-queryRegionCenter.x) + (onCircle.y-queryRegionCenter.y)*(onCircle.y-queryRegionCenter.y)));
-        // queryRegionLb.setText();
-        // queryRegionLb.moveTo(queryRegionG.vx, queryRegionG.y + Config.QUERY_REGION_LB_OFFSET * queryRegionG.getSize());
     }
 
     public void querySimbadbyScript(final String script, final JSkyFitsImage cImg){
@@ -202,9 +191,7 @@ public class SimbadQuery {
                 try{
 
                   System.out.println("querying...");
-                  // start_time = System.nanoTime();
-                  // objs = SimbadCatQuery.makeSimbadCoordQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
-                  objs = SimbadCatQuery.testVOTable(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
+                  objs = SimbadCatQuery.makeSimbadCircleQuery(wc.getRaDeg(), wc.getDecDeg(), distArcMin);
                 } catch(IOException ioe){
                     ioe.printStackTrace();
                 } finally {

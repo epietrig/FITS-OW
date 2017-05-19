@@ -9,14 +9,11 @@
 import fr.inria.zvtm.glyphs.VRectangle;
 import fr.inria.zvtm.glyphs.VText;
 import fr.inria.zvtm.glyphs.VSegment;
-import fr.inria.zvtm.glyphs.Composite;
-import fr.inria.zvtm.glyphs.Glyph;
 import fr.inria.zvtm.engine.VirtualSpace;
 
 import fr.inria.ilda.fitsow.Config;
 
 import java.awt.Color;
-import java.awt.Font;
 
 public class MeasurementsTable extends SimbadQueryGlyph{
   private int nRows, nCols;
@@ -52,12 +49,10 @@ public class MeasurementsTable extends SimbadQueryGlyph{
     double bottom = bounds[3];
 
     VText title = new VText(OFFSET+left, top+OFFSET, 0, TEXT_COLOR, name);
-    // VSegment split = new VSegment(left, top-TEXT_SIZE, right, top-TEXT_SIZE,Z, BORDER_COLOR);
     title.setScale(1.1f);
 
     this.addChild(background);
     this.addChild(title);
-    // this.addChild(split);
 
     double xPosition = 0;
     for(int j = 0; j < nRows; j ++){
